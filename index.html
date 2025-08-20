@@ -333,13 +333,15 @@
             </div>
 
             <!-- AI Copilot -->
-            <div class="glass-card p-6 rounded-xl mb-8">
+            <div class="glass-card p-6 rounded-xl mb-8 cursor-pointer hover:bg-white/20 transition-all duration-300" onclick="activateAICopilot()">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center">
+                        <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center relative">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                             </svg>
+                            <!-- Connection indicator -->
+                            <div id="connection-indicator" class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white opacity-0 transition-opacity duration-300"></div>
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-white">AI Copilot</h3>
@@ -356,6 +358,24 @@
                 <p class="text-white/80 mb-3">Ready for voice commands.</p>
                 <div class="bg-teal-500/20 border-l-4 border-teal-400 p-3 rounded-r-lg">
                     <p class="text-sm text-white">Ask me about tonight's venue recommendations!</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs text-white/80">Click to activate voice assistant</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10" onclick="event.stopPropagation(); activateVoiceMode()" title="Voice Mode">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        </button>
+                        <button class="text-white/60 hover:text-white transition-colors" onclick="event.stopPropagation(); toggleChatWidget()" title="Chat Mode">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -910,6 +930,161 @@
                 }, 10);
             });
         }, 3000);
+
+        // Function to activate the AI Copilot chat widget
+        function activateAICopilot() {
+            // Show the chat widget
+            if (window.ClubRunChat) {
+                window.ClubRunChat.show();
+            }
+            
+            // Update the main AI Copilot status
+            updateAICopilotStatus('Voice activated - Ready to help!', 'listening');
+            
+            // Show notification
+            showNotification('🎤 AI Copilot activated! You can now speak or type your questions.', 'success');
+            
+            // Simulate voice activation
+            setTimeout(() => {
+                const chatInput = document.getElementById('chat-input');
+                if (chatInput) {
+                    chatInput.focus();
+                    chatInput.placeholder = 'Listening... Speak or type your question';
+                }
+            }, 500);
+        }
+        
+        // Function to toggle the chat widget
+        function toggleChatWidget() {
+            if (window.ClubRunChat) {
+                const chatWidget = document.getElementById('chat-widget');
+                const minimizedChat = document.getElementById('minimized-chat');
+                
+                if (chatWidget && chatWidget.classList.contains('hidden')) {
+                    window.ClubRunChat.show();
+                    updateAICopilotStatus('Chat widget opened', 'active');
+                } else {
+                    window.ClubRunChat.hide();
+                    updateAICopilotStatus('Chat widget minimized', 'standby');
+                }
+            }
+        }
+        
+        // Function to update AI Copilot status
+        function updateAICopilotStatus(message, status) {
+            const copilotCard = document.querySelector('.glass-card');
+            if (copilotCard) {
+                const statusDiv = copilotCard.querySelector('.bg-teal-500\\/20');
+                const statusBadge = copilotCard.querySelector('.bg-blue-500');
+                const connectionIndicator = document.getElementById('connection-indicator');
+                
+                if (statusDiv) {
+                    statusDiv.innerHTML = `<p class="text-sm text-white">${message}</p>`;
+                }
+                
+                if (statusBadge) {
+                    statusBadge.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white status-pulse`;
+                    
+                    if (status === 'listening') {
+                        statusBadge.classList.add('bg-green-500');
+                        statusBadge.textContent = 'LISTENING';
+                        // Show connection indicator when listening
+                        if (connectionIndicator) {
+                            connectionIndicator.classList.remove('opacity-0');
+                            connectionIndicator.classList.add('opacity-100');
+                        }
+                    } else if (status === 'active') {
+                        statusBadge.classList.add('bg-blue-500');
+                        statusBadge.textContent = 'ACTIVE';
+                        // Show connection indicator when active
+                        if (connectionIndicator) {
+                            connectionIndicator.classList.remove('opacity-0');
+                            connectionIndicator.classList.add('opacity-100');
+                        }
+                    } else {
+                        statusBadge.classList.add('bg-gray-500');
+                        statusBadge.textContent = 'STANDBY';
+                        // Hide connection indicator when standby
+                        if (connectionIndicator) {
+                            connectionIndicator.classList.add('opacity-0');
+                            connectionIndicator.classList.remove('opacity-100');
+                        }
+                    }
+                }
+                
+                // Reset status after 5 seconds
+                setTimeout(() => {
+                    if (statusDiv) {
+                        statusDiv.innerHTML = '<p class="text-sm text-white">Ask me about tonight\'s venue recommendations!</p>';
+                    }
+                    if (statusBadge) {
+                        statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500 text-white status-pulse';
+                        statusBadge.textContent = 'LISTENING';
+                    }
+                    // Keep connection indicator visible
+                    if (connectionIndicator) {
+                        connectionIndicator.classList.remove('opacity-0');
+                        connectionIndicator.classList.add('opacity-100');
+                    }
+                }, 5000);
+            }
+        }
+        
+        // Function to handle voice commands from the main AI Copilot
+        function handleVoiceCommand(command) {
+            // Update status
+            updateAICopilotStatus(`Processing: "${command}"`, 'listening');
+            
+            // Show the chat widget and send the command
+            if (window.ClubRunChat) {
+                window.ClubRunChat.show();
+                
+                setTimeout(() => {
+                    const chatInput = document.getElementById('chat-input');
+                    const sendBtn = document.getElementById('send-message');
+                    
+                    if (chatInput && sendBtn) {
+                        chatInput.value = command;
+                        sendBtn.click();
+                    }
+                }, 500);
+            }
+        }
+        
+        // Function to activate voice mode
+        function activateVoiceMode() {
+            // Update status to show voice activation
+            updateAICopilotStatus('Voice mode activated - Speak now!', 'listening');
+            
+            // Show notification
+            showNotification('🎤 Voice mode activated! Click the microphone to speak.', 'success');
+            
+            // Simulate voice recognition
+            setTimeout(() => {
+                // Simulate a voice command
+                const voiceCommands = [
+                    "Find me the best venues tonight",
+                    "Log an expense for drinks",
+                    "Show me my active missions",
+                    "Check me in at the current venue",
+                    "What's my budget status?"
+                ];
+                
+                const randomCommand = voiceCommands[Math.floor(Math.random() * voiceCommands.length)];
+                handleVoiceCommand(randomCommand);
+                
+                // Update status
+                updateAICopilotStatus(`Voice command: "${randomCommand}"`, 'active');
+                
+            }, 2000);
+        }
+        
+        // Make functions globally accessible
+        window.activateAICopilot = activateAICopilot;
+        window.toggleChatWidget = toggleChatWidget;
+        window.updateAICopilotStatus = updateAICopilotStatus;
+        window.handleVoiceCommand = handleVoiceCommand;
+        window.activateVoiceMode = activateVoiceMode;
     </script>
 </body>
 </html> 

@@ -18,52 +18,62 @@
                         </div>
                         <div>
                             <h3 class="font-semibold">AI Copilot</h3>
-                            <p class="text-xs text-blue-100">Ready to help!</p>
+                            <p class="text-xs text-blue-100">Ready to help! <span id="voice-status" class="hidden">🎤 Voice enabled</span></p>
                         </div>
                     </div>
-                    <button id="minimize-chat" class="text-white/80 hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button id="voice-mode-toggle" class="text-white/80 hover:text-white transition-colors p-1 rounded" title="Voice Mode">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        </button>
+                        <button id="minimize-chat" class="text-white/80 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Chat Messages -->
                 <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
-                    <div class="text-center py-8">
+                    <div class="text-center py-6">
                         <svg class="w-12 h-12 text-blue-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Hello! I'm your AI Copilot</h3>
                         <p class="text-sm text-gray-600 mb-4">
-                            I can help you with venue recommendations, business insights, and operational decisions.
+                            I can help you with venue recommendations, business insights, and operational decisions. You can type or use voice input!
                         </p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="checkin">
-                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="space-y-2">
+                            <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-blue-700 font-medium" data-action="checkin">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
-                                <span class="text-xs">Check In</span>
+                                <span>Quick Check-In</span>
                             </button>
-                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="expense">
-                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors text-green-700 font-medium" data-action="expense">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
-                                <span class="text-xs">Log Expense</span>
+                                <span>Log Expense</span>
                             </button>
-                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="missions">
-                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-purple-50 border border-purple-200 hover:bg-purple-100 transition-colors text-purple-700 font-medium" data-action="missions">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span class="text-xs">View Missions</span>
+                                <span>View Missions</span>
                             </button>
-                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="venues">
-                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors text-orange-700 font-medium" data-action="venues">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <span class="text-xs">Find Venues</span>
+                                <span>Find Venues</span>
                             </button>
+                        </div>
+                        <div class="mt-4 text-xs text-gray-500">
+                            💡 Tip: Click the microphone button or use the voice toggle to speak with me!
                         </div>
                     </div>
                 </div>
@@ -77,6 +87,11 @@
                             placeholder="Ask me anything..."
                             class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                        <button id="mic-button" class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Voice Input">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        </button>
                         <button id="send-message" class="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -126,6 +141,62 @@
             #chat-widget, #minimized-chat {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             }
+            .permission-dialog {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            }
+            .permission-content {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .permission-options {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 16px;
+            }
+            .permission-option {
+                padding: 12px 16px;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .permission-option:hover {
+                background: #f9fafb;
+                border-color: #d1d5db;
+            }
+            .permission-option.primary {
+                background: #3b82f6;
+                color: white;
+                border-color: #3b82f6;
+            }
+            .permission-option.primary:hover {
+                background: #2563eb;
+            }
+            .permission-option.danger {
+                background: #ef4444;
+                color: white;
+                border-color: #ef4444;
+            }
+            .permission-option.danger:hover {
+                background: #dc2626;
+            }
         </style>
     `;
 
@@ -158,9 +229,300 @@
         const chatMessages = document.getElementById('chat-messages');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-message');
+        const micBtn = document.getElementById('mic-button');
         const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+        const voiceModeToggle = document.getElementById('voice-mode-toggle');
+        const voiceStatus = document.getElementById('voice-status');
 
         if (!chatWidget || !minimizedChat) return;
+
+        // Permission management
+        const PERMISSION_KEY = 'clubrun_mic_permission';
+        const PERMISSION_STATES = {
+            NEVER: 'never',
+            ALWAYS: 'always',
+            ASK: 'ask'
+        };
+
+        function getStoredPermission() {
+            return localStorage.getItem(PERMISSION_KEY) || PERMISSION_STATES.ASK;
+        }
+
+        function setStoredPermission(permission) {
+            localStorage.setItem(PERMISSION_KEY, permission);
+        }
+
+        function showPermissionDialog() {
+            return new Promise((resolve) => {
+                const dialog = document.createElement('div');
+                dialog.className = 'permission-dialog';
+                dialog.innerHTML = `
+                    <div class="permission-content">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Microphone Access</h3>
+                                <p class="text-sm text-gray-600">Club Run needs microphone access for voice input</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">
+                            This allows you to speak with the AI Copilot using voice commands. Your voice data is processed locally and not stored.
+                        </p>
+                        <div class="permission-options">
+                            <div class="permission-option primary" data-permission="always">
+                                <span>Always Allow</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div class="permission-option" data-permission="ask">
+                                <span>Ask Every Time</span>
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="permission-option danger" data-permission="never">
+                                <span>Never Allow</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(dialog);
+
+                // Add event listeners
+                const options = dialog.querySelectorAll('.permission-option');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const permission = option.dataset.permission;
+                        setStoredPermission(permission);
+                        document.body.removeChild(dialog);
+                        resolve(permission);
+                    });
+                });
+
+                // Close on background click
+                dialog.addEventListener('click', (e) => {
+                    if (e.target === dialog) {
+                        document.body.removeChild(dialog);
+                        resolve(PERMISSION_STATES.NEVER);
+                    }
+                });
+            });
+        }
+
+        async function requestMicrophonePermission() {
+            const storedPermission = getStoredPermission();
+            
+            if (storedPermission === PERMISSION_STATES.NEVER) {
+                addMessage('Microphone access is disabled. You can enable it in your browser settings or change your preference.', 'ai');
+                return false;
+            }
+            
+            if (storedPermission === PERMISSION_STATES.ASK) {
+                const userChoice = await showPermissionDialog();
+                if (userChoice === PERMISSION_STATES.NEVER) {
+                    addMessage('Microphone access denied. You can enable it later in your browser settings.', 'ai');
+                    return false;
+                }
+            }
+            
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                return true;
+            } catch (error) {
+                console.error('Microphone permission error:', error);
+                addMessage('Microphone permission denied. Please allow microphone access in your browser settings to use voice input.', 'ai');
+                return false;
+            }
+        }
+
+        // Microphone permission and voice recognition
+        let isListening = false;
+        let recognition = null;
+
+        // Initialize speech recognition if available
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                micBtn.classList.remove('bg-gray-100', 'text-gray-600');
+                micBtn.classList.add('bg-red-500', 'text-white');
+                micBtn.innerHTML = `
+                    <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                `;
+                chatInput.placeholder = 'Listening...';
+                voiceStatus.classList.remove('hidden');
+                
+                // Update AI Copilot status
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('Listening for voice input...', 'listening');
+                }
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                chatInput.value = transcript;
+                
+                // Auto-send the message
+                setTimeout(() => {
+                    sendMessage();
+                }, 500);
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                micBtn.classList.remove('bg-red-500', 'text-white');
+                micBtn.classList.add('bg-gray-100', 'text-gray-600');
+                micBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                `;
+                chatInput.placeholder = 'Ask me anything...';
+                voiceStatus.classList.add('hidden');
+                
+                // Update AI Copilot status
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('Voice input completed', 'active');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                isListening = false;
+                micBtn.classList.remove('bg-red-500', 'text-white');
+                micBtn.classList.add('bg-gray-100', 'text-gray-600');
+                micBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                `;
+                chatInput.placeholder = 'Ask me anything...';
+                voiceStatus.classList.add('hidden');
+                
+                let errorMessage = 'Voice input error. Please try again.';
+                if (event.error === 'not-allowed') {
+                    errorMessage = 'Microphone permission denied. Please allow microphone access to use voice input.';
+                } else if (event.error === 'no-speech') {
+                    errorMessage = 'No speech detected. Please try speaking again.';
+                }
+                
+                addMessage(errorMessage, 'ai');
+                
+                // Update AI Copilot status
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('Voice input error', 'standby');
+                }
+            };
+        }
+
+        // Voice mode toggle functionality
+        if (voiceModeToggle) {
+            voiceModeToggle.addEventListener('click', () => {
+                if (recognition) {
+                    if (isListening) {
+                        recognition.stop();
+                        micBtn.classList.remove('bg-red-500', 'text-white');
+                        micBtn.classList.add('bg-gray-100', 'text-gray-600');
+                        micBtn.innerHTML = `
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        `;
+                        chatInput.placeholder = 'Ask me anything...';
+                        voiceStatus.classList.add('hidden');
+                    } else {
+                        // Request microphone permission if not already granted
+                        requestMicrophonePermission()
+                            .then((permission) => {
+                                if (permission === false) {
+                                    return;
+                                }
+                                recognition.start();
+                                micBtn.classList.remove('bg-gray-100', 'text-gray-600');
+                                micBtn.classList.add('bg-red-500', 'text-white');
+                                micBtn.innerHTML = `
+                                    <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                    </svg>
+                                `;
+                                chatInput.placeholder = 'Listening...';
+                                voiceStatus.classList.remove('hidden');
+                                if (typeof showNotification === 'function') {
+                                    showNotification('🎤 Voice activated! Speak now...', 'info');
+                                }
+                            });
+                    }
+                } else {
+                    addMessage('Voice input is not supported in this browser. Please use text input instead.', 'ai');
+                }
+            });
+        }
+
+        // Microphone button click handler
+        if (micBtn) {
+            micBtn.addEventListener('click', () => {
+                if (!recognition) {
+                    addMessage('Voice input is not supported in this browser. Please use text input instead.', 'ai');
+                    return;
+                }
+
+                if (isListening) {
+                    recognition.stop();
+                    return;
+                }
+
+                // Request microphone permission
+                requestMicrophonePermission()
+                    .then((permission) => {
+                        if (permission === false) {
+                            addMessage('Microphone access is disabled. You can enable it in your browser settings or change your preference.', 'ai');
+                            return;
+                        }
+                        // Permission granted, start recognition
+                        recognition.start();
+                        
+                        // Show notification
+                        if (typeof showNotification === 'function') {
+                            showNotification('🎤 Microphone activated! Speak now...', 'info');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Microphone permission error:', error);
+                        addMessage('Microphone permission denied. Please allow microphone access in your browser settings to use voice input.', 'ai');
+                        
+                        // Show notification
+                        if (typeof showNotification === 'function') {
+                            showNotification('❌ Microphone permission denied', 'error');
+                        }
+                        
+                        // Update AI Copilot status
+                        if (typeof updateAICopilotStatus === 'function') {
+                            updateAICopilotStatus('Microphone permission denied', 'standby');
+                        }
+                    });
+            });
+        }
+
+        // Add a function to reset permission preferences (for testing)
+        window.resetMicrophonePermission = function() {
+            localStorage.removeItem(PERMISSION_KEY);
+            addMessage('Microphone permission preferences have been reset. You will be asked again next time.', 'ai');
+        };
 
         // Minimize/Expand functionality
         if (minimizeBtn) {
@@ -216,6 +578,13 @@
             messageDiv.appendChild(messageBubble);
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Show quick actions after AI responses
+            if (sender === 'ai') {
+                setTimeout(() => {
+                    showQuickActions();
+                }, 1000);
+            }
         }
 
         function showTypingIndicator() {
@@ -244,9 +613,123 @@
             }
         }
 
+        function showQuickActions() {
+            // Remove existing quick actions if any
+            const existingActions = document.querySelector('.quick-actions-container');
+            if (existingActions) {
+                existingActions.remove();
+            }
+            
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'quick-actions-container mt-4 space-y-2';
+            actionsDiv.innerHTML = `
+                <p class="text-xs text-gray-500 text-center mb-2">Quick Actions:</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="quick-action-btn flex items-center justify-center space-x-2 p-2 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-blue-700 text-xs" data-action="checkin">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span>Check In</span>
+                    </button>
+                    <button class="quick-action-btn flex items-center justify-center space-x-2 p-2 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors text-green-700 text-xs" data-action="expense">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <span>Log Expense</span>
+                    </button>
+                    <button class="quick-action-btn flex items-center justify-center space-x-2 p-2 rounded-lg bg-purple-50 border border-purple-200 hover:bg-purple-100 transition-colors text-purple-700 text-xs" data-action="missions">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Missions</span>
+                    </button>
+                    <button class="quick-action-btn flex items-center justify-center space-x-2 p-2 rounded-lg bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors text-orange-700 text-xs" data-action="venues">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>Venues</span>
+                    </button>
+                </div>
+                <div class="mt-2 text-center">
+                    <button class="quick-action-btn text-xs text-gray-500 hover:text-gray-700 underline" data-action="reset-permissions">
+                        Reset Microphone Permissions
+                    </button>
+                </div>
+            `;
+            
+            chatMessages.appendChild(actionsDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Add event listeners to new quick action buttons
+            const newQuickActionBtns = actionsDiv.querySelectorAll('.quick-action-btn');
+            newQuickActionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const action = btn.dataset.action;
+                    
+                    // Add visual feedback
+                    btn.classList.add('scale-95');
+                    setTimeout(() => btn.classList.remove('scale-95'), 150);
+                    
+                    if (action === 'checkin') {
+                        addMessage('Opening Quick Check-In form...', 'ai');
+                        if (typeof openQuickCheckIn === 'function') {
+                            setTimeout(() => {
+                                openQuickCheckIn();
+                                if (typeof showNotification === 'function') {
+                                    showNotification('📱 Quick Check-In form opened!', 'info');
+                                }
+                                if (typeof updateAICopilotStatus === 'function') {
+                                    updateAICopilotStatus('Check-in form opened', 'active');
+                                }
+                            }, 500);
+                        }
+                    } else if (action === 'expense') {
+                        addMessage('Opening Log Expense form...', 'ai');
+                        if (typeof openLogExpense === 'function') {
+                            setTimeout(() => {
+                                openLogExpense();
+                                if (typeof showNotification === 'function') {
+                                    showNotification('💰 Log Expense form opened!', 'info');
+                                }
+                                if (typeof updateAICopilotStatus === 'function') {
+                                    updateAICopilotStatus('Expense form opened', 'active');
+                                }
+                            }, 500);
+                        }
+                    } else if (action === 'missions') {
+                        addMessage('Opening Active Missions...', 'ai');
+                        if (typeof openViewMissions === 'function') {
+                            setTimeout(() => {
+                                openViewMissions();
+                                if (typeof showNotification === 'function') {
+                                    showNotification('🎯 Active Missions opened!', 'info');
+                                }
+                                if (typeof updateAICopilotStatus === 'function') {
+                                    updateAICopilotStatus('Missions view opened', 'active');
+                                }
+                            }, 500);
+                        }
+                    } else if (action === 'venues') {
+                        addMessage('I can help you find venues! What type of venue are you looking for?', 'ai');
+                        if (typeof updateAICopilotStatus === 'function') {
+                            updateAICopilotStatus('Venue search activated', 'active');
+                        }
+                    } else if (action === 'reset-permissions') {
+                        window.resetMicrophonePermission();
+                    }
+                });
+            });
+        }
+
         function generateResponse(input) {
             const lowerInput = input.toLowerCase();
             const currentPath = window.location.pathname;
+            
+            // Update main AI Copilot status when processing
+            if (typeof updateAICopilotStatus === 'function') {
+                updateAICopilotStatus(`Processing: "${input}"`, 'listening');
+            }
             
             // Quick Actions triggers
             if (lowerInput.includes('check in') || lowerInput.includes('checkin') || lowerInput.includes('check-in')) {
@@ -256,6 +739,9 @@
                         openQuickCheckIn();
                         if (typeof showNotification === 'function') {
                             showNotification('📱 Quick Check-In form opened!', 'info');
+                        }
+                        if (typeof updateAICopilotStatus === 'function') {
+                            updateAICopilotStatus('Check-in form opened', 'active');
                         }
                     }, 1000);
                 }
@@ -270,6 +756,9 @@
                         if (typeof showNotification === 'function') {
                             showNotification('💰 Log Expense form opened!', 'info');
                         }
+                        if (typeof updateAICopilotStatus === 'function') {
+                            updateAICopilotStatus('Expense form opened', 'active');
+                        }
                     }, 1000);
                 }
                 return "Opening the Log Expense form! Please enter the expense details and I'll help you track it.";
@@ -283,12 +772,18 @@
                         if (typeof showNotification === 'function') {
                             showNotification('🎯 Active Missions opened!', 'info');
                         }
+                        if (typeof updateAICopilotStatus === 'function') {
+                            updateAICopilotStatus('Missions view opened', 'active');
+                        }
                     }, 1000);
                 }
                 return "Opening your Active Missions! Here you can see all your current tasks and their progress.";
             }
             
             if (lowerInput.includes('venue') || lowerInput.includes('place') || lowerInput.includes('club') || lowerInput.includes('bar')) {
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('Searching for venues...', 'active');
+                }
                 return "I can help you find great venues! Here are some popular options in Atlanta. Would you like me to show you venues with specific features like rooftop bars or live music?";
             }
             
@@ -301,17 +796,29 @@
             }
             
             if (lowerInput.includes('ai') || lowerInput.includes('agent') || lowerInput.includes('copilot')) {
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('AI Copilot ready to help!', 'active');
+                }
                 return "I'm your AI Copilot! I can help with venue research, budget management, reporting, and customer interactions. What would you like to know?";
             }
             
             if (lowerInput.includes('help') || lowerInput.includes('support')) {
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('Providing help and support', 'active');
+                }
                 return "I'm here to help! I can assist with venue recommendations, business insights, operational decisions, and guide you through the platform. What do you need?";
             }
             
             if (lowerInput.includes('budget') || lowerInput.includes('money') || lowerInput.includes('finance')) {
+                if (typeof updateAICopilotStatus === 'function') {
+                    updateAICopilotStatus('Accessing budget information', 'active');
+                }
                 return "I can help you manage your budget! You can log expenses, track spending, and get insights on your financial performance. Would you like to log an expense or view your budget status?";
             }
             
+            if (typeof updateAICopilotStatus === 'function') {
+                updateAICopilotStatus('Ready to help with your request', 'active');
+            }
             return "I'm your AI Copilot and I'm here to help with your nightlife business! I can help you check in at venues, log expenses, view missions, find venues, manage budgets, analyze data, and make operational decisions. What would you like to do?";
         }
 
@@ -333,6 +840,10 @@
             btn.addEventListener('click', () => {
                 const action = btn.dataset.action;
                 
+                // Add visual feedback
+                btn.classList.add('scale-95');
+                setTimeout(() => btn.classList.remove('scale-95'), 150);
+                
                 if (action === 'checkin') {
                     addMessage('Opening Quick Check-In form...', 'ai');
                     if (typeof openQuickCheckIn === 'function') {
@@ -341,7 +852,12 @@
                             if (typeof showNotification === 'function') {
                                 showNotification('📱 Quick Check-In form opened!', 'info');
                             }
+                            if (typeof updateAICopilotStatus === 'function') {
+                                updateAICopilotStatus('Check-in form opened', 'active');
+                            }
                         }, 500);
+                    } else {
+                        addMessage('Sorry, the check-in feature is not available right now.', 'ai');
                     }
                 } else if (action === 'expense') {
                     addMessage('Opening Log Expense form...', 'ai');
@@ -351,7 +867,12 @@
                             if (typeof showNotification === 'function') {
                                 showNotification('💰 Log Expense form opened!', 'info');
                             }
+                            if (typeof updateAICopilotStatus === 'function') {
+                                updateAICopilotStatus('Expense form opened', 'active');
+                            }
                         }, 500);
+                    } else {
+                        addMessage('Sorry, the expense logging feature is not available right now.', 'ai');
                     }
                 } else if (action === 'missions') {
                     addMessage('Opening Active Missions...', 'ai');
@@ -361,10 +882,18 @@
                             if (typeof showNotification === 'function') {
                                 showNotification('🎯 Active Missions opened!', 'info');
                             }
+                            if (typeof updateAICopilotStatus === 'function') {
+                                updateAICopilotStatus('Missions view opened', 'active');
+                            }
                         }, 500);
+                    } else {
+                        addMessage('Sorry, the missions feature is not available right now.', 'ai');
                     }
                 } else if (action === 'venues') {
-                    addMessage('I can help you find venues! What type of venue are you looking for?', 'ai');
+                    addMessage('I can help you find venues! What type of venue are you looking for? You can ask me about specific features like rooftop bars, live music venues, or popular nightclubs.', 'ai');
+                    if (typeof updateAICopilotStatus === 'function') {
+                        updateAICopilotStatus('Venue search activated', 'active');
+                    }
                 }
             });
         });

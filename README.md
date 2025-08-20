@@ -1,22 +1,21 @@
-# Club Run - Pre-MVP 0.1 🎉
+# Club Run Platform 🎉
 
-**AI-Powered Nightlife Operations Platform**
+**AI-Powered Nightlife Operations - Main Platform**
 
-A comprehensive platform for nightlife business optimization with intelligent AI agents, real-time analytics, and automated operations management.
+The main landing page and documentation hub for the Club Run platform. This repository contains the beautiful purple gradient homepage and serves as the central entry point for the entire platform.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- Python 3.8+
-- Git
+- Python 3.8+ (for local server)
+- Modern web browser
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd "CLUB RUN"
+   git clone <platform-repo-url>
+   cd club-run-platform
    ```
 
 2. **Start the main homepage**
@@ -25,29 +24,15 @@ A comprehensive platform for nightlife business optimization with intelligent AI
    ```
    Visit: http://localhost:8081
 
-3. **Start the Agent Dashboard**
-   ```bash
-   cd frontend
-   python3 -m http.server 8080
-   ```
-   Visit: http://localhost:8080/index.html
-
 ## 📁 Project Structure
 
 ```
-CLUB RUN/
+club-run-platform/
 ├── index.html              # Main purple gradient homepage
 ├── template.html           # Template for new pages
 ├── chat-widget.js          # Global chat widget
-├── frontend/               # Frontend application
-│   ├── index.html         # Agent Dashboard (light theme)
-│   ├── src/               # React/Next.js source code
-│   ├── styles/            # Global styles
-│   └── package.json       # Frontend dependencies
-└── backend/               # Backend API (separate repo)
-    ├── src/               # Express.js server
-    ├── prisma/            # Database schema
-    └── package.json       # Backend dependencies
+├── README.md              # This documentation
+└── RELEASE_NOTES.md       # Release information
 ```
 
 ## 🎨 Design System
@@ -57,92 +42,70 @@ CLUB RUN/
 - **Style**: Glassmorphism with backdrop blur
 - **Features**: Hero section, feature cards, AI agents showcase
 
-### Agent Dashboard (Light Theme)
-- **Background**: Light gray (`bg-gray-50`)
-- **Style**: Clean white cards with shadows
-- **Features**: Agent status cards, quick actions, floating FAB
+### Key Features
+- **Responsive Design**: Mobile-first approach
+- **Modern UI/UX**: Tailwind CSS with smooth animations
+- **Glassmorphism Effects**: Beautiful backdrop blur effects
+- **Professional Branding**: Consistent Club Run identity
 
-## 🔧 Features Implemented
+## 🔗 Connected Repositories
 
-### ✅ Core Features
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Glassmorphism Effects**: Modern UI with backdrop blur
-- **Agent Dashboard**: Real-time agent status monitoring
-- **Navigation System**: Smooth transitions and hover effects
-- **Chat Widget**: Global chat functionality
+### Frontend Application
+- **Repository**: `club-run-frontend`
+- **Technology**: React/Next.js, TypeScript, Tailwind CSS
+- **Purpose**: Agent dashboard and user interface
+- **URL**: http://localhost:3000
 
-### ✅ AI Agents
+### Backend API
+- **Repository**: `club-run-backend`
+- **Technology**: Node.js, Express.js, PostgreSQL, Prisma
+- **Purpose**: API endpoints and database management
+- **URL**: http://localhost:3001
+
+## 🎯 Platform Overview
+
+### Main Homepage Features
+- ✅ **Hero Section**: Eye-catching introduction with call-to-action
+- ✅ **Feature Showcase**: AI agents and platform capabilities
+- ✅ **Navigation**: Links to frontend and backend applications
+- ✅ **Responsive Design**: Works on all device sizes
+- ✅ **Modern Animations**: Smooth transitions and hover effects
+
+### AI Agents Highlighted
 - **Research Agent**: Venue trend analysis (85% efficiency)
 - **Budget Agent**: Expense tracking (99% efficiency)
 - **Reporting Agent**: Data processing (98% efficiency)
 - **AI Copilot**: Voice assistant (90% listening)
 
-### ✅ UI Components
-- **Hero Sections**: Engaging landing pages
-- **Feature Cards**: Glassmorphism design
-- **Status Indicators**: Real-time efficiency metrics
-- **Quick Actions**: One-click operations
-- **Floating Action Button**: Mobile-friendly interactions
-
-## 🎯 Pre-MVP 0.1 Highlights
-
-### Design Excellence
-- **Purple Gradient Homepage**: Eye-catching main landing page
-- **Clean Agent Dashboard**: Professional light theme interface
-- **Responsive Layout**: Works on all device sizes
-- **Modern Typography**: Inter font family throughout
-
-### Technical Foundation
-- **Static HTML/CSS**: Fast loading and reliable
-- **Tailwind CSS**: Utility-first styling
-- **Modular Structure**: Easy to maintain and extend
-- **Cross-browser Compatible**: Works on all modern browsers
-
-### User Experience
-- **Intuitive Navigation**: Clear information hierarchy
-- **Visual Feedback**: Hover states and transitions
-- **Accessibility**: Proper contrast and semantic HTML
-- **Performance**: Optimized assets and minimal dependencies
-
-## 🚀 Next Steps for MVP
-
-### Frontend Enhancements
-- [ ] React/Next.js integration
-- [ ] User authentication system
-- [ ] Real-time data updates
-- [ ] Advanced dashboard features
-
-### Backend Integration
-- [ ] API endpoints for data
-- [ ] Database connectivity
-- [ ] AI agent integration
-- [ ] Real-time WebSocket communication
-
-### Additional Features
-- [ ] User profiles and settings
-- [ ] Mission system implementation
-- [ ] Expense tracking interface
-- [ ] Venue management system
-
 ## 🛠️ Development
 
 ### Running Locally
 ```bash
-# Main homepage
+# Start main homepage
 python3 -m http.server 8081
+# Visit: http://localhost:8081
 
-# Agent dashboard
-cd frontend && python3 -m http.server 8080
-
-# React development (when ready)
-cd frontend && npm run dev
+# Alternative: Use any static file server
+npx serve .
+# or
+npx http-server .
 ```
 
-### File Structure
-- `index.html` - Main homepage with purple gradient
-- `frontend/index.html` - Agent dashboard interface
+### File Descriptions
+- `index.html` - Main homepage with purple gradient and glassmorphism
+- `template.html` - Base template for creating new pages
 - `chat-widget.js` - Global chat functionality
-- `template.html` - Base template for new pages
+- `README.md` - Platform documentation
+- `RELEASE_NOTES.md` - Release information
+
+## 🎨 Color Palette
+
+### Purple Theme (Main Homepage)
+- **Primary Purple**: `#8B5CF6` (Violet-500)
+- **Secondary Purple**: `#7C3AED` (Violet-600)
+- **Accent**: `#A855F7` (Violet-500)
+- **Glass Effect**: `rgba(255, 255, 255, 0.1)`
+- **Text**: `#FFFFFF` (White)
 
 ## 📱 Browser Support
 
@@ -151,18 +114,42 @@ cd frontend && npm run dev
 - ✅ Safari 14+
 - ✅ Edge 90+
 
-## 🎨 Color Palette
+## 🔗 Integration Points
 
-### Purple Theme (Main Homepage)
-- Primary: `#8B5CF6` (Violet-500)
-- Secondary: `#7C3AED` (Violet-600)
-- Accent: `#A855F7` (Violet-500)
+### Frontend Connection
+- **Launch Button**: Links to `http://localhost:3000`
+- **Navigation**: Seamless transition to agent dashboard
+- **Branding**: Consistent visual identity
 
-### Light Theme (Agent Dashboard)
-- Background: `#F9FAFB` (Gray-50)
-- Cards: `#FFFFFF` (White)
-- Text: `#111827` (Gray-900)
-- Accent: `#3B82F6` (Blue-500)
+### Backend Connection
+- **API Ready**: Configured for backend integration
+- **Chat Widget**: Connects to backend chat system
+- **Data Flow**: Prepared for real-time updates
+
+## 🚀 Deployment
+
+### Static Hosting
+This platform is ready for deployment on:
+- **Netlify**: Drag and drop deployment
+- **Vercel**: Git-based deployment
+- **GitHub Pages**: Free hosting
+- **AWS S3**: Scalable static hosting
+- **Cloudflare Pages**: Fast global CDN
+
+### Environment Setup
+```bash
+# Production build (if needed)
+# This is a static site, no build process required
+
+# Deploy to Netlify
+netlify deploy
+
+# Deploy to Vercel
+vercel
+
+# Deploy to GitHub Pages
+git push origin main
+```
 
 ## 📄 License
 
@@ -170,8 +157,11 @@ This project is proprietary software. All rights reserved.
 
 ## 🤝 Contributing
 
-This is a Pre-MVP release. For feedback and suggestions, please contact the development team.
+This is the main platform repository. For contributions:
+- **Frontend**: Contribute to `club-run-frontend` repository
+- **Backend**: Contribute to `club-run-backend` repository
+- **Platform**: Submit issues and suggestions here
 
 ---
 
-**🎉 Club Run Pre-MVP 0.1** - Ready for demonstration and feedback! 
+**🎉 Club Run Platform** - The beautiful entry point to AI-powered nightlife operations! 
