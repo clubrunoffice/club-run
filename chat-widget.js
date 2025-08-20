@@ -39,18 +39,30 @@
                             I can help you with venue recommendations, business insights, and operational decisions.
                         </p>
                         <div class="grid grid-cols-2 gap-2">
-                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="venues">
+                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="checkin">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-xs">Check In</span>
+                            </button>
+                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="expense">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                <span class="text-xs">Log Expense</span>
+                            </button>
+                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="missions">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="text-xs">View Missions</span>
+                            </button>
+                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="venues">
+                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 <span class="text-xs">Find Venues</span>
-                            </button>
-                            <button class="quick-action-btn flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" data-action="launch">
-                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                                <span class="text-xs">Launch App</span>
                             </button>
                         </div>
                     </div>
@@ -236,7 +248,47 @@
             const lowerInput = input.toLowerCase();
             const currentPath = window.location.pathname;
             
-            if (lowerInput.includes('venue') || lowerInput.includes('place') || lowerInput.includes('club')) {
+            // Quick Actions triggers
+            if (lowerInput.includes('check in') || lowerInput.includes('checkin') || lowerInput.includes('check-in')) {
+                // Trigger the check-in modal
+                if (typeof openQuickCheckIn === 'function') {
+                    setTimeout(() => {
+                        openQuickCheckIn();
+                        if (typeof showNotification === 'function') {
+                            showNotification('📱 Quick Check-In form opened!', 'info');
+                        }
+                    }, 1000);
+                }
+                return "Opening the Quick Check-In form for you! Please fill in the venue details and I'll help you check in.";
+            }
+            
+            if (lowerInput.includes('log expense') || lowerInput.includes('expense') || lowerInput.includes('spend') || lowerInput.includes('cost')) {
+                // Trigger the expense modal
+                if (typeof openLogExpense === 'function') {
+                    setTimeout(() => {
+                        openLogExpense();
+                        if (typeof showNotification === 'function') {
+                            showNotification('💰 Log Expense form opened!', 'info');
+                        }
+                    }, 1000);
+                }
+                return "Opening the Log Expense form! Please enter the expense details and I'll help you track it.";
+            }
+            
+            if (lowerInput.includes('mission') || lowerInput.includes('task') || lowerInput.includes('progress')) {
+                // Trigger the missions modal
+                if (typeof openViewMissions === 'function') {
+                    setTimeout(() => {
+                        openViewMissions();
+                        if (typeof showNotification === 'function') {
+                            showNotification('🎯 Active Missions opened!', 'info');
+                        }
+                    }, 1000);
+                }
+                return "Opening your Active Missions! Here you can see all your current tasks and their progress.";
+            }
+            
+            if (lowerInput.includes('venue') || lowerInput.includes('place') || lowerInput.includes('club') || lowerInput.includes('bar')) {
                 return "I can help you find great venues! Here are some popular options in Atlanta. Would you like me to show you venues with specific features like rooftop bars or live music?";
             }
             
@@ -256,15 +308,11 @@
                 return "I'm here to help! I can assist with venue recommendations, business insights, operational decisions, and guide you through the platform. What do you need?";
             }
             
-            if (lowerInput.includes('mission') || lowerInput.includes('task')) {
-                return "I can help you with missions! Track your progress, find new challenges, and earn rewards. Would you like to see your current missions?";
+            if (lowerInput.includes('budget') || lowerInput.includes('money') || lowerInput.includes('finance')) {
+                return "I can help you manage your budget! You can log expenses, track spending, and get insights on your financial performance. Would you like to log an expense or view your budget status?";
             }
             
-            if (lowerInput.includes('check in') || lowerInput.includes('checkin')) {
-                return "I can help you check in at venues! Use the check-in feature to earn tokens and track your nightlife adventures.";
-            }
-            
-            return "I'm your AI Copilot and I'm here to help with your nightlife business! I can help you find venues, manage budgets, analyze data, and make operational decisions. What would you like to do?";
+            return "I'm your AI Copilot and I'm here to help with your nightlife business! I can help you check in at venues, log expenses, view missions, find venues, manage budgets, analyze data, and make operational decisions. What would you like to do?";
         }
 
         // Event listeners
@@ -284,14 +332,39 @@
         quickActionBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const action = btn.dataset.action;
-                if (action === 'venues') {
-                    addMessage('I can help you find venues! What type of venue are you looking for?', 'ai');
-                } else if (action === 'launch') {
-                    if (currentPath.includes('frontend')) {
-                        addMessage('You\'re already in the app! Let me help you navigate to different sections.', 'ai');
-                    } else {
-                        window.location.href = 'frontend/';
+                
+                if (action === 'checkin') {
+                    addMessage('Opening Quick Check-In form...', 'ai');
+                    if (typeof openQuickCheckIn === 'function') {
+                        setTimeout(() => {
+                            openQuickCheckIn();
+                            if (typeof showNotification === 'function') {
+                                showNotification('📱 Quick Check-In form opened!', 'info');
+                            }
+                        }, 500);
                     }
+                } else if (action === 'expense') {
+                    addMessage('Opening Log Expense form...', 'ai');
+                    if (typeof openLogExpense === 'function') {
+                        setTimeout(() => {
+                            openLogExpense();
+                            if (typeof showNotification === 'function') {
+                                showNotification('💰 Log Expense form opened!', 'info');
+                            }
+                        }, 500);
+                    }
+                } else if (action === 'missions') {
+                    addMessage('Opening Active Missions...', 'ai');
+                    if (typeof openViewMissions === 'function') {
+                        setTimeout(() => {
+                            openViewMissions();
+                            if (typeof showNotification === 'function') {
+                                showNotification('🎯 Active Missions opened!', 'info');
+                            }
+                        }, 500);
+                    }
+                } else if (action === 'venues') {
+                    addMessage('I can help you find venues! What type of venue are you looking for?', 'ai');
                 }
             });
         });
