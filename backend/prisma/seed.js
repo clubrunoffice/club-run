@@ -1,227 +1,122 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
+
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create default agents
-  const agents = [
-    {
-      name: 'research',
-      displayName: 'Research Agent',
-      description: 'Analyzes venue data and crowd intelligence',
-      status: 'active',
-      confidence: 87.0
-    },
-    {
-      name: 'budget',
-      displayName: 'Budget Agent', 
-      description: 'Tracks expenses and financial optimization',
-      status: 'active',
-      confidence: 92.0
-    },
-    {
-      name: 'reporting',
-      displayName: 'Reporting Agent',
-      description: 'Processes check-ins and generates analytics',
-      status: 'active', 
-      confidence: 95.0
-    },
-    {
-      name: 'copilot',
-      displayName: 'Copilot',
-      description: 'Conversational AI assistant for all operations',
-      status: 'listening',
-      confidence: 98.0
-    }
-  ];
+  console.log('🌱 Starting database seeding...');
 
-  for (const agent of agents) {
-    await prisma.agent.upsert({
-      where: { name: agent.name },
-      update: agent,
-      create: agent
-    });
-  }
-
-  // Create Atlanta venues
-  const venues = [
-    {
-      name: 'MJQ Concourse',
-      address: '736 Ponce de Leon Ave NE, Atlanta, GA 30306',
-      type: 'nightclub',
-      hours: '10 PM - 3 AM',
-      checkInReward: 10,
-      status: 'open',
-      crowdLevel: 'Medium',
-      safetyRating: 4.2,
-      avgCost: 25,
-      specialMissions: ['Photo Check-in: +15 tokens', 'Review Venue: +5 tokens'],
-      amenities: ['Dance Floor', 'VIP Area', 'Live Music', 'Cocktail Bar']
-    },
-    {
-      name: '529 Bar',
-      address: '529 Flat Shoals Ave SE, Atlanta, GA 30316',
-      type: 'bar',
-      hours: '9 PM - 2 AM',
-      checkInReward: 10,
-      status: 'open',
-      crowdLevel: 'High',
-      safetyRating: 4.5,
-      avgCost: 20,
-      specialMissions: ['DJ Set Review: +20 tokens'],
-      amenities: ['Outdoor Patio', 'Live Music', 'Craft Beer', 'Food Menu']
-    },
-    {
-      name: 'Aisle 5',
-      address: '1492 Piedmont Ave NE, Atlanta, GA 30309',
-      type: 'nightclub',
-      hours: '11 PM - 3 AM',
-      checkInReward: 10,
-      status: 'opening_soon',
-      crowdLevel: 'Low',
-      safetyRating: 4.1,
-      avgCost: 30,
-      specialMissions: ['Early Bird Check-in: +25 tokens'],
-      amenities: ['Live Music', 'Dance Floor', 'Cocktail Bar', 'VIP Tables']
-    },
-    {
-      name: 'Paradise Lounge',
-      address: '1123 Zonolite Rd NE, Atlanta, GA 30306',
-      type: 'lounge',
-      hours: '8 PM - 1 AM',
-      checkInReward: 10,
-      status: 'open',
-      crowdLevel: 'Medium',
-      safetyRating: 3.8,
-      avgCost: 35,
-      specialMissions: ['VIP Area Photo: +30 tokens'],
-      amenities: ['VIP Lounge', 'Bottle Service', 'Dance Floor', 'Cocktail Bar']
-    },
-    {
-      name: 'Opera Nightclub',
-      address: '1150 Crescent Ave NE, Atlanta, GA 30309',
-      type: 'nightclub',
-      hours: '10 PM - 3 AM',
-      checkInReward: 15,
-      status: 'open',
-      crowdLevel: 'High',
-      safetyRating: 4.3,
-      avgCost: 40,
-      specialMissions: ['VIP Check-in: +25 tokens'],
-      amenities: ['VIP Bottle Service', 'Dance Floor', 'Live DJs', 'Cocktail Bar']
-    },
-    {
-      name: 'Believe Music Hall',
-      address: '1924 Piedmont Cir NE, Atlanta, GA 30324',
-      type: 'music_venue',
-      hours: '7 PM - 2 AM',
-      checkInReward: 12,
-      status: 'open',
-      crowdLevel: 'Medium',
-      safetyRating: 4.4,
-      avgCost: 28,
-      specialMissions: ['Concert Review: +20 tokens'],
-      amenities: ['Live Music', 'Dance Floor', 'Bar', 'Food Options']
-    }
-  ];
-
-  // Clear existing venues and create new ones
-  await prisma.venue.deleteMany({});
+  // Create admin user
+  console.log('👤 Creating admin user...');
+  const adminPassword = await bcrypt.hash('admin123', 12);
   
-  for (const venue of venues) {
-    await prisma.venue.create({
-      data: venue
-    });
-  }
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@clubrun.com' },
+    update: {},
+    create: {
+      email: 'admin@clubrun.com',
+      name: 'System Administrator',
+      passwordHash: adminPassword,
+      role: 'ADMIN',
+      tokenBalance: 1000,
+      level: 'Admin',
+      theme: 'dark'
+    }
+  });
 
-  // Create default missions
-  const missions = [
+  console.log('✅ Admin user created:', adminUser.email);
+
+  // Create sample users with different roles
+  console.log('👥 Creating sample users...');
+  
+  const sampleUsers = [
     {
-      title: 'Triple Threat',
-      description: 'Check into 3 different venues tonight',
-      type: 'daily',
-      category: 'check_in',
-      target: 3,
-      reward: 30,
-      timeLimit: '24h',
-      priority: 1
+      email: 'runner@clubrun.com',
+      name: 'John Runner',
+      role: 'RUNNER',
+      tokenBalance: 150,
+      level: 'Navigator'
     },
     {
-      title: 'Show & Tell',
-      description: 'Upload 5 venue photos',
-      type: 'daily',
-      category: 'photo',
-      target: 5,
-      reward: 25,
-      timeLimit: '24h',
-      priority: 2
+      email: 'client@clubrun.com',
+      name: 'Sarah Client',
+      role: 'CLIENT',
+      tokenBalance: 200,
+      level: 'VIP'
     },
     {
-      title: 'Money Manager',
-      description: 'Log all expenses for the night',
-      type: 'daily',
-      category: 'budget',
-      target: 1,
-      reward: 15,
-      timeLimit: '24h',
-      priority: 3
+      email: 'operations@clubrun.com',
+      name: 'Mike Operations',
+      role: 'OPERATIONS',
+      tokenBalance: 300,
+      level: 'Manager'
     },
     {
-      title: 'Consistency King',
-      description: 'Check-in 7 days in a row',
-      type: 'weekly',
-      category: 'streak',
-      target: 7,
-      reward: 100,
-      timeLimit: '7d',
-      priority: 1
-    },
-    {
-      title: 'Venue Explorer',
-      description: 'Visit 10 different venues this week',
-      type: 'weekly',
-      category: 'check_in',
-      target: 10,
-      reward: 75,
-      timeLimit: '7d',
-      priority: 2
-    },
-    {
-      title: 'Budget Master',
-      description: 'Track $500 in expenses this month',
-      type: 'weekly',
-      category: 'budget',
-      target: 500,
-      reward: 50,
-      timeLimit: '30d',
-      priority: 3
-    },
-    {
-      title: 'Social Butterfly',
-      description: 'Check into 5 venues with photos',
-      type: 'special',
-      category: 'photo',
-      target: 5,
-      reward: 40,
-      timeLimit: '7d',
-      priority: 1
+      email: 'partner@clubrun.com',
+      name: 'Lisa Partner',
+      role: 'PARTNER',
+      tokenBalance: 250,
+      level: 'Partner'
     }
   ];
 
-  // Clear existing missions and create new ones
-  await prisma.mission.deleteMany({});
+  for (const userData of sampleUsers) {
+    const password = await bcrypt.hash('password123', 12);
+    
+    await prisma.user.upsert({
+      where: { email: userData.email },
+      update: {},
+      create: {
+        ...userData,
+        passwordHash: password,
+        theme: 'dark'
+      }
+    });
+    
+    console.log(`✅ Created ${userData.role} user:`, userData.email);
+  }
+
+  // Create some sample system logs
+  console.log('📝 Creating sample system logs...');
   
-  for (const mission of missions) {
-    await prisma.mission.create({
-      data: mission
+  const sampleLogs = [
+    {
+      level: 'info',
+      message: 'System initialized successfully',
+      userId: adminUser.id
+    },
+    {
+      level: 'info',
+      message: 'Admin user logged in',
+      userId: adminUser.id
+    },
+    {
+      level: 'warn',
+      message: 'High memory usage detected',
+      userId: null
+    }
+  ];
+
+  for (const logData of sampleLogs) {
+    await prisma.systemLog.create({
+      data: logData
     });
   }
 
-  console.log('✅ Database seeded successfully');
+  console.log('✅ Sample system logs created');
+
+  console.log('🎉 Database seeding completed!');
+  console.log('\n📋 Login Credentials:');
+  console.log('Admin: admin@clubrun.com / admin123');
+  console.log('Runner: runner@clubrun.com / password123');
+  console.log('Client: client@clubrun.com / password123');
+  console.log('Operations: operations@clubrun.com / password123');
+  console.log('Partner: partner@clubrun.com / password123');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed error:', e);
+    console.error('❌ Seeding failed:', e);
     process.exit(1);
   })
   .finally(async () => {

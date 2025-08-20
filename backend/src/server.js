@@ -15,7 +15,7 @@ const prisma = new PrismaClient();
 // Socket.IO setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:8081"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -32,7 +32,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:8081"],
   credentials: true
 }));
 
@@ -67,6 +67,7 @@ app.get('/health', async (req, res) => {
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/admin', require('./routes/admin')); // Admin routes for role management
 app.use('/api/users', require('./routes/users'));
 app.use('/api/venues', require('./routes/venues'));
 app.use('/api/checkins', require('./routes/checkins'));

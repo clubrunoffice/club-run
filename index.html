@@ -4,1087 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club Run - AI-Powered Nightlife Operations</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Loading animation */
-        .loading {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        /* Agent status animations */
-        .status-pulse {
-            animation: statusPulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes statusPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        /* Mobile menu */
-        .mobile-menu {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        
-        .mobile-menu.open {
-            transform: translateX(0);
-        }
-
-        /* Dashboard toggle */
-        .dashboard-section {
-            display: none;
-        }
-        
-        .dashboard-section.active {
-            display: block;
-        }
-
-        .landing-section.active {
-            display: block;
-        }
-
-        .landing-section {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
-<body class="gradient-bg min-h-screen">
+<body>
     <!-- Navigation -->
-    <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                        <span class="text-2xl">🎉</span>
-                    </div>
-                    <h1 class="text-2xl font-bold text-white">Club Run</h1>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-6">
-                    <button id="nav-landing" class="text-white/80 hover:text-white transition-colors nav-btn active">Home</button>
-                    <button id="nav-dashboard" class="text-white/80 hover:text-white transition-colors nav-btn">Dashboard</button>
-                    <a href="#features" class="text-white/80 hover:text-white transition-colors">Features</a>
-                    <a href="#contact" class="text-white/80 hover:text-white transition-colors">Contact</a>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <button id="toggle-dashboard-btn" class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                        🚀 Launch Dashboard
-                    </button>
-                    
-                    <!-- Mobile menu button -->
-                    <button id="mobile-menu-btn" class="md:hidden text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">🎉</div>
+                <h1>Club Run</h1>
             </div>
-        </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="mobile-menu md:hidden absolute top-full left-0 w-full bg-white/10 backdrop-blur-md border-b border-white/20">
-            <div class="px-4 py-2 space-y-2">
-                <button id="mobile-nav-landing" class="block text-white/80 hover:text-white transition-colors py-2 nav-btn active">Home</button>
-                <button id="mobile-nav-dashboard" class="block text-white/80 hover:text-white transition-colors py-2 nav-btn">Dashboard</button>
-                <a href="#features" class="block text-white/80 hover:text-white transition-colors py-2">Features</a>
-                <a href="#contact" class="block text-white/80 hover:text-white transition-colors py-2">Contact</a>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="agent-dashboard.html" class="nav-link">Agent Dashboard</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-auth">
+                <button class="btn-login" onclick="openAuthModal()">Sign In</button>
+                <button class="btn-signup" onclick="openAuthModal('signup')">Sign Up</button>
+                <button class="btn-launch-dashboard" onclick="window.location.href='dashboard.html'">
+                    <span class="rocket-icon">🚀</span>
+                    Launch Dashboard
+                </button>
+            </div>
+            <div class="nav-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </nav>
 
-    <!-- Landing Section -->
-    <div id="landing-section" class="landing-section active">
-        <!-- Hero Section -->
-        <section class="py-20 px-4">
-            <div class="max-w-7xl mx-auto text-center">
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6">
-                    AI-Powered Nightlife Operations
-                </h1>
-                <p class="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto">
-                    Optimize your nightlife business with intelligent AI agents that handle research, budgeting, reporting, and customer interactions.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button id="hero-launch-btn" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
-                        🚀 Launch Agent Dashboard
-                    </button>
-                    <button id="demo-btn" class="glass-card text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white/20 transition-colors">
-                        📊 View Demo
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section id="features" class="py-20 px-4 bg-white/5">
-            <div class="max-w-7xl mx-auto">
-                <h2 class="text-4xl font-bold text-white text-center mb-16">Powerful Features</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="glass-card p-8 rounded-xl hover:bg-white/20 transition-all duration-300 cursor-pointer" onclick="showFeatureDetails('copilot')">
-                        <div class="w-16 h-16 bg-blue-500 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-white mb-4">AI Copilot</h3>
-                        <p class="text-white/80">Intelligent voice assistant that helps with venue recommendations, customer service, and operational decisions.</p>
-                    </div>
-                    
-                    <div class="glass-card p-8 rounded-xl hover:bg-white/20 transition-all duration-300 cursor-pointer" onclick="showFeatureDetails('analytics')">
-                        <div class="w-16 h-16 bg-green-500 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-white mb-4">Smart Analytics</h3>
-                        <p class="text-white/80">Real-time insights into crowd patterns, revenue optimization, and performance metrics.</p>
-                    </div>
-                    
-                    <div class="glass-card p-8 rounded-xl hover:bg-white/20 transition-all duration-300 cursor-pointer" onclick="showFeatureDetails('budget')">
-                        <div class="w-16 h-16 bg-purple-500 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-white mb-4">Budget Management</h3>
-                        <p class="text-white/80">Automated expense tracking and financial optimization to maximize your profitability.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 px-4 bg-white/5">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl font-bold text-white mb-6">Get in Touch</h2>
-                <p class="text-xl text-white/80 mb-8">Have questions? Want to learn more? We'd love to hear from you.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                    <div class="glass-card p-6 rounded-xl">
-                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-white mb-2">Email</h3>
-                        <p class="text-white/80">hello@clubrun.ai</p>
-                    </div>
-                    
-                    <div class="glass-card p-6 rounded-xl">
-                        <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-white mb-2">Phone</h3>
-                        <p class="text-white/80">+1 (555) 123-4567</p>
-                    </div>
-                    
-                    <div class="glass-card p-6 rounded-xl">
-                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-semibold text-white mb-2">Location</h3>
-                        <p class="text-white/80">San Francisco, CA</p>
-                    </div>
-                </div>
-                
-                <button id="contact-btn" class="glass-card text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
-                    Send Message
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">AI-Powered Nightlife Operations</h1>
+            <p class="hero-subtitle">Optimize your nightlife business with intelligent AI agents that handle research, budgeting, reporting, and customer interactions.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.location.href='agent-dashboard.html'">
+                    <span class="rocket-icon">🚀</span>
+                    Launch Agent Dashboard
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='dashboard.html'">
+                    <span class="chart-icon">📊</span>
+                    View Operations Dashboard
                 </button>
             </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="bg-black/20 border-t border-white/20 py-8">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="flex items-center space-x-3 mb-4 md:mb-0">
-                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                            <span class="text-lg">🎉</span>
-                        </div>
-                        <span class="text-white font-semibold">Club Run</span>
-                    </div>
-                    <div class="text-white/60 text-sm">
-                        © 2024 Club Run. AI-Powered Nightlife Operations.
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Dashboard Section -->
-    <div id="dashboard-section" class="dashboard-section">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Header -->
-            <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold text-white mb-2">Agent Dashboard</h1>
-                <p class="text-xl text-white/80">Your AI agents are working to optimize your nightlife operations.</p>
-            </div>
-
-            <!-- Agent Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Research Agent -->
-                <div class="glass-card p-6 rounded-xl hover:bg-white/20 transition-all duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-white">Research Agent</h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white status-pulse">
-                                    ACTIVE
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-bold text-white">85%</div>
-                            <div class="text-sm text-white/80">Efficiency</div>
-                        </div>
-                    </div>
-                    <p class="text-white/80 mb-3">Analyzing venue crowd reports.</p>
-                    <div class="bg-teal-500/20 border-l-4 border-teal-400 p-3 rounded-r-lg">
-                        <p class="text-sm text-white">529 Bar trending up - expect higher crowd tonight.</p>
-                    </div>
-                </div>
-
-                <!-- Budget Agent -->
-                <div class="glass-card p-6 rounded-xl hover:bg-white/20 transition-all duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-white">Budget Agent</h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white status-pulse">
-                                    ACTIVE
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-bold text-white">99%</div>
-                            <div class="text-sm text-white/80">Efficiency</div>
-                        </div>
-                    </div>
-                    <p class="text-white/80 mb-3">Tracking weekly expenses.</p>
-                    <div class="bg-orange-500/20 border-l-4 border-orange-400 p-3 rounded-r-lg">
-                        <p class="text-sm text-white">$15 under budget this week - great job!</p>
-                    </div>
-                </div>
-
-                <!-- Reporting Agent -->
-                <div class="glass-card p-6 rounded-xl hover:bg-white/20 transition-all duration-300">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-white">Reporting Agent</h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white status-pulse">
-                                    ACTIVE
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-bold text-white">98%</div>
-                            <div class="text-sm text-white/80">Efficiency</div>
-                        </div>
-                    </div>
-                    <p class="text-white/80 mb-3">Processing check-in verifications.</p>
-                    <div class="bg-red-500/20 border-l-4 border-red-400 p-3 rounded-r-lg">
-                        <p class="text-sm text-white">All recent check-ins verified successfully.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI Copilot -->
-            <div class="glass-card p-6 rounded-xl mb-8 cursor-pointer hover:bg-white/20 transition-all duration-300" onclick="activateAICopilot()">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center relative">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                            <!-- Connection indicator -->
-                            <div id="connection-indicator" class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white opacity-0 transition-opacity duration-300"></div>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-white">AI Copilot</h3>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500 text-white status-pulse">
-                                LISTENING
-                            </span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-2xl font-bold text-white">90%</div>
-                        <div class="text-sm text-white/80">Efficiency</div>
-                    </div>
-                </div>
-                <p class="text-white/80 mb-3">Ready for voice commands.</p>
-                <div class="bg-teal-500/20 border-l-4 border-teal-400 p-3 rounded-r-lg">
-                    <p class="text-sm text-white">Ask me about tonight's venue recommendations!</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <span class="text-xs text-white/80">Click to activate voice assistant</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button class="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10" onclick="event.stopPropagation(); activateVoiceMode()" title="Voice Mode">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                        </button>
-                        <button class="text-white/60 hover:text-white transition-colors" onclick="event.stopPropagation(); toggleChatWidget()" title="Chat Mode">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="glass-card p-6 rounded-xl">
-                <h3 class="text-xl font-semibold text-white mb-4">Quick Actions</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button onclick="openQuickCheckIn()" class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
-                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <span class="font-medium text-white">Quick Check-In</span>
-                    </button>
-                    
-                    <button onclick="openLogExpense()" class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
-                        <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                        </div>
-                        <span class="font-medium text-white">Log Expense</span>
-                    </button>
-                    
-                    <button onclick="openViewMissions()" class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
-                        <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <span class="font-medium text-white">View Missions</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Floating Action Button -->
-            <button class="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-teal-400 to-blue-500 rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </button>
         </div>
-    </div>
+    </section>
 
-    <!-- Modal for Feature Details -->
-    <div id="feature-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 id="modal-title" class="text-2xl font-bold text-gray-900"></h2>
-                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon ai-copilot">
+                        <div class="icon-bg">
+                            <span class="speech-bubble">💬</span>
+                        </div>
+                    </div>
+                    <h3>AI Copilot</h3>
+                    <p>Intelligent voice assistant that helps with venue recommendations, business insights, and operational decisions.</p>
                 </div>
-                <div id="modal-content" class="text-gray-600"></div>
-                <div class="mt-6 flex justify-end">
-                    <button onclick="closeModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                        Close
-                    </button>
+                <div class="feature-card">
+                    <div class="feature-icon smart-analytics">
+                        <div class="icon-bg">
+                            <span class="chart-icon">📊</span>
+                        </div>
+                    </div>
+                    <h3>Smart Analytics</h3>
+                    <p>Real-time insights into crowd patterns, revenue optimization, and performance metrics to maximize your business potential.</p>
                 </div>
+                <div class="feature-card">
+                    <div class="feature-icon financial-optimization">
+                        <div class="icon-bg">
+                            <span class="money-icon">💰</span>
+                        </div>
+                    </div>
+                    <h3>Financial Optimization</h3>
+                    <p>Advanced financial modeling and optimization tools to maximize your revenue and minimize operational costs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <p class="contact-subtitle">Have questions? Want to learn more? We'd love to hear from you.</p>
+            
+            <div class="contact-cards">
+                <div class="contact-card">
+                    <div class="contact-icon-bg email-icon">
+                        <span class="contact-icon">📧</span>
+                    </div>
+                    <h3>Email</h3>
+                    <p>hello@clubrun.ai</p>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon-bg phone-icon">
+                        <span class="contact-icon">📞</span>
+                    </div>
+                    <h3>Phone</h3>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon-bg location-icon">
+                        <span class="contact-icon">📍</span>
+                    </div>
+                    <h3>Location</h3>
+                    <p>San Francisco, CA</p>
+                </div>
+            </div>
+            
+            <div class="contact-action">
+                <button class="btn-send-message" onclick="openContactForm()">Send Message</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <div class="auth-header">
+                <h2 id="authTitle">Login</h2>
+                <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <div class="auth-footer">
+                <p id="authToggle">Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign up</a></p>
             </div>
         </div>
     </div>
 
-    <!-- Quick Check-In Modal -->
-    <div id="checkin-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Quick Check-In</h2>
-                    <button onclick="closeCheckInModal()" class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Club Run</h3>
+                    <p>AI-powered nightlife operations platform</p>
                 </div>
-                <form id="checkin-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name</label>
-                        <input type="text" id="venue-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter venue name" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Check-In Time</label>
-                        <input type="datetime-local" id="checkin-time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                        <textarea id="checkin-notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Any additional notes..."></textarea>
-                    </div>
-                    <div class="flex space-x-3 pt-4">
-                        <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            Check In
-                        </button>
-                        <button type="button" onclick="closeCheckInModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Log Expense Modal -->
-    <div id="expense-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Log Expense</h2>
-                    <button onclick="closeExpenseModal()" class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <a href="#features">Features</a>
+                    <a href="#dashboard">Dashboard</a>
+                    <a href="#pricing">Pricing</a>
                 </div>
-                <form id="expense-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Expense Category</label>
-                        <select id="expense-category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
-                            <option value="">Select category</option>
-                            <option value="food">Food & Drinks</option>
-                            <option value="transport">Transportation</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="supplies">Supplies</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount ($)</label>
-                        <input type="number" id="expense-amount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0.00" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <input type="text" id="expense-description" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="What was this expense for?" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                        <input type="date" id="expense-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
-                    </div>
-                    <div class="flex space-x-3 pt-4">
-                        <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                            Log Expense
-                        </button>
-                        <button type="button" onclick="closeExpenseModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Missions Modal -->
-    <div id="missions-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Active Missions</h2>
-                    <button onclick="closeMissionsModal()" class="text-gray-500 hover:text-gray-700">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-semibold text-blue-900">Venue Research Mission</h3>
-                                <p class="text-blue-700 text-sm">Research Agent is analyzing 3 trending venues</p>
-                                <div class="mt-2">
-                                    <div class="w-full bg-blue-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
-                                    </div>
-                                    <span class="text-xs text-blue-600">75% Complete</span>
-                                </div>
-                            </div>
-                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-semibold text-green-900">Budget Optimization</h3>
-                                <p class="text-green-700 text-sm">Budget Agent is tracking weekly expenses</p>
-                                <div class="mt-2">
-                                    <div class="w-full bg-green-200 rounded-full h-2">
-                                        <div class="bg-green-600 h-2 rounded-full" style="width: 90%"></div>
-                                    </div>
-                                    <span class="text-xs text-green-600">90% Complete</span>
-                                </div>
-                            </div>
-                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-semibold text-purple-900">Performance Report</h3>
-                                <p class="text-purple-700 text-sm">Reporting Agent is generating weekly insights</p>
-                                <div class="mt-2">
-                                    <div class="w-full bg-purple-200 rounded-full h-2">
-                                        <div class="bg-purple-600 h-2 rounded-full" style="width: 60%"></div>
-                                    </div>
-                                    <span class="text-xs text-purple-600">60% Complete</span>
-                                </div>
-                            </div>
-                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-50 border-l-4 border-gray-400 p-4 rounded-r-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="font-semibold text-gray-900">Customer Feedback Analysis</h3>
-                                <p class="text-gray-700 text-sm">AI Copilot is processing recent feedback</p>
-                                <div class="mt-2">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-gray-600 h-2 rounded-full" style="width: 45%"></div>
-                                    </div>
-                                    <span class="text-xs text-gray-600">45% Complete</span>
-                                </div>
-                            </div>
-                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Pending</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-6 flex justify-end">
-                    <button onclick="closeMissionsModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                        Close
-                    </button>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#privacy">Privacy</a>
                 </div>
             </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Club Run. All rights reserved.</p>
+            </div>
         </div>
-    </div>
+    </footer>
 
-    <!-- Global Chat Widget Script -->
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="chat-widget.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script>
-        // Dashboard toggle functionality
-        function showDashboard() {
-            document.getElementById('landing-section').classList.remove('active');
-            document.getElementById('dashboard-section').classList.add('active');
-            document.getElementById('toggle-dashboard-btn').textContent = '🏠 Back to Home';
-            
-            // Update navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('nav-dashboard').classList.add('active');
-            document.getElementById('mobile-nav-dashboard').classList.add('active');
-        }
-        
-        function showLanding() {
-            document.getElementById('dashboard-section').classList.remove('active');
-            document.getElementById('landing-section').classList.add('active');
-            document.getElementById('toggle-dashboard-btn').textContent = '🚀 Launch Dashboard';
-            
-            // Update navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('nav-landing').classList.add('active');
-            document.getElementById('mobile-nav-landing').classList.add('active');
-        }
-        
-        // Event listeners for dashboard toggle
-        document.getElementById('toggle-dashboard-btn').addEventListener('click', () => {
-            if (document.getElementById('dashboard-section').classList.contains('active')) {
-                showLanding();
-            } else {
-                showDashboard();
-            }
-        });
-        
-        // Navigation event listeners
-        document.getElementById('nav-landing').addEventListener('click', showLanding);
-        document.getElementById('nav-dashboard').addEventListener('click', showDashboard);
-        document.getElementById('mobile-nav-landing').addEventListener('click', showLanding);
-        document.getElementById('mobile-nav-dashboard').addEventListener('click', showDashboard);
-        
-        // Mobile menu functionality
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
-        });
-        
-        // Close mobile menu when clicking on links
-        document.querySelectorAll('#mobile-menu a, #mobile-menu button').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('open');
-            });
-        });
-        
-        // Launch dashboard functionality
-        function launchDashboard() {
-            showDashboard();
-        }
-        
-        // Add event listeners to all launch buttons
-        document.getElementById('hero-launch-btn').addEventListener('click', launchDashboard);
-        
-        // Demo functionality
-        document.getElementById('demo-btn').addEventListener('click', () => {
-            showDashboard();
-        });
-        
-        // Feature details modal
-        function showFeatureDetails(feature) {
-            const modal = document.getElementById('feature-modal');
-            const title = document.getElementById('modal-title');
-            const content = document.getElementById('modal-content');
-            
-            const features = {
-                copilot: {
-                    title: 'AI Copilot',
-                    content: `
-                        <p class="mb-4">Our AI Copilot is your intelligent voice assistant that helps with every aspect of your nightlife operations.</p>
-                        <h3 class="font-semibold text-gray-900 mb-2">Key Features:</h3>
-                        <ul class="list-disc list-inside space-y-1 mb-4">
-                            <li>Voice-activated commands</li>
-                            <li>Real-time venue recommendations</li>
-                            <li>Customer service assistance</li>
-                            <li>Operational decision support</li>
-                            <li>Natural language processing</li>
-                        </ul>
-                        <h3 class="font-semibold text-gray-900 mb-2">How it works:</h3>
-                        <p>Simply speak to your AI Copilot and it will understand your needs, provide insights, and help you make informed decisions about your nightlife business.</p>
-                    `
-                },
-                analytics: {
-                    title: 'Smart Analytics',
-                    content: `
-                        <p class="mb-4">Get real-time insights into your nightlife business performance with our advanced analytics platform.</p>
-                        <h3 class="font-semibold text-gray-900 mb-2">Key Features:</h3>
-                        <ul class="list-disc list-inside space-y-1 mb-4">
-                            <li>Crowd pattern analysis</li>
-                            <li>Revenue optimization insights</li>
-                            <li>Performance metrics tracking</li>
-                            <li>Predictive analytics</li>
-                            <li>Custom reporting</li>
-                        </ul>
-                        <h3 class="font-semibold text-gray-900 mb-2">Benefits:</h3>
-                        <p>Make data-driven decisions to optimize your operations, increase revenue, and improve customer satisfaction.</p>
-                    `
-                },
-                budget: {
-                    title: 'Budget Management',
-                    content: `
-                        <p class="mb-4">Automated expense tracking and financial optimization to maximize your profitability.</p>
-                        <h3 class="font-semibold text-gray-900 mb-2">Key Features:</h3>
-                        <ul class="list-disc list-inside space-y-1 mb-4">
-                            <li>Automatic expense categorization</li>
-                            <li>Real-time budget tracking</li>
-                            <li>Financial optimization recommendations</li>
-                            <li>Expense alerts and notifications</li>
-                            <li>Profit margin analysis</li>
-                        </ul>
-                        <h3 class="font-semibold text-gray-900 mb-2">Benefits:</h3>
-                        <p>Stay on top of your finances, identify cost-saving opportunities, and maximize your nightlife business profitability.</p>
-                    `
-                }
-            };
-            
-            title.textContent = features[feature].title;
-            content.innerHTML = features[feature].content;
-            modal.classList.remove('hidden');
-        }
-        
-        function closeModal() {
-            document.getElementById('feature-modal').classList.add('hidden');
-        }
-
-        // Quick Check-In Modal
-        function openQuickCheckIn() {
-            document.getElementById('checkin-modal').classList.remove('hidden');
-        }
-
-        function closeCheckInModal() {
-            document.getElementById('checkin-modal').classList.add('hidden');
-        }
-
-        // Log Expense Modal
-        function openLogExpense() {
-            document.getElementById('expense-modal').classList.remove('hidden');
-        }
-
-        function closeExpenseModal() {
-            document.getElementById('expense-modal').classList.add('hidden');
-        }
-
-        // View Missions Modal
-        function openViewMissions() {
-            document.getElementById('missions-modal').classList.remove('hidden');
-        }
-
-        function closeMissionsModal() {
-            document.getElementById('missions-modal').classList.add('hidden');
-        }
-
-        // Make functions globally accessible for chat widget
-        window.openQuickCheckIn = openQuickCheckIn;
-        window.closeCheckInModal = closeCheckInModal;
-        window.openLogExpense = openLogExpense;
-        window.closeExpenseModal = closeExpenseModal;
-        window.openViewMissions = openViewMissions;
-        window.closeMissionsModal = closeMissionsModal;
-        window.showNotification = showNotification;
-
-        // Form submission handlers
-        document.getElementById('checkin-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const venueName = document.getElementById('venue-name').value;
-            const checkinTime = document.getElementById('checkin-time').value;
-            const notes = document.getElementById('checkin-notes').value;
-            
-            // Simulate API call
-            setTimeout(() => {
-                showNotification('✅ Check-in successful! You\'ve been checked in at ' + venueName, 'success');
-                closeCheckInModal();
-                document.getElementById('checkin-form').reset();
-                
-                // Update Research Agent status
-                updateAgentStatus('research', 'Checked in at ' + venueName);
-            }, 1000);
-        });
-
-        document.getElementById('expense-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const category = document.getElementById('expense-category').value;
-            const amount = document.getElementById('expense-amount').value;
-            const description = document.getElementById('expense-description').value;
-            const date = document.getElementById('expense-date').value;
-            
-            // Simulate API call
-            setTimeout(() => {
-                showNotification('💰 Expense logged! $' + amount + ' for ' + description, 'success');
-                closeExpenseModal();
-                document.getElementById('expense-form').reset();
-                
-                // Update Budget Agent status
-                updateAgentStatus('budget', 'Logged $' + amount + ' expense');
-            }, 1000);
-        });
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
-            
-            if (type === 'success') {
-                notification.className += ' bg-green-500 text-white';
-            } else if (type === 'error') {
-                notification.className += ' bg-red-500 text-white';
-            } else {
-                notification.className += ' bg-blue-500 text-white';
-            }
-            
-            notification.innerHTML = `
-                <div class="flex items-center space-x-2">
-                    <span>${message}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Animate in
-            setTimeout(() => {
-                notification.classList.remove('translate-x-full');
-            }, 100);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    if (notification.parentElement) {
-                        notification.remove();
-                    }
-                }, 300);
-            }, 5000);
-        }
-
-        // Update agent status
-        function updateAgentStatus(agentType, message) {
-            const agentCards = document.querySelectorAll('.glass-card');
-            agentCards.forEach(card => {
-                const agentName = card.querySelector('h3');
-                if (agentName && agentName.textContent.toLowerCase().includes(agentType)) {
-                    const statusDiv = card.querySelector('.bg-teal-500\\/20, .bg-orange-500\\/20, .bg-red-500\\/20');
-                    if (statusDiv) {
-                        statusDiv.innerHTML = `<p class="text-sm text-white">${message}</p>`;
-                        
-                        // Reset after 10 seconds
-                        setTimeout(() => {
-                            if (agentType === 'research') {
-                                statusDiv.innerHTML = '<p class="text-sm text-white">529 Bar trending up - expect higher crowd tonight.</p>';
-                            } else if (agentType === 'budget') {
-                                statusDiv.innerHTML = '<p class="text-sm text-white">$15 under budget this week - great job!</p>';
-                            }
-                        }, 10000);
-                    }
-                }
-            });
-        }
-
-        // Set default values for forms
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set default date/time for check-in
-            const now = new Date();
-            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('checkin-time').value = localDateTime;
-            
-            // Set default date for expense
-            document.getElementById('expense-date').value = now.toISOString().split('T')[0];
-        });
-
-        // Contact button functionality
-        document.getElementById('contact-btn').addEventListener('click', () => {
-            alert('Contact form coming soon! For now, please email us at hello@clubrun.ai');
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Add loading animation to status indicators
-        setInterval(() => {
-            const statusElements = document.querySelectorAll('.status-pulse');
-            statusElements.forEach(el => {
-                el.style.animation = 'none';
-                setTimeout(() => {
-                    el.style.animation = 'statusPulse 2s ease-in-out infinite';
-                }, 10);
-            });
-        }, 3000);
-
-        // Function to activate the AI Copilot chat widget
-        function activateAICopilot() {
-            // Show the chat widget
-            if (window.ClubRunChat) {
-                window.ClubRunChat.show();
-            }
-            
-            // Update the main AI Copilot status
-            updateAICopilotStatus('Voice activated - Ready to help!', 'listening');
-            
-            // Show notification
-            showNotification('🎤 AI Copilot activated! You can now speak or type your questions.', 'success');
-            
-            // Simulate voice activation
-            setTimeout(() => {
-                const chatInput = document.getElementById('chat-input');
-                if (chatInput) {
-                    chatInput.focus();
-                    chatInput.placeholder = 'Listening... Speak or type your question';
-                }
-            }, 500);
-        }
-        
-        // Function to toggle the chat widget
-        function toggleChatWidget() {
-            if (window.ClubRunChat) {
-                const chatWidget = document.getElementById('chat-widget');
-                const minimizedChat = document.getElementById('minimized-chat');
-                
-                if (chatWidget && chatWidget.classList.contains('hidden')) {
-                    window.ClubRunChat.show();
-                    updateAICopilotStatus('Chat widget opened', 'active');
-                } else {
-                    window.ClubRunChat.hide();
-                    updateAICopilotStatus('Chat widget minimized', 'standby');
-                }
-            }
-        }
-        
-        // Function to update AI Copilot status
-        function updateAICopilotStatus(message, status) {
-            const copilotCard = document.querySelector('.glass-card');
-            if (copilotCard) {
-                const statusDiv = copilotCard.querySelector('.bg-teal-500\\/20');
-                const statusBadge = copilotCard.querySelector('.bg-blue-500');
-                const connectionIndicator = document.getElementById('connection-indicator');
-                
-                if (statusDiv) {
-                    statusDiv.innerHTML = `<p class="text-sm text-white">${message}</p>`;
-                }
-                
-                if (statusBadge) {
-                    statusBadge.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white status-pulse`;
-                    
-                    if (status === 'listening') {
-                        statusBadge.classList.add('bg-green-500');
-                        statusBadge.textContent = 'LISTENING';
-                        // Show connection indicator when listening
-                        if (connectionIndicator) {
-                            connectionIndicator.classList.remove('opacity-0');
-                            connectionIndicator.classList.add('opacity-100');
-                        }
-                    } else if (status === 'active') {
-                        statusBadge.classList.add('bg-blue-500');
-                        statusBadge.textContent = 'ACTIVE';
-                        // Show connection indicator when active
-                        if (connectionIndicator) {
-                            connectionIndicator.classList.remove('opacity-0');
-                            connectionIndicator.classList.add('opacity-100');
-                        }
-                    } else {
-                        statusBadge.classList.add('bg-gray-500');
-                        statusBadge.textContent = 'STANDBY';
-                        // Hide connection indicator when standby
-                        if (connectionIndicator) {
-                            connectionIndicator.classList.add('opacity-0');
-                            connectionIndicator.classList.remove('opacity-100');
-                        }
-                    }
-                }
-                
-                // Reset status after 5 seconds
-                setTimeout(() => {
-                    if (statusDiv) {
-                        statusDiv.innerHTML = '<p class="text-sm text-white">Ask me about tonight\'s venue recommendations!</p>';
-                    }
-                    if (statusBadge) {
-                        statusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500 text-white status-pulse';
-                        statusBadge.textContent = 'LISTENING';
-                    }
-                    // Keep connection indicator visible
-                    if (connectionIndicator) {
-                        connectionIndicator.classList.remove('opacity-0');
-                        connectionIndicator.classList.add('opacity-100');
-                    }
-                }, 5000);
-            }
-        }
-        
-        // Function to handle voice commands from the main AI Copilot
-        function handleVoiceCommand(command) {
-            // Update status
-            updateAICopilotStatus(`Processing: "${command}"`, 'listening');
-            
-            // Show the chat widget and send the command
-            if (window.ClubRunChat) {
-                window.ClubRunChat.show();
-                
-                setTimeout(() => {
-                    const chatInput = document.getElementById('chat-input');
-                    const sendBtn = document.getElementById('send-message');
-                    
-                    if (chatInput && sendBtn) {
-                        chatInput.value = command;
-                        sendBtn.click();
-                    }
-                }, 500);
-            }
-        }
-        
-        // Function to activate voice mode
-        function activateVoiceMode() {
-            // Update status to show voice activation
-            updateAICopilotStatus('Voice mode activated - Speak now!', 'listening');
-            
-            // Show notification
-            showNotification('🎤 Voice mode activated! Click the microphone to speak.', 'success');
-            
-            // Simulate voice recognition
-            setTimeout(() => {
-                // Simulate a voice command
-                const voiceCommands = [
-                    "Find me the best venues tonight",
-                    "Log an expense for drinks",
-                    "Show me my active missions",
-                    "Check me in at the current venue",
-                    "What's my budget status?"
-                ];
-                
-                const randomCommand = voiceCommands[Math.floor(Math.random() * voiceCommands.length)];
-                handleVoiceCommand(randomCommand);
-                
-                // Update status
-                updateAICopilotStatus(`Voice command: "${randomCommand}"`, 'active');
-                
-            }, 2000);
-        }
-        
-        // Make functions globally accessible
-        window.activateAICopilot = activateAICopilot;
-        window.toggleChatWidget = toggleChatWidget;
-        window.updateAICopilotStatus = updateAICopilotStatus;
-        window.handleVoiceCommand = handleVoiceCommand;
-        window.activateVoiceMode = activateVoiceMode;
-    </script>
+    <script src="script.js"></script>
 </body>
 </html> 

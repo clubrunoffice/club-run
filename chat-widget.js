@@ -4,6 +4,161 @@
 (function() {
     'use strict';
 
+    // Global Voice Permission Management System
+    window.VoicePermissionManager = {
+        PERMISSION_KEY: 'clubrun_mic_permission',
+        PERMISSION_STATES: {
+            NEVER: 'never',
+            ALWAYS: 'always',
+            ASK: 'ask'
+        },
+
+        getStoredPermission() {
+            return localStorage.getItem(this.PERMISSION_KEY) || this.PERMISSION_STATES.ASK;
+        },
+
+        setStoredPermission(permission) {
+            localStorage.setItem(this.PERMISSION_KEY, permission);
+            // Dispatch event to notify other components
+            window.dispatchEvent(new CustomEvent('voicePermissionChanged', { 
+                detail: { permission } 
+            }));
+        },
+
+        async requestPermission() {
+            const storedPermission = this.getStoredPermission();
+            
+            if (storedPermission === this.PERMISSION_STATES.NEVER) {
+                return false;
+            }
+            
+            if (storedPermission === this.PERMISSION_STATES.ASK) {
+                const userChoice = await this.showPermissionDialog();
+                if (userChoice === this.PERMISSION_STATES.NEVER) {
+                    return false;
+                }
+            }
+            
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                return true;
+            } catch (error) {
+                console.error('Microphone permission error:', error);
+                return false;
+            }
+        },
+
+        // Force show permission dialog for testing
+        forceShowPermissionDialog() {
+            console.log('Force showing permission dialog');
+            return this.showPermissionDialog();
+        },
+
+        showPermissionDialog() {
+            return new Promise((resolve) => {
+                const dialog = document.createElement('div');
+                dialog.className = 'permission-dialog';
+                dialog.innerHTML = `
+                    <div class="permission-content">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Microphone Access</h3>
+                                <p class="text-sm text-gray-600">Club Run needs microphone access for voice input</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">
+                            This allows you to speak with the AI Copilot using voice commands. Your voice data is processed locally and not stored.
+                        </p>
+                        <div class="permission-options">
+                            <div class="permission-option primary" data-permission="always">
+                                <span>Always Allow</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div class="permission-option" data-permission="ask">
+                                <span>Ask Every Time</span>
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="permission-option danger" data-permission="never">
+                                <span>Never Allow</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="permission-sync-status" class="hidden mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span class="text-sm text-blue-700">Syncing permissions across interfaces...</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(dialog);
+
+                // Add event listeners
+                const options = dialog.querySelectorAll('.permission-option');
+                const syncStatus = dialog.querySelector('#permission-sync-status');
+                
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const permission = option.dataset.permission;
+                        
+                        // Show syncing status
+                        syncStatus.classList.remove('hidden');
+                        
+                        // Set permission and notify other components
+                        this.setStoredPermission(permission);
+                        
+                        // Show success message
+                        setTimeout(() => {
+                            syncStatus.innerHTML = `
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span class="text-sm text-green-700">Permissions synced successfully!</span>
+                                </div>
+                            `;
+                            
+                            // Close dialog after showing success
+                            setTimeout(() => {
+                                document.body.removeChild(dialog);
+                                resolve(permission);
+                            }, 1000);
+                        }, 500);
+                    });
+                });
+
+                // Close on background click
+                dialog.addEventListener('click', (e) => {
+                    if (e.target === dialog) {
+                        document.body.removeChild(dialog);
+                        resolve(this.PERMISSION_STATES.NEVER);
+                    }
+                });
+            });
+        },
+
+        resetPermission() {
+            localStorage.removeItem(this.PERMISSION_KEY);
+            window.dispatchEvent(new CustomEvent('voicePermissionChanged', { 
+                detail: { permission: this.PERMISSION_STATES.ASK } 
+            }));
+        }
+    };
+
     // Chat Widget HTML Template
     const chatWidgetHTML = `
         <div id="chat-widget" class="fixed bottom-6 right-6 z-50">
@@ -18,7 +173,7 @@
                         </div>
                         <div>
                             <h3 class="font-semibold">AI Copilot</h3>
-                            <p class="text-xs text-blue-100">Ready to help! <span id="voice-status" class="hidden">🎤 Voice enabled</span></p>
+                            <p class="text-xs text-blue-100">Ready to help! 🎤 Voice enabled</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -50,26 +205,26 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                 </svg>
-                                <span>Quick Check-In</span>
+                                <span>📱 Quick Check-In</span>
                             </button>
                             <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-green-50 border border-green-200 hover:bg-green-100 transition-colors text-green-700 font-medium" data-action="expense">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
-                                <span>Log Expense</span>
+                                <span>💳 Log Expense</span>
                             </button>
                             <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-purple-50 border border-purple-200 hover:bg-purple-100 transition-colors text-purple-700 font-medium" data-action="missions">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>View Missions</span>
+                                <span>✅ View Missions</span>
                             </button>
                             <button class="quick-action-btn w-full flex items-center justify-center space-x-2 p-3 rounded-lg bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors text-orange-700 font-medium" data-action="venues">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <span>Find Venues</span>
+                                <span>📍 Find Venues</span>
                             </button>
                         </div>
                         <div class="mt-4 text-xs text-gray-500">
@@ -87,7 +242,7 @@
                             placeholder="Ask me anything..."
                             class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        <button id="mic-button" class="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Voice Input">
+                        <button id="mic-button" class="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors" title="Voice Input">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                             </svg>
@@ -105,7 +260,7 @@
 
     const minimizedChatHTML = `
         <div id="minimized-chat" class="fixed bottom-6 right-6 z-50 hidden">
-            <button id="expand-chat" class="w-14 h-14 rounded-full shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all duration-200 flex items-center justify-center hover:scale-110">
+            <button id="expand-chat" class="w-14 h-14 rounded-full shadow-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-200 flex items-center justify-center hover:scale-110">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
@@ -236,7 +391,7 @@
 
         if (!chatWidget || !minimizedChat) return;
 
-        // Permission management
+        // Permission management - now using global VoicePermissionManager
         const PERMISSION_KEY = 'clubrun_mic_permission';
         const PERMISSION_STATES = {
             NEVER: 'never',
@@ -245,103 +400,30 @@
         };
 
         function getStoredPermission() {
-            return localStorage.getItem(PERMISSION_KEY) || PERMISSION_STATES.ASK;
+            return window.VoicePermissionManager.getStoredPermission();
         }
 
         function setStoredPermission(permission) {
-            localStorage.setItem(PERMISSION_KEY, permission);
+            window.VoicePermissionManager.setStoredPermission(permission);
         }
 
         function showPermissionDialog() {
-            return new Promise((resolve) => {
-                const dialog = document.createElement('div');
-                dialog.className = 'permission-dialog';
-                dialog.innerHTML = `
-                    <div class="permission-content">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Microphone Access</h3>
-                                <p class="text-sm text-gray-600">Club Run needs microphone access for voice input</p>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4">
-                            This allows you to speak with the AI Copilot using voice commands. Your voice data is processed locally and not stored.
-                        </p>
-                        <div class="permission-options">
-                            <div class="permission-option primary" data-permission="always">
-                                <span>Always Allow</span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <div class="permission-option" data-permission="ask">
-                                <span>Ask Every Time</span>
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div class="permission-option danger" data-permission="never">
-                                <span>Never Allow</span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                document.body.appendChild(dialog);
-
-                // Add event listeners
-                const options = dialog.querySelectorAll('.permission-option');
-                options.forEach(option => {
-                    option.addEventListener('click', () => {
-                        const permission = option.dataset.permission;
-                        setStoredPermission(permission);
-                        document.body.removeChild(dialog);
-                        resolve(permission);
-                    });
-                });
-
-                // Close on background click
-                dialog.addEventListener('click', (e) => {
-                    if (e.target === dialog) {
-                        document.body.removeChild(dialog);
-                        resolve(PERMISSION_STATES.NEVER);
-                    }
-                });
-            });
+            return window.VoicePermissionManager.showPermissionDialog();
         }
 
         async function requestMicrophonePermission() {
-            const storedPermission = getStoredPermission();
+            const permission = await window.VoicePermissionManager.requestPermission();
             
-            if (storedPermission === PERMISSION_STATES.NEVER) {
-                addMessage('Microphone access is disabled. You can enable it in your browser settings or change your preference.', 'ai');
-                return false;
-            }
-            
-            if (storedPermission === PERMISSION_STATES.ASK) {
-                const userChoice = await showPermissionDialog();
-                if (userChoice === PERMISSION_STATES.NEVER) {
-                    addMessage('Microphone access denied. You can enable it later in your browser settings.', 'ai');
-                    return false;
+            if (!permission) {
+                const storedPermission = getStoredPermission();
+                if (storedPermission === PERMISSION_STATES.NEVER) {
+                    addMessage('Microphone access is disabled. You can enable it in your browser settings or change your preference.', 'ai');
+                } else {
+                    addMessage('Microphone permission denied. Please allow microphone access in your browser settings to use voice input.', 'ai');
                 }
             }
             
-            try {
-                await navigator.mediaDevices.getUserMedia({ audio: true });
-                return true;
-            } catch (error) {
-                console.error('Microphone permission error:', error);
-                addMessage('Microphone permission denied. Please allow microphone access in your browser settings to use voice input.', 'ai');
-                return false;
-            }
+            return permission;
         }
 
         // Microphone permission and voice recognition
@@ -520,7 +602,7 @@
 
         // Add a function to reset permission preferences (for testing)
         window.resetMicrophonePermission = function() {
-            localStorage.removeItem(PERMISSION_KEY);
+            window.VoicePermissionManager.resetPermission();
             addMessage('Microphone permission preferences have been reset. You will be asked again next time.', 'ai');
         };
 
@@ -905,6 +987,96 @@
     } else {
         initChatWidget();
     }
+
+    // Listen for voice permission changes from other components
+    window.addEventListener('voicePermissionChanged', (event) => {
+        const { permission } = event.detail;
+        updateVoiceUIState(permission);
+        
+        // Show notification about permission change
+        if (typeof showNotification === 'function') {
+            const permissionText = permission === 'always' ? 'Always Allow' : 
+                                 permission === 'never' ? 'Never Allow' : 'Ask Every Time';
+            showNotification(`🎤 Voice permission updated: ${permissionText}`, 'info');
+        }
+    });
+
+    // Function to update voice UI state based on permission
+    function updateVoiceUIState(permission) {
+        const voiceModeToggle = document.getElementById('voice-mode-toggle');
+        const voiceStatus = document.getElementById('voice-status');
+        const micBtn = document.getElementById('mic-button');
+        
+        if (voiceModeToggle) {
+            if (permission === 'never') {
+                voiceModeToggle.classList.add('opacity-50');
+                voiceModeToggle.title = 'Voice disabled - Change permission to enable';
+            } else {
+                voiceModeToggle.classList.remove('opacity-50');
+                voiceModeToggle.title = 'Voice Mode';
+            }
+        }
+        
+        if (voiceStatus) {
+            if (permission === 'always') {
+                voiceStatus.classList.remove('hidden');
+                voiceStatus.textContent = '🎤 Voice enabled';
+            } else if (permission === 'never') {
+                voiceStatus.classList.remove('hidden');
+                voiceStatus.textContent = '🎤 Voice disabled';
+            } else {
+                voiceStatus.classList.add('hidden');
+            }
+        }
+        
+        // Update microphone button state
+        if (micBtn && permission === 'never') {
+            micBtn.classList.add('opacity-50');
+            micBtn.title = 'Microphone disabled - Change permission to enable';
+        } else if (micBtn) {
+            micBtn.classList.remove('opacity-50');
+            micBtn.title = 'Click to use voice input';
+        }
+    }
+
+    // Initialize voice UI state on load
+    function initializeVoiceUIState() {
+        if (window.VoicePermissionManager) {
+            const currentPermission = window.VoicePermissionManager.getStoredPermission();
+            updateVoiceUIState(currentPermission);
+        }
+    }
+
+    // Call initialization after widget is created
+    setTimeout(initializeVoiceUIState, 100);
+
+    // Global function to reset microphone permissions
+    window.resetMicrophonePermission = function() {
+        if (window.VoicePermissionManager) {
+            // Show syncing indicator
+            if (typeof showSyncIndicator === 'function') {
+                showSyncIndicator();
+            }
+            
+            // Reset permission
+            window.VoicePermissionManager.resetPermission();
+            
+            // Show success message
+            setTimeout(() => {
+                if (typeof showNotification === 'function') {
+                    showNotification('🔄 Microphone permissions reset and synced across all interfaces', 'success');
+                }
+                
+                // Update UI states
+                updateVoiceUIState('ask');
+                
+                // Add message to chat
+                addMessage('Microphone permissions have been reset. You will be asked for permission again when using voice features.', 'ai');
+            }, 1000);
+        } else {
+            addMessage('Error: Voice Permission Manager not available', 'ai');
+        }
+    };
 
     // Export for global access
     window.ClubRunChat = {
