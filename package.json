@@ -1,0 +1,31 @@
+{
+  "name": "club-run",
+  "version": "1.0.0-pre",
+  "description": "AI-Powered Nightlife Operations Platform - Pre-MVP 1.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -o",
+    "start": "npx http-server . -p 3000",
+    "build": "echo 'Build process for production'",
+    "test": "echo 'Run tests'",
+    "deploy": "echo 'Deploy to production'"
+  },
+  "keywords": [
+    "club-run",
+    "nightlife",
+    "ai",
+    "operations",
+    "role-based",
+    "rbac",
+    "dashboard"
+  ],
+  "author": "Club Run Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clubrun/club-run.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

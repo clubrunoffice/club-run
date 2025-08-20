@@ -8,12 +8,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Role enum for automatic role assignment
+enum UserRole {
+  GUEST
+  RUNNER
+  CLIENT
+  OPERATIONS
+  PARTNER
+  ADMIN
+}
+
 model User {
   id               String    @id @default(cuid())
   email            String    @unique
-  passwordHash     String
+  passwordHash     String?
   name             String
+  googleId         String?   @unique
+  avatar           String?
   walletAddress    String?   @unique
+  role             UserRole  @default(RUNNER) // Automatic role assignment
   tokenBalance     Int       @default(0)
   currentStreak    Int       @default(0)
   totalCheckIns    Int       @default(0)

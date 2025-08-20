@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Dashboard - Club Run</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">🎉</div>
+                <h1>Club Run</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="agent-dashboard.html" class="nav-link">Agent Dashboard</a>
+                <a href="index.html#features" class="nav-link">Features</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="nav-auth">
+                <button class="btn-login" onclick="openAuthModal()">Sign In</button>
+                <button class="btn-signup" onclick="openAuthModal('signup')">Sign Up</button>
+                <button class="btn-launch-dashboard" onclick="window.location.href='agent-dashboard.html'">
+                    <span class="home-icon">🤖</span>
+                    Agent Dashboard
+                </button>
+            </div>
+            <div class="nav-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <section class="dashboard-hero">
+        <div class="container">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h1>Operations Dashboard</h1>
+                    <p>Real-time insights into your nightlife business performance</p>
+                </div>
+                <div class="dashboard-controls">
+                    <button class="btn-refresh" onclick="refreshDashboard()">
+                        <span class="refresh-icon">🔄</span>
+                        Refresh
+                    </button>
+                    <select class="time-filter" onchange="updateTimeFilter(this.value)">
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="quarter">This Quarter</option>
+                    </select>
+                    <button class="btn-export" onclick="exportData()">
+                        <span class="export-icon">📊</span>
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Content -->
+    <section class="dashboard-content">
+        <div class="container">
+            <!-- Key Metrics Grid -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Guest Count</h3>
+                        <div class="card-icon guest-icon">👥</div>
+                    </div>
+                    <div class="metric-large">247</div>
+                    <div class="metric-trend positive">+12% from yesterday</div>
+                    <div class="metric-detail">
+                        <span class="detail-label">Peak Time:</span>
+                        <span class="detail-value">10:30 PM</span>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Revenue</h3>
+                        <div class="card-icon revenue-icon">💰</div>
+                    </div>
+                    <div class="metric-large">$16,450</div>
+                    <div class="metric-trend positive">+8% from yesterday</div>
+                    <div class="metric-detail">
+                        <span class="detail-label">Avg. Spend:</span>
+                        <span class="detail-value">$66.60</span>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Capacity</h3>
+                        <div class="card-icon capacity-icon">🎯</div>
+                    </div>
+                    <div class="metric-large">78%</div>
+                    <div class="capacity-bar">
+                        <div class="capacity-fill" style="width: 78%"></div>
+                    </div>
+                    <div class="metric-detail">
+                        <span class="detail-label">Max Capacity:</span>
+                        <span class="detail-value">320 guests</span>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Staff On Duty</h3>
+                        <div class="card-icon staff-icon">👨‍💼</div>
+                    </div>
+                    <div class="metric-large">12</div>
+                    <div class="metric-trend neutral">All positions filled</div>
+                    <div class="metric-detail">
+                        <span class="detail-label">Next Shift:</span>
+                        <span class="detail-value">2:00 AM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="dashboard-charts">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Revenue Trend</h3>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="day">Day</button>
+                            <button class="chart-btn" data-period="week">Week</button>
+                            <button class="chart-btn" data-period="month">Month</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Guest Flow</h3>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="hour">Hour</button>
+                            <button class="chart-btn" data-period="day">Day</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="guestChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Analytics -->
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Top Performing Venues</h3>
+                    <div class="venue-list">
+                        <div class="venue-item">
+                            <div class="venue-info">
+                                <span class="venue-name">Main Dance Floor</span>
+                                <span class="venue-revenue">$8,240</span>
+                            </div>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="venue-item">
+                            <div class="venue-info">
+                                <span class="venue-name">VIP Lounge</span>
+                                <span class="venue-revenue">$5,120</span>
+                            </div>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="venue-item">
+                            <div class="venue-info">
+                                <span class="venue-name">Bar Area</span>
+                                <span class="venue-revenue">$3,090</span>
+                            </div>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">🎉</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Peak hour reached</div>
+                                <div class="activity-time">2 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">💰</div>
+                            <div class="activity-content">
+                                <div class="activity-title">VIP table booked</div>
+                                <div class="activity-time">5 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">👥</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Group of 8 arrived</div>
+                                <div class="activity-time">8 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🍾</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Bottle service ordered</div>
+                                <div class="activity-time">12 minutes ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <div class="auth-header">
+                <h2 id="authTitle">Login</h2>
+                <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <div class="auth-footer">
+                <p id="authToggle">Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="chat-widget.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html> 

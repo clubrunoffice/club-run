@@ -24,13 +24,14 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'Email already registered' });
     }
 
-    // Create user
+    // Create user with default RUNNER role
     const passwordHash = await hashPassword(password);
     const user = await req.prisma.user.create({
       data: {
         email: email.toLowerCase(),
         passwordHash,
-        name
+        name,
+        role: 'RUNNER' // Default role assignment
       }
     });
 
@@ -55,6 +56,7 @@ router.post('/register', async (req, res) => {
         id: user.id, 
         email: user.email, 
         name: user.name,
+        role: user.role,
         tokenBalance: user.tokenBalance,
         level: user.level
       },
@@ -105,6 +107,7 @@ router.post('/login', async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
         tokenBalance: user.tokenBalance,
         level: user.level,
         theme: user.theme,
@@ -140,6 +143,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
         tokenBalance: user.tokenBalance,
         currentStreak: user.currentStreak,
         totalCheckIns: user._count.checkIns,
@@ -166,6 +170,99 @@ router.post('/logout', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({ error: 'Logout failed' });
+  }
+});
+
+// Google OAuth
+router.post('/google', async (req, res) => {
+  try {
+    const { accessToken, userInfo } = req.body;
+    
+    if (!accessToken || !userInfo) {
+      return res.status(400).json({ error: 'Access token and user info are required' });
+    }
+
+    // Check if user exists
+    let user = await req.prisma.user.findUnique({
+      where: { email: userInfo.email.toLowerCase() }
+    });
+
+    if (!user) {
+      // Create new user
+      user = await req.prisma.user.create({
+        data: {
+          email: userInfo.email.toLowerCase(),
+          name: userInfo.name,
+          googleId: userInfo.id,
+          avatar: userInfo.picture,
+          tokenBalance: 50, // Welcome bonus
+          level: 'Navigator',
+          theme: 'dark'
+        }
+      });
+
+      // Initialize default missions for new user
+      await initializeDefaultMissions(req.prisma, user.id);
+    } else {
+      // Update existing user's Google info if not set
+      if (!user.googleId) {
+        await req.prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleId: userInfo.id,
+            avatar: userInfo.picture
+          }
+        });
+      }
+      
+      // Give welcome bonus to existing users who haven't received it yet
+      if (user.tokenBalance === 0) {
+        await req.prisma.user.update({
+          where: { id: user.id },
+          data: {
+            tokenBalance: 50 // Welcome bonus for existing users
+          }
+        });
+        user.tokenBalance = 50;
+      }
+    }
+
+    // Create session
+    const { token, expiresAt } = generateTokens(user);
+    await req.prisma.userSession.create({
+      data: {
+        userId: user.id,
+        token,
+        expiresAt,
+        userAgent: req.headers['user-agent'],
+        ipAddress: req.ip
+      }
+    });
+
+    // Update last login
+    await req.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
+    res.json({
+      message: user.googleId ? 'Login successful' : 'Account created successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        tokenBalance: user.tokenBalance,
+        level: user.level,
+        theme: user.theme,
+        currentStreak: user.currentStreak,
+        avatar: user.avatar
+      },
+      token,
+      expiresAt
+    });
+  } catch (error) {
+    console.error('Google OAuth error:', error);
+    res.status(500).json({ error: 'Google authentication failed' });
   }
 });
 
