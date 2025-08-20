@@ -363,7 +363,7 @@
             <div class="glass-card p-6 rounded-xl">
                 <h3 class="text-xl font-semibold text-white mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
+                    <button onclick="openQuickCheckIn()" class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
                         <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -372,7 +372,7 @@
                         <span class="font-medium text-white">Quick Check-In</span>
                     </button>
                     
-                    <button class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
+                    <button onclick="openLogExpense()" class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
                         <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -381,7 +381,7 @@
                         <span class="font-medium text-white">Log Expense</span>
                     </button>
                     
-                    <button class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
+                    <button onclick="openViewMissions()" class="flex items-center space-x-3 p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/20">
                         <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -416,6 +416,179 @@
                 <div id="modal-content" class="text-gray-600"></div>
                 <div class="mt-6 flex justify-end">
                     <button onclick="closeModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Check-In Modal -->
+    <div id="checkin-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Quick Check-In</h2>
+                    <button onclick="closeCheckInModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form id="checkin-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name</label>
+                        <input type="text" id="venue-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter venue name" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Check-In Time</label>
+                        <input type="datetime-local" id="checkin-time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                        <textarea id="checkin-notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Any additional notes..."></textarea>
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Check In
+                        </button>
+                        <button type="button" onclick="closeCheckInModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Expense Modal -->
+    <div id="expense-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Log Expense</h2>
+                    <button onclick="closeExpenseModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form id="expense-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Expense Category</label>
+                        <select id="expense-category" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                            <option value="">Select category</option>
+                            <option value="food">Food & Drinks</option>
+                            <option value="transport">Transportation</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="supplies">Supplies</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Amount ($)</label>
+                        <input type="number" id="expense-amount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0.00" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <input type="text" id="expense-description" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="What was this expense for?" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                        <input type="date" id="expense-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                            Log Expense
+                        </button>
+                        <button type="button" onclick="closeExpenseModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Missions Modal -->
+    <div id="missions-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Active Missions</h2>
+                    <button onclick="closeMissionsModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-blue-900">Venue Research Mission</h3>
+                                <p class="text-blue-700 text-sm">Research Agent is analyzing 3 trending venues</p>
+                                <div class="mt-2">
+                                    <div class="w-full bg-blue-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                    <span class="text-xs text-blue-600">75% Complete</span>
+                                </div>
+                            </div>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-green-900">Budget Optimization</h3>
+                                <p class="text-green-700 text-sm">Budget Agent is tracking weekly expenses</p>
+                                <div class="mt-2">
+                                    <div class="w-full bg-green-200 rounded-full h-2">
+                                        <div class="bg-green-600 h-2 rounded-full" style="width: 90%"></div>
+                                    </div>
+                                    <span class="text-xs text-green-600">90% Complete</span>
+                                </div>
+                            </div>
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 rounded-r-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-purple-900">Performance Report</h3>
+                                <p class="text-purple-700 text-sm">Reporting Agent is generating weekly insights</p>
+                                <div class="mt-2">
+                                    <div class="w-full bg-purple-200 rounded-full h-2">
+                                        <div class="bg-purple-600 h-2 rounded-full" style="width: 60%"></div>
+                                    </div>
+                                    <span class="text-xs text-purple-600">60% Complete</span>
+                                </div>
+                            </div>
+                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 border-l-4 border-gray-400 p-4 rounded-r-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Customer Feedback Analysis</h3>
+                                <p class="text-gray-700 text-sm">AI Copilot is processing recent feedback</p>
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-gray-600 h-2 rounded-full" style="width: 45%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-600">45% Complete</span>
+                                </div>
+                            </div>
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Pending</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="closeMissionsModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
                         Close
                     </button>
                 </div>
@@ -559,7 +732,146 @@
         function closeModal() {
             document.getElementById('feature-modal').classList.add('hidden');
         }
-        
+
+        // Quick Check-In Modal
+        function openQuickCheckIn() {
+            document.getElementById('checkin-modal').classList.remove('hidden');
+        }
+
+        function closeCheckInModal() {
+            document.getElementById('checkin-modal').classList.add('hidden');
+        }
+
+        // Log Expense Modal
+        function openLogExpense() {
+            document.getElementById('expense-modal').classList.remove('hidden');
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expense-modal').classList.add('hidden');
+        }
+
+        // View Missions Modal
+        function openViewMissions() {
+            document.getElementById('missions-modal').classList.remove('hidden');
+        }
+
+        function closeMissionsModal() {
+            document.getElementById('missions-modal').classList.add('hidden');
+        }
+
+        // Form submission handlers
+        document.getElementById('checkin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const venueName = document.getElementById('venue-name').value;
+            const checkinTime = document.getElementById('checkin-time').value;
+            const notes = document.getElementById('checkin-notes').value;
+            
+            // Simulate API call
+            setTimeout(() => {
+                showNotification('✅ Check-in successful! You\'ve been checked in at ' + venueName, 'success');
+                closeCheckInModal();
+                document.getElementById('checkin-form').reset();
+                
+                // Update Research Agent status
+                updateAgentStatus('research', 'Checked in at ' + venueName);
+            }, 1000);
+        });
+
+        document.getElementById('expense-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const category = document.getElementById('expense-category').value;
+            const amount = document.getElementById('expense-amount').value;
+            const description = document.getElementById('expense-description').value;
+            const date = document.getElementById('expense-date').value;
+            
+            // Simulate API call
+            setTimeout(() => {
+                showNotification('💰 Expense logged! $' + amount + ' for ' + description, 'success');
+                closeExpenseModal();
+                document.getElementById('expense-form').reset();
+                
+                // Update Budget Agent status
+                updateAgentStatus('budget', 'Logged $' + amount + ' expense');
+            }, 1000);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500 text-white';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500 text-white';
+            } else {
+                notification.className += ' bg-blue-500 text-white';
+            }
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Update agent status
+        function updateAgentStatus(agentType, message) {
+            const agentCards = document.querySelectorAll('.glass-card');
+            agentCards.forEach(card => {
+                const agentName = card.querySelector('h3');
+                if (agentName && agentName.textContent.toLowerCase().includes(agentType)) {
+                    const statusDiv = card.querySelector('.bg-teal-500\\/20, .bg-orange-500\\/20, .bg-red-500\\/20');
+                    if (statusDiv) {
+                        statusDiv.innerHTML = `<p class="text-sm text-white">${message}</p>`;
+                        
+                        // Reset after 10 seconds
+                        setTimeout(() => {
+                            if (agentType === 'research') {
+                                statusDiv.innerHTML = '<p class="text-sm text-white">529 Bar trending up - expect higher crowd tonight.</p>';
+                            } else if (agentType === 'budget') {
+                                statusDiv.innerHTML = '<p class="text-sm text-white">$15 under budget this week - great job!</p>';
+                            }
+                        }, 10000);
+                    }
+                }
+            });
+        }
+
+        // Set default values for forms
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date/time for check-in
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('checkin-time').value = localDateTime;
+            
+            // Set default date for expense
+            document.getElementById('expense-date').value = now.toISOString().split('T')[0];
+        });
+
         // Contact button functionality
         document.getElementById('contact-btn').addEventListener('click', () => {
             alert('Contact form coming soon! For now, please email us at hello@clubrun.ai');
