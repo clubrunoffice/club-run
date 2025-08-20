@@ -760,6 +760,15 @@
             document.getElementById('missions-modal').classList.add('hidden');
         }
 
+        // Make functions globally accessible for chat widget
+        window.openQuickCheckIn = openQuickCheckIn;
+        window.closeCheckInModal = closeCheckInModal;
+        window.openLogExpense = openLogExpense;
+        window.closeExpenseModal = closeExpenseModal;
+        window.openViewMissions = openViewMissions;
+        window.closeMissionsModal = closeMissionsModal;
+        window.showNotification = showNotification;
+
         // Form submission handlers
         document.getElementById('checkin-form').addEventListener('submit', function(e) {
             e.preventDefault();
