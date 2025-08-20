@@ -1,0 +1,215 @@
+<!-- Notification System Component -->
+<div id="notification-container" class="notification-container">
+    
+    <!-- Toast Notifications -->
+    <div class="toast-notifications" id="toast-notifications">
+        
+        <!-- Success Toast Example -->
+        <div class="toast-notification success" id="toast-success">
+            <div class="toast-icon">
+                <svg class="toast-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">Success!</h4>
+                <p class="toast-message">Successfully checked in at The Basement</p>
+            </div>
+            <button class="toast-close" aria-label="Close notification">
+                <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="toast-progress"></div>
+        </div>
+        
+        <!-- Error Toast Example -->
+        <div class="toast-notification error" id="toast-error">
+            <div class="toast-icon">
+                <svg class="toast-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">Error</h4>
+                <p class="toast-message">Failed to check in. Please try again.</p>
+            </div>
+            <button class="toast-close" aria-label="Close notification">
+                <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="toast-progress"></div>
+        </div>
+        
+        <!-- Warning Toast Example -->
+        <div class="toast-notification warning" id="toast-warning">
+            <div class="toast-icon">
+                <svg class="toast-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">Warning</h4>
+                <p class="toast-message">You're approaching your daily check-in limit</p>
+            </div>
+            <button class="toast-close" aria-label="Close notification">
+                <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="toast-progress"></div>
+        </div>
+        
+        <!-- Info Toast Example -->
+        <div class="toast-notification info" id="toast-info">
+            <div class="toast-icon">
+                <svg class="toast-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">New Mission Available</h4>
+                <p class="toast-message">Check out the new weekly challenge!</p>
+            </div>
+            <button class="toast-close" aria-label="Close notification">
+                <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="toast-progress"></div>
+        </div>
+    </div>
+    
+    <!-- Notification Center -->
+    <div class="notification-center" id="notification-center">
+        <div class="notification-center-header">
+            <h3 class="notification-center-title">Notifications</h3>
+            <div class="notification-center-actions">
+                <button class="notification-action-btn" id="mark-all-read-btn">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Mark all read
+                </button>
+                <button class="notification-action-btn" id="clear-all-btn">
+                    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Clear all
+                </button>
+            </div>
+        </div>
+        
+        <div class="notification-list" id="notification-list">
+            
+            <!-- Unread Notification -->
+            <div class="notification-item unread" data-notification-id="1">
+                <div class="notification-icon success">
+                    <svg class="notification-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <h4 class="notification-title">Check-in Successful</h4>
+                        <span class="notification-time">2 minutes ago</span>
+                    </div>
+                    <p class="notification-message">You've successfully checked in at The Basement and earned 50 tokens!</p>
+                    <div class="notification-actions">
+                        <button class="notification-action-link">View Details</button>
+                        <button class="notification-action-link">Dismiss</button>
+                    </div>
+                </div>
+                <div class="notification-status">
+                    <div class="unread-indicator"></div>
+                </div>
+            </div>
+            
+            <!-- Read Notification -->
+            <div class="notification-item read" data-notification-id="2">
+                <div class="notification-icon info">
+                    <svg class="notification-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <h4 class="notification-title">New Mission Available</h4>
+                        <span class="notification-time">1 hour ago</span>
+                    </div>
+                    <p class="notification-message">A new weekly mission "City Explorer" is now available. Visit 5 different neighborhoods to earn 500 tokens!</p>
+                    <div class="notification-actions">
+                        <button class="notification-action-link">View Mission</button>
+                        <button class="notification-action-link">Dismiss</button>
+                    </div>
+                </div>
+                <div class="notification-status">
+                    <div class="read-indicator"></div>
+                </div>
+            </div>
+            
+            <!-- Warning Notification -->
+            <div class="notification-item unread" data-notification-id="3">
+                <div class="notification-icon warning">
+                    <svg class="notification-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <h4 class="notification-title">Safety Alert</h4>
+                        <span class="notification-time">3 hours ago</span>
+                    </div>
+                    <p class="notification-message">High crowd levels detected at SkyLounge. Consider alternative venues for a better experience.</p>
+                    <div class="notification-actions">
+                        <button class="notification-action-link">Find Alternatives</button>
+                        <button class="notification-action-link">Dismiss</button>
+                    </div>
+                </div>
+                <div class="notification-status">
+                    <div class="unread-indicator"></div>
+                </div>
+            </div>
+            
+            <!-- Achievement Notification -->
+            <div class="notification-item read" data-notification-id="4">
+                <div class="notification-icon achievement">
+                    <svg class="notification-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <h4 class="notification-title">Achievement Unlocked!</h4>
+                        <span class="notification-time">1 day ago</span>
+                    </div>
+                    <p class="notification-message">Congratulations! You've unlocked the "First Steps" achievement for completing your first mission.</p>
+                    <div class="notification-actions">
+                        <button class="notification-action-link">View Achievement</button>
+                        <button class="notification-action-link">Dismiss</button>
+                    </div>
+                </div>
+                <div class="notification-status">
+                    <div class="read-indicator"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notification-center-footer">
+            <a href="/notifications" class="view-all-notifications">View all notifications</a>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+            </div>
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+</div> 

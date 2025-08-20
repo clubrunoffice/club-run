@@ -1,0 +1,197 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  name             String
+  walletAddress    String?   @unique
+  tokenBalance     Int       @default(0)
+  currentStreak    Int       @default(0)
+  totalCheckIns    Int       @default(0)
+  missionsCompleted Int      @default(0)
+  level            String    @default("Navigator")
+  theme            String    @default("dark")
+  badges           String[]
+  isActive         Boolean   @default(true)
+  lastLoginAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  // Relations
+  checkIns         CheckIn[]
+  userMissions     UserMission[]
+  expenses         Expense[]
+  chatMessages     ChatMessage[]
+  sessions         UserSession[]
+  
+  @@map("users")
+}
+
+model UserSession {
+  id          String   @id @default(cuid())
+  userId      String
+  token       String   @unique
+  expiresAt   DateTime
+  userAgent   String?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_sessions")
+}
+
+model Venue {
+  id              String   @id @default(cuid())
+  name            String
+  address         String
+  city            String   @default("Atlanta")
+  state           String   @default("GA")
+  zipCode         String?
+  latitude        Float?
+  longitude       Float?
+  type            String   // nightclub, bar, lounge, music_venue
+  hours           String
+  phoneNumber     String?
+  website         String?
+  checkInReward   Int
+  status          String   @default("open") // open, closed, opening_soon
+  crowdLevel      String   @default("Medium") // Low, Medium, High
+  safetyRating    Float    @default(4.0)
+  avgCost         Int
+  specialMissions String[]
+  amenities       String[]
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  checkIns        CheckIn[]
+  expenses        Expense[]
+  
+  @@map("venues")
+}
+
+model CheckIn {
+  id          String   @id @default(cuid())
+  userId      String
+  venueId     String
+  tokens      Int
+  hasPhoto    Boolean  @default(false)
+  photoUrl    String?
+  notes       String?
+  location    Json?    // {lat, lng}
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue       Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  
+  @@map("check_ins")
+}
+
+model Mission {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  type        String   // daily, weekly, special, event
+  category    String   // check_in, photo, budget, streak, social
+  target      Int
+  reward      Int
+  timeLimit   String?  // "24h", "7d", "30d"
+  startDate   DateTime?
+  endDate     DateTime?
+  priority    Int      @default(1)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  userMissions UserMission[]
+  
+  @@map("missions")
+}
+
+model UserMission {
+  id          String    @id @default(cuid())
+  userId      String
+  missionId   String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  rewardClaimed Boolean @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mission     Mission   @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, missionId])
+  @@map("user_missions")
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  userId      String
+  venueId     String?
+  amount      Float
+  category    String   // cover_charge, drinks, food, transportation, tips, other
+  description String?
+  receiptUrl  String?
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue       Venue?   @relation(fields: [venueId], references: [id])
+  
+  @@map("expenses")
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // user, copilot, system
+  message     String
+  metadata    Json?    // Additional data like actions performed
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("chat_messages")
+}
+
+model Agent {
+  id          String   @id @default(cuid())
+  name        String   @unique // research, budget, reporting, copilot
+  displayName String
+  description String
+  status      String   @default("active") // active, inactive, maintenance
+  confidence  Float    @default(85.0)
+  lastUpdate  DateTime @default(now())
+  config      Json?    // Agent-specific configuration
+  
+  @@map("agents")
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     String   // info, warn, error, debug
+  message   String
+  userId    String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  
+  @@map("system_logs")
+} 

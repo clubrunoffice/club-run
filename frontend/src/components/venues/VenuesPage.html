@@ -1,0 +1,363 @@
+<!-- Venues Page Component -->
+<div id="venues-page" class="venues-page">
+    
+    <!-- Venues Header -->
+    <div class="venues-header">
+        <div class="venues-title-section">
+            <h1 class="venues-title">Venues</h1>
+            <p class="venues-subtitle">Discover the best nightlife spots in Atlanta</p>
+        </div>
+        <div class="venues-actions">
+            <button class="venues-action-btn" id="map-view-toggle">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"/>
+                </svg>
+                Map View
+            </button>
+            <button class="venues-action-btn" id="filter-toggle">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                </svg>
+                Filters
+            </button>
+        </div>
+    </div>
+    
+    <!-- Search and Filters Section -->
+    <div class="venues-search-section">
+        <div class="search-filters-container">
+            
+            <!-- Search Bar -->
+            <div class="venues-search">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="venues-search-input" class="venues-search-input" placeholder="Search venues by name, location, or type...">
+                    <button class="search-clear-btn" id="venues-search-clear">
+                        <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Chips -->
+            <div class="filter-chips" id="filter-chips">
+                <button class="filter-chip active" data-filter="all">All Venues</button>
+                <button class="filter-chip" data-filter="open">Open Now</button>
+                <button class="filter-chip" data-filter="nearby">Nearby</button>
+                <button class="filter-chip" data-filter="popular">Popular</button>
+                <button class="filter-chip" data-filter="safe">High Safety</button>
+            </div>
+        </div>
+        
+        <!-- Advanced Filters Panel -->
+        <div class="advanced-filters" id="advanced-filters">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Venue Type</label>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" value="club" class="filter-checkbox">
+                            <span class="filter-text">Clubs</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="bar" class="filter-checkbox">
+                            <span class="filter-text">Bars</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="lounge" class="filter-checkbox">
+                            <span class="filter-text">Lounges</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="restaurant" class="filter-checkbox">
+                            <span class="filter-text">Restaurants</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Safety Rating</label>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" value="9-10" class="filter-checkbox">
+                            <span class="filter-text">9-10 (Excellent)</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="7-8" class="filter-checkbox">
+                            <span class="filter-text">7-8 (Good)</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="5-6" class="filter-checkbox">
+                            <span class="filter-text">5-6 (Fair)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Crowd Level</label>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" value="high" class="filter-checkbox">
+                            <span class="filter-text">High (80%+)</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="medium" class="filter-checkbox">
+                            <span class="filter-text">Medium (50-80%)</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" value="low" class="filter-checkbox">
+                            <span class="filter-text">Low (<50%)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Distance</label>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="radio" name="distance" value="1" class="filter-radio">
+                            <span class="filter-text">Within 1 mile</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="distance" value="5" class="filter-radio">
+                            <span class="filter-text">Within 5 miles</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="distance" value="10" class="filter-radio">
+                            <span class="filter-text">Within 10 miles</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="filter-btn secondary" id="clear-filters">Clear All</button>
+                <button class="filter-btn primary" id="apply-filters">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Venues Results Section -->
+    <div class="venues-results">
+        
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count" id="venues-count">24 venues found</span>
+                <span class="results-location">in Atlanta, GA</span>
+            </div>
+            <div class="results-sort">
+                <label class="sort-label">Sort by:</label>
+                <select class="sort-select" id="venues-sort">
+                    <option value="distance">Distance</option>
+                    <option value="popularity">Popularity</option>
+                    <option value="safety">Safety Rating</option>
+                    <option value="crowd">Crowd Level</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Venues Grid -->
+        <div class="venues-grid" id="venues-grid">
+            
+            <!-- Venue Card 1 -->
+            <div class="venue-card" data-venue-id="1">
+                <div class="venue-image">
+                    <img src="/venue-basement.jpg" alt="The Basement" class="venue-img">
+                    <div class="venue-status open">Open</div>
+                    <div class="venue-badge popular">Popular</div>
+                </div>
+                <div class="venue-content">
+                    <div class="venue-header">
+                        <h3 class="venue-name">The Basement</h3>
+                        <div class="venue-rating">
+                            <span class="rating-stars">★★★★★</span>
+                            <span class="rating-score">9.2</span>
+                        </div>
+                    </div>
+                    <p class="venue-location">
+                        <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Buckhead, Atlanta • 0.8 miles away
+                    </p>
+                    <div class="venue-stats">
+                        <div class="venue-stat">
+                            <span class="stat-label">Crowd</span>
+                            <span class="stat-value high">85%</span>
+                        </div>
+                        <div class="venue-stat">
+                            <span class="stat-label">Safety</span>
+                            <span class="stat-value">9.2</span>
+                        </div>
+                        <div class="venue-stat">
+                            <span class="stat-label">Type</span>
+                            <span class="stat-value">Club</span>
+                        </div>
+                    </div>
+                    <div class="venue-description">
+                        <p>Underground electronic music venue with state-of-the-art sound system and immersive lighting.</p>
+                    </div>
+                    <div class="venue-actions">
+                        <button class="venue-action-btn primary check-in-btn" data-venue-id="1">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Check In
+                        </button>
+                        <button class="venue-action-btn secondary details-btn" data-venue-id="1">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Details
+                        </button>
+                        <button class="venue-action-btn icon-only favorite-btn" data-venue-id="1">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Venue Card 2 -->
+            <div class="venue-card" data-venue-id="2">
+                <div class="venue-image">
+                    <img src="/venue-skylounge.jpg" alt="SkyLounge" class="venue-img">
+                    <div class="venue-status open">Open</div>
+                    <div class="venue-badge rooftop">Rooftop</div>
+                </div>
+                <div class="venue-content">
+                    <div class="venue-header">
+                        <h3 class="venue-name">SkyLounge</h3>
+                        <div class="venue-rating">
+                            <span class="rating-stars">★★★★☆</span>
+                            <span class="rating-score">8.8</span>
+                        </div>
+                    </div>
+                    <p class="venue-location">
+                        <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Midtown, Atlanta • 1.2 miles away
+                    </p>
+                    <div class="venue-stats">
+                        <div class="venue-stat">
+                            <span class="stat-label">Crowd</span>
+                            <span class="stat-value medium">72%</span>
+                        </div>
+                        <div class="venue-stat">
+                            <span class="stat-label">Safety</span>
+                            <span class="stat-value">8.8</span>
+                        </div>
+                        <div class="venue-stat">
+                            <span class="stat-label">Type</span>
+                            <span class="stat-value">Lounge</span>
+                        </div>
+                    </div>
+                    <div class="venue-description">
+                        <p>Upscale rooftop lounge with panoramic city views, craft cocktails, and sophisticated atmosphere.</p>
+                    </div>
+                    <div class="venue-actions">
+                        <button class="venue-action-btn primary check-in-btn" data-venue-id="2">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Check In
+                        </button>
+                        <button class="venue-action-btn secondary details-btn" data-venue-id="2">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Details
+                        </button>
+                        <button class="venue-action-btn icon-only favorite-btn" data-venue-id="2">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Venue Card 3 -->
+            <div class="venue-card" data-venue-id="3">
+                <div class="venue-image">
+                    <img src="/venue-echo.jpg" alt="Echo Lounge" class="venue-img">
+                    <div class="venue-status closed">Closed</div>
+                </div>
+                <div class="venue-content">
+                    <div class="venue-header">
+                        <h3 class="venue-name">Echo Lounge</h3>
+                        <div class="venue-rating">
+                            <span class="rating-stars">★★★★☆</span>
+                            <span class="rating-score">8.5</span>
+                        </div>
+                    </div>
+                    <p class="venue-location">
+                        <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        East Atlanta • 2.1 miles away
+                    </p>
+                    <div class="venue-stats">
+                        <div class="venue-stat">
+                            <span class="stat-label">Crowd</span>
+                            <span class="stat-value low">0%</span>
+                        </div>
+                        <div class="venue-stat">
+                            <span class="stat-label">Safety</span>
+                            <span class="stat-value">8.5</span>
+                        </div>
+                        <div class="venue-stat">
+                            <span class="stat-label">Type</span>
+                            <span class="stat-value">Bar</span>
+                        </div>
+                    </div>
+                    <div class="venue-description">
+                        <p>Local dive bar with live music, friendly atmosphere, and great drink specials.</p>
+                    </div>
+                    <div class="venue-actions">
+                        <button class="venue-action-btn secondary details-btn" data-venue-id="3">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Details
+                        </button>
+                        <button class="venue-action-btn icon-only favorite-btn" data-venue-id="3">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="load-more-section">
+            <button class="load-more-btn" id="load-more-venues">
+                <svg class="load-more-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                Load More Venues
+            </button>
+        </div>
+    </div>
+    
+    <!-- Map View Container (Hidden by default) -->
+    <div class="map-container" id="map-container">
+        <div class="map-placeholder">
+            <svg class="map-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"/>
+            </svg>
+            <p class="map-text">Map view will be implemented with JavaScript</p>
+        </div>
+    </div>
+</div> 

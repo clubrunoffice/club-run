@@ -1,0 +1,62 @@
+<!-- Theme Toggle Component -->
+<div id="theme-toggle" class="theme-toggle">
+    
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle theme">
+        <div class="theme-toggle-track">
+            <div class="theme-toggle-thumb">
+                <svg class="theme-icon light" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <svg class="theme-icon dark" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </div>
+        </div>
+    </button>
+    
+    <!-- Theme Options Dropdown -->
+    <div class="theme-options" id="theme-options">
+        <div class="theme-option" data-theme="light">
+            <div class="theme-preview light">
+                <div class="preview-header"></div>
+                <div class="preview-content">
+                    <div class="preview-sidebar"></div>
+                    <div class="preview-main"></div>
+                </div>
+            </div>
+            <div class="theme-info">
+                <span class="theme-name">Light</span>
+                <span class="theme-description">Clean and bright</span>
+            </div>
+        </div>
+        
+        <div class="theme-option active" data-theme="dark">
+            <div class="theme-preview dark">
+                <div class="preview-header"></div>
+                <div class="preview-content">
+                    <div class="preview-sidebar"></div>
+                    <div class="preview-main"></div>
+                </div>
+            </div>
+            <div class="theme-info">
+                <span class="theme-name">Dark</span>
+                <span class="theme-description">Easy on the eyes</span>
+            </div>
+        </div>
+        
+        <div class="theme-option" data-theme="auto">
+            <div class="theme-preview auto">
+                <div class="preview-header"></div>
+                <div class="preview-content">
+                    <div class="preview-sidebar"></div>
+                    <div class="preview-main"></div>
+                </div>
+            </div>
+            <div class="theme-info">
+                <span class="theme-name">Auto</span>
+                <span class="theme-description">Follows system</span>
+            </div>
+        </div>
+    </div>
+</div> 

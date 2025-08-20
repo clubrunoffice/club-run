@@ -1,0 +1,229 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "club-run-backend"
+version = "1.0.0"
+description = "Elite nightlife operations platform backend with AI copilot integration"
+authors = [
+    {name = "Club Run Team", email = "team@clubrun.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["fastapi", "nightlife", "ai", "copilot", "venues", "missions"]
+dependencies = [
+    "fastapi==0.104.1",
+    "uvicorn[standard]==0.24.0",
+    "pydantic==2.5.0",
+    "pydantic-settings==2.1.0",
+    "sqlalchemy==2.0.23",
+    "alembic==1.13.1",
+    "asyncpg==0.29.0",
+    "redis==5.0.1",
+    "python-jose[cryptography]==3.3.0",
+    "passlib[bcrypt]==1.7.4",
+    "python-multipart==0.0.6",
+    "cryptography==41.0.8",
+    "httpx==0.25.2",
+    "aiohttp==3.9.1",
+    "pandas==2.1.4",
+    "numpy==1.25.2",
+    "geopy==2.4.1",
+    "shapely==2.0.2",
+    "structlog==23.2.0",
+    "prometheus-client==0.19.0",
+    "python-dotenv==1.0.0",
+    "celery==5.3.4",
+    "flower==2.0.1",
+    "aioredis==2.0.1",
+    "python-magic==0.4.27",
+    "pillow==10.1.0",
+    "fastapi-mail==1.4.1",
+    "email-validator==2.1.0",
+    "python-dateutil==2.8.2",
+    "pytz==2023.3",
+    "dynaconf==3.2.4",
+    "healthcheck==1.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.3",
+    "pytest-asyncio==0.21.1",
+    "pytest-cov==4.1.0",
+    "black==23.11.0",
+    "isort==5.12.0",
+    "flake8==6.1.0",
+    "mypy==1.7.1",
+    "pre-commit==3.6.0",
+    "fastapi-openapi==0.0.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/clubrun/backend"
+Documentation = "https://docs.clubrun.com"
+Repository = "https://github.com/clubrun/backend"
+"Bug Tracker" = "https://github.com/clubrun/backend/issues"
+
+[project.scripts]
+club-run = "club_run.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["club_run"]
+known_third_party = ["fastapi", "pydantic", "sqlalchemy"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "alembic.*",
+    "celery.*",
+    "flower.*",
+    "geopy.*",
+    "shapely.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.poetry]
+name = "club-run-backend"
+version = "1.0.0"
+description = "Elite nightlife operations platform backend with AI copilot integration"
+authors = ["Club Run Team <team@clubrun.com>"]
+readme = "README.md"
+packages = [{include = "club_run", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+pydantic = "^2.5.0"
+pydantic-settings = "^2.1.0"
+sqlalchemy = "^2.0.23"
+alembic = "^1.13.1"
+asyncpg = "^0.29.0"
+redis = "^5.0.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.6"
+cryptography = "^41.0.8"
+httpx = "^0.25.2"
+aiohttp = "^3.9.1"
+pandas = "^2.1.4"
+numpy = "^1.25.2"
+geopy = "^2.4.1"
+shapely = "^2.0.2"
+structlog = "^23.2.0"
+prometheus-client = "^0.19.0"
+python-dotenv = "^1.0.0"
+celery = "^5.3.4"
+flower = "^2.0.1"
+aioredis = "^2.0.1"
+python-magic = "^0.4.27"
+pillow = "^10.1.0"
+fastapi-mail = "^1.4.1"
+email-validator = "^2.1.0"
+python-dateutil = "^2.8.2"
+pytz = "^2023.3"
+dynaconf = "^3.2.4"
+healthcheck = "^1.3.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-asyncio = "^0.21.1"
+pytest-cov = "^4.1.0"
+black = "^23.11.0"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+mypy = "^1.7.1"
+pre-commit = "^3.6.0"
+fastapi-openapi = "^0.0.1"
+
+[tool.poetry.scripts]
+club-run = "club_run.main:main" 
