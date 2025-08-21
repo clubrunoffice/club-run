@@ -1,13 +1,7 @@
-import React from 'react';
 import { 
   Search, 
   DollarSign, 
-  BarChart3, 
-  Smartphone, 
-  Calendar, 
-  Eye,
-  TrendingUp,
-  CheckCircle
+  BarChart3
 } from 'lucide-react';
 import { useUIAgent } from '../contexts/UIAgentContext';
 import UIAgentCard from '../components/UIAgentCard';

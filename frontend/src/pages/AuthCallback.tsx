@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../config/supabase';
+// import { supabase } from '../config/supabase';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -8,21 +8,25 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
+        // TODO: Implement supabase auth when config is ready
+        // const { data, error } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Auth callback error:', error);
-          navigate('/auth?error=auth_callback_failed');
-          return;
-        }
+        // if (error) {
+        //   console.error('Auth callback error:', error);
+        //   navigate('/auth?error=auth_callback_failed');
+        //   return;
+        // }
 
-        if (data.session) {
-          console.log('✅ User authenticated successfully:', data.session.user.email);
-          navigate('/dashboard');
-        } else {
-          console.log('❌ No session found in callback');
-          navigate('/auth?error=no_session');
-        }
+        // if (data.session) {
+        //   console.log('✅ User authenticated successfully:', data.session.user.email);
+        //   navigate('/dashboard');
+        // } else {
+        //   console.log('❌ No session found in callback');
+        //   navigate('/auth?error=no_session');
+        // }
+        
+        // Temporary redirect for now
+        navigate('/dashboard');
       } catch (error) {
         console.error('Auth callback error:', error);
         navigate('/auth?error=callback_error');

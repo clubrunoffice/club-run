@@ -1,9 +1,7 @@
-import React from 'react';
 import { useUIAgent, quickActionConfigs } from '../contexts/UIAgentContext';
 
 const QuickActions: React.FC = () => {
-  const { state, handleQuickAction, getRoleConfig } = useUIAgent();
-  const { currentRole } = state;
+  const { handleQuickAction, getRoleConfig } = useUIAgent();
   const roleConfig = getRoleConfig();
 
   return (
