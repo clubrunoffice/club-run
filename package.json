@@ -4,9 +4,9 @@
   "description": "AI-Powered Nightlife Operations Platform - Pre-MVP 1.0",
   "main": "index.js",
   "scripts": {
-    "dev": "npx http-server . -p 3000 -o",
-    "start": "npx http-server . -p 3000",
-    "build": "echo 'Build process for production'",
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview",
     "test": "echo 'Run tests'",
     "deploy": "echo 'Deploy to production'"
   },
