@@ -4,11 +4,7 @@ import {
   MessageSquare, 
   BarChart3, 
   DollarSign, 
-  ArrowRight, 
-  Rocket,
-  Target,
-  Heart,
-  Shield
+  Rocket
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

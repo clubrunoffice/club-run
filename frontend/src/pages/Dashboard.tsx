@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Users, 
   TrendingUp, 
   DollarSign, 
-  Calendar,
   MapPin,
-  Clock,
-  Star,
-  Zap,
   Trophy,
   Activity
 } from 'lucide-react';

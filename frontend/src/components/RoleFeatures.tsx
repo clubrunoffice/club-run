@@ -1,12 +1,24 @@
 import React from 'react';
 import { useUIAgent } from '../contexts/UIAgentContext';
 
-const RoleFeatures: React.FC = () => {
-  const { state, getRoleConfig } = useUIAgent();
-  const { currentRole } = state;
-  const roleConfig = getRoleConfig();
+interface RoleFeature {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+}
 
-  const roleFeatures = {
+interface RoleFeaturesMap {
+  runner: RoleFeature[];
+  client: RoleFeature[];
+  operations: RoleFeature[];
+}
+
+const RoleFeatures: React.FC = () => {
+  const { state } = useUIAgent();
+  const { currentRole } = state;
+
+  const roleFeatures: RoleFeaturesMap = {
     runner: [
       { id: 'venueResearch', icon: '🏢', title: 'Venue Research', description: 'Advanced venue analysis and crowd intelligence' },
       { id: 'expenseTracking', icon: '💰', title: 'Expense Tracking', description: 'Real-time expense monitoring and optimization' },
@@ -24,13 +36,13 @@ const RoleFeatures: React.FC = () => {
     ]
   };
 
-  const features = roleFeatures[currentRole] || [];
+  const features = roleFeatures[currentRole as keyof RoleFeaturesMap] || [];
 
   return (
     <div className="role-features-section">
       <h2>Role-Specific Features</h2>
       <div className="role-features-grid">
-        {features.map((feature) => (
+        {features.map((feature: RoleFeature) => (
           <div 
             key={feature.id} 
             className="role-feature"

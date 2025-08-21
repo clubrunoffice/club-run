@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Mic, ChevronDown, Lightbulb, Wallet, CheckCircle, MapPin, Smartphone } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { MessageCircle, Send, Mic, ChevronDown, Wallet, CheckCircle, MapPin, Smartphone } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -59,7 +59,7 @@ const ChatBot: React.FC = () => {
     }
   };
 
-  const handleClickOutside = (e: React.MouseEvent) => {
+  const handleClickOutside = () => {
     // Close the chat when clicking outside
     setIsOpen(false);
   };

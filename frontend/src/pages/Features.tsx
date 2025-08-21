@@ -1,17 +1,7 @@
-import React from 'react';
 import { 
   MessageSquare, 
   BarChart3, 
-  DollarSign, 
-  Activity,
-  Target,
-  Heart,
-  Shield,
-  Clock,
-  MapPin,
-  TrendingUp,
-  Users,
-  Zap
+  DollarSign
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

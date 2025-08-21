@@ -1,4 +1,3 @@
-import React from 'react';
 import { MessageCircle, BarChart3, DollarSign } from 'lucide-react';
 
 const FeaturesSection = () => {
