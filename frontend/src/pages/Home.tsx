@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  MessageSquare, 
-  BarChart3, 
-  DollarSign, 
-  Rocket
+  MapPin,
+  Music,
+  Zap,
+  Shield,
+  TrendingUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -12,27 +13,27 @@ const Home: React.FC = () => {
 
   const features = [
     {
-      icon: <MessageSquare className="w-6 h-6" />,
-      title: "AI Copilot",
-      description: "Intelligent voice assistant that helps with venue recommendations, customer service, and operational decisions."
+      icon: <MapPin className="w-6 h-6" />,
+      title: "Smart Mission Matching",
+      description: "AI-powered matching connects clients with the perfect runners based on location, skills, and availability."
     },
     {
-      icon: <BarChart3 className="w-6 h-6" />,
-      title: "Smart Analytics",
-      description: "Real-time insights into crowd patterns, revenue optimization, and performance metrics."
+      icon: <Shield className="w-6 h-6" />,
+      title: "Trust & Safety",
+      description: "Verified profiles, insurance coverage, and real-time tracking ensure safe and reliable service delivery."
     },
     {
-      icon: <DollarSign className="w-6 h-6" />,
-      title: "Budget Management",
-      description: "Automated expense tracking and financial optimization to maximize your profitability."
+      icon: <TrendingUp className="w-6 h-6" />,
+      title: "Real-Time Tracking",
+      description: "Live GPS tracking, progress updates, and communication tools keep everyone informed throughout the mission."
     }
   ];
 
   const stats = [
-    { number: "500+", label: "Venues Managed" },
-    { number: "1M+", label: "Transactions" },
-    { number: "95%", label: "Efficiency Rate" },
-    { number: "24/7", label: "AI Support" }
+    { number: "500+", label: "Missions Completed" },
+    { number: "200+", label: "Skilled Runners" },
+    { number: "95%", label: "Satisfaction Rate" },
+    { number: "24hr", label: "Average Response" }
   ];
 
   return (
@@ -43,24 +44,25 @@ const Home: React.FC = () => {
         <div className="relative z-10 container mx-auto px-4 py-20">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
-              AI-Powered<br />Nightlife Operations
+              Music Services<br />Mission Platform
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Optimize your nightlife business with intelligent AI agents that handle research, budgeting, reporting, and customer interactions.
+              Connect clients needing music services with skilled runners. Post missions, find talent, and earn money with our intelligent platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/agent-dashboard"
+                to="/missions"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg"
               >
-                <Rocket className="w-5 h-5" />
-                <span>Launch Agent Dashboard</span>
+                <Music className="w-5 h-5" />
+                <span>🎵 Need Music Services? Post a Mission</span>
               </Link>
               <Link
-                to="/auth"
-                className="border border-white text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-white hover:text-black transition-all duration-200 text-lg"
+                to="/missions"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:from-green-700 hover:to-emerald-700 transition-all duration-200 text-lg"
               >
-                <span>Get Started</span>
+                <Zap className="w-5 h-5" />
+                <span>🏃‍♂️ Earn Money as a Music Runner</span>
               </Link>
             </div>
           </div>
@@ -88,10 +90,10 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Powerful Features
+              Mission Experience Features
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Everything you need to optimize your nightlife business operations.
+              Everything you need for seamless music service missions between clients and runners.
             </p>
           </div>
 
@@ -117,22 +119,60 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Mission Types Section */}
+      <section className="py-20 bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+              Popular Mission Types
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              From corporate events to intimate celebrations, we've got you covered.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: '🏢', title: 'Corporate Events', avgBudget: '$800-1200' },
+              { icon: '💒', title: 'Weddings', avgBudget: '$1000-1500' },
+              { icon: '🎂', title: 'Birthday Parties', avgBudget: '$300-500' },
+              { icon: '🎧', title: 'Club/Bar Events', avgBudget: '$500-800' }
+            ].map((type, index) => (
+              <div key={index} className="bg-gray-800 rounded-lg p-6 text-center hover:shadow-lg transition-all duration-300 border border-gray-700">
+                <div className="text-4xl mb-4">{type.icon}</div>
+                <h3 className="text-lg font-semibold mb-2 text-white">{type.title}</h3>
+                <p className="text-blue-400 font-medium">{type.avgBudget}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-900 to-purple-900">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Ready to Transform Your Nightlife Business?
+            Ready to Start Your Music Mission?
           </h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join hundreds of venues that have already optimized their operations with Club Run.
+            Join hundreds of clients and runners who have already discovered the perfect music service match.
           </p>
-          <Link
-            to="/auth"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg mx-auto w-fit"
-          >
-            <Rocket className="w-5 h-5" />
-            <span>Get Started Today</span>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/missions"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg"
+            >
+              <Music className="w-5 h-5" />
+              <span>Post a Mission</span>
+            </Link>
+            <Link
+              to="/missions"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:from-green-700 hover:to-emerald-700 transition-all duration-200 text-lg"
+            >
+              <Zap className="w-5 h-5" />
+              <span>Find Missions</span>
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -18,7 +18,7 @@ model User {
   googleId         String?   @unique
   avatar           String?
   walletAddress    String?   @unique
-  role             String    @default("RUNNER") // GUEST, RUNNER, CLIENT, OPERATIONS, PARTNER, ADMIN
+  role             String    @default("RUNNER") // GUEST, RUNNER, CLIENT, CURATOR, OPERATIONS, PARTNER, ADMIN
   tokenBalance     Int       @default(0)
   currentStreak    Int       @default(0)
   totalCheckIns    Int       @default(0)
@@ -28,6 +28,7 @@ model User {
   badges           String
   isActive         Boolean   @default(true)
   lastLoginAt      DateTime?
+  teamId           String?   // Team membership for runners
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   
@@ -37,8 +38,31 @@ model User {
   expenses         Expense[]
   chatMessages     ChatMessage[]
   sessions         UserSession[]
+  curatedMissions  P2pMission[] @relation("CuratedMissions")
+  runningMissions  P2pMission[] @relation("RunningMissions")
+  
+  // Team relations
+  ownedTeams       Team[]    @relation("TeamOwner")
+  teamMembership   Team?     @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull)
   
   @@map("users")
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  curatorId   String   // User who owns/manages this team
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  owner       User     @relation("TeamOwner", fields: [curatorId], references: [id], onDelete: Cascade)
+  members     User[]   @relation("TeamMembers")
+  missions    P2pMission[] @relation("TeamMissions")
+  
+  @@map("teams")
 }
 
 model UserSession {
@@ -136,6 +160,43 @@ model UserMission {
   mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
   
   @@map("user_missions")
+}
+
+model P2pMission {
+  id                String   @id @default(cuid())
+  curatorId         String
+  runnerId          String?
+  teamId            String?  // If present, only team members can see/accept
+  title             String
+  description       String
+  venueAddress      String
+  eventType         String
+  budget            Float
+  deadline          DateTime
+  paymentMethod     String   // matic, usdc, cashapp, zelle, venmo, paypal
+  ipfsHash          String   // Mission details stored on IPFS
+  proofHash         String?  // Proof of completion stored on IPFS
+  status            String   @default("OPEN") // OPEN, ASSIGNED, IN_PROGRESS, COMPLETED, DISPUTED, CANCELLED
+  requirements      String   // JSON string of requirements
+  openMarket        Boolean  @default(true) // Open to all runners, or restricted to team
+  assignedAt        DateTime?
+  proofSubmittedAt  DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  paymentDetails    String?  // JSON string of payment details
+  disputeRaisedBy   String?
+  disputeReason     String?
+  disputeEvidence   String?
+  disputeRaisedAt   DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  curator           User     @relation("CuratedMissions", fields: [curatorId], references: [id], onDelete: Cascade)
+  runner            User?    @relation("RunningMissions", fields: [runnerId], references: [id], onDelete: SetNull)
+  team              Team?    @relation("TeamMissions", fields: [teamId], references: [id], onDelete: SetNull)
+  
+  @@map("p2p_missions")
 }
 
 model Expense {

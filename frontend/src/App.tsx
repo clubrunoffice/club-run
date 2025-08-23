@@ -9,9 +9,12 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import ChatBot from './components/ChatBot';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import MissionDashboard from './pages/MissionDashboard';
 import AgentDashboard from './pages/AgentDashboard';
 import Features from './pages/Features';
 import Contact from './pages/Contact';
+import { P2PMissions } from './pages/P2PMissions';
+import { CuratorDashboardPage } from './pages/CuratorDashboard';
 import './App.css';
 
 // Authentication pages component
@@ -85,6 +88,11 @@ const Header: React.FC = () => {
                   Welcome, {user?.firstName || user?.email}!
                 </span>
                 <Link to="/dashboard" className="text-blue-600 hover:text-blue-700">Dashboard</Link>
+                <Link to="/missions" className="text-blue-600 hover:text-blue-700">Missions</Link>
+                <Link to="/p2p-missions" className="text-blue-600 hover:text-blue-700">P2P Missions</Link>
+                {user?.role === 'CURATOR' && (
+                  <Link to="/curator-dashboard" className="text-blue-600 hover:text-blue-700">Curator Dashboard</Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -125,6 +133,30 @@ const AppContent: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/missions" 
+              element={
+                <ProtectedRoute>
+                  <MissionDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/p2p-missions" 
+              element={
+                <ProtectedRoute>
+                  <P2PMissions />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/curator-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <CuratorDashboardPage />
                 </ProtectedRoute>
               } 
             />
