@@ -1,7 +1,58 @@
+#!/bin/bash
+
+# Quick SQLite Setup for Club Run Development
+set -e
+
+echo "🚀 Quick SQLite Setup for Club Run"
+echo "==================================="
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+print_status "Setting up SQLite for immediate development..."
+
+# Check if we're in the right directory
+if [ ! -d "backend" ]; then
+    print_error "Please run this script from the Club Run root directory"
+    exit 1
+fi
+
+cd backend
+
+# Backup original schema
+if [ -f "prisma/schema.prisma" ]; then
+    cp prisma/schema.prisma prisma/schema.prisma.backup
+    print_status "Backed up original Prisma schema"
+fi
+
+# Update schema to use SQLite
+print_status "Updating Prisma schema to use SQLite..."
+
+# Create temporary schema with SQLite
+cat > prisma/schema.sqlite.prisma << 'EOF'
 // prisma/schema.prisma
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -167,3 +218,55 @@ model ChatMessage {
   
   @@map("chat_messages")
 }
+EOF
+
+# Replace the schema
+mv prisma/schema.sqlite.prisma prisma/schema.prisma
+
+# Update .env to use SQLite
+print_status "Updating environment to use SQLite..."
+
+# Update DATABASE_URL in .env
+sed -i.bak 's|DATABASE_URL="postgresql://.*"|DATABASE_URL="file:./dev.db"|' .env
+
+# Generate Prisma client
+print_status "Generating Prisma client..."
+npx prisma generate
+
+# Push schema to database
+print_status "Creating SQLite database..."
+npx prisma db push
+
+# Seed database if seed script exists
+if [ -f "prisma/seed.js" ]; then
+    print_status "Seeding database..."
+    npx prisma db seed
+fi
+
+print_success "SQLite setup completed!"
+print_status "Database file created at: backend/dev.db"
+
+# Test the connection
+print_status "Testing database connection..."
+if curl -s http://localhost:3001/health | grep -q "healthy"; then
+    print_success "Database connection successful!"
+else
+    print_warning "Database connection test failed. Restart the backend server:"
+    echo "  npm run dev"
+fi
+
+print_status "Next steps:"
+echo ""
+echo "1. Restart the backend server:"
+echo "   npm run dev"
+echo ""
+echo "2. Test the API:"
+echo "   curl http://localhost:3001/health"
+echo ""
+echo "3. When ready for production, switch to Supabase:"
+echo "   See SUPABASE_SETUP_GUIDE.md"
+echo ""
+
+cd ..
+
+print_success "Quick SQLite setup completed! 🎉"

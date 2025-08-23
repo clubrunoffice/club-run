@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'clubrun-backend'
+    static_configs:
+      - targets: ['backend:3001']
+    metrics_path: '/metrics'
+    
+  - job_name: 'clubrun-postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    
+  - job_name: 'clubrun-redis'
+    static_configs:
+      - targets: ['redis:6379']

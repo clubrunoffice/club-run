@@ -20,7 +20,8 @@ async function main() {
       role: 'ADMIN',
       tokenBalance: 1000,
       level: 'Admin',
-      theme: 'dark'
+      theme: 'dark',
+      badges: 'admin,founder'
     }
   });
 
@@ -69,41 +70,16 @@ async function main() {
       create: {
         ...userData,
         passwordHash: password,
-        theme: 'dark'
+        theme: 'dark',
+        badges: 'user'
       }
     });
     
     console.log(`✅ Created ${userData.role} user:`, userData.email);
   }
 
-  // Create some sample system logs
-  console.log('📝 Creating sample system logs...');
-  
-  const sampleLogs = [
-    {
-      level: 'info',
-      message: 'System initialized successfully',
-      userId: adminUser.id
-    },
-    {
-      level: 'info',
-      message: 'Admin user logged in',
-      userId: adminUser.id
-    },
-    {
-      level: 'warn',
-      message: 'High memory usage detected',
-      userId: null
-    }
-  ];
-
-  for (const logData of sampleLogs) {
-    await prisma.systemLog.create({
-      data: logData
-    });
-  }
-
-  console.log('✅ Sample system logs created');
+  // Sample system logs removed for SQLite compatibility
+  console.log('📝 Skipping system logs (not in SQLite schema)');
 
   console.log('🎉 Database seeding completed!');
   console.log('\n📋 Login Credentials:');

@@ -1,8 +1,15 @@
-# Multi-stage Dockerfile for Club Run
+# Multi-stage Dockerfile for Club Run Production
 FROM node:18-alpine AS base
 
 # Set working directory
 WORKDIR /app
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Create app user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S clubrun -u 1001 -G nodejs
 
 # Copy package files
 COPY package*.json ./
@@ -10,9 +17,9 @@ COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
 
 # Install dependencies
-RUN npm ci --only=production
-RUN cd backend && npm ci --only=production
-RUN cd frontend && npm ci
+RUN npm ci --only=production --ignore-scripts && \
+    cd backend && npm ci --only=production --ignore-scripts && \
+    cd ../frontend && npm ci --only=production --ignore-scripts
 
 # Build stage for frontend
 FROM node:18-alpine AS frontend-builder
@@ -25,12 +32,12 @@ RUN npm run build
 # Production stage
 FROM node:18-alpine AS production
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init and security packages
+RUN apk add --no-cache dumb-init curl
 
 # Create app user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S clubrun -u 1001
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S clubrun -u 1001 -G nodejs
 
 # Set working directory
 WORKDIR /app
@@ -45,6 +52,10 @@ COPY --chown=clubrun:nodejs backend/ ./
 # Copy environment files
 COPY backend/env.production.example .env
 
+# Create necessary directories
+RUN mkdir -p /app/logs /app/uploads && \
+    chown -R clubrun:nodejs /app/logs /app/uploads
+
 # Switch to non-root user
 USER clubrun
 
@@ -52,9 +63,9 @@ USER clubrun
 EXPOSE 3001
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
 
-# Start the application
+# Start the application with proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "src/server.js"] 
+CMD ["node", "src/simple-server.js"] 

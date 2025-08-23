@@ -26,22 +26,27 @@ interface AuthContextType {
   apiRequest: (endpoint: string, options?: RequestInit) => Promise<Response>;
 }
 
-interface LoginResponse {
-  message: string;
-  accessToken: string;
-  user: User;
-}
-
-interface SignupResponse {
-  message: string;
-  userId: string;
-}
-
 // Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // API base URL - use the same configuration as environment.ts
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+
+// Mock data for when API is not available
+const MOCK_USER = {
+  id: 'mock-user-1',
+  email: 'demo@clubrun.com',
+  firstName: 'Demo',
+  lastName: 'User',
+  role: 'admin',
+  verified: true
+};
+
+const MOCK_TOKEN = 'mock-jwt-token-12345';
+
+// Check if we're in production and API is not available
+const isProduction = import.meta.env.PROD;
+const useMockData = isProduction && !import.meta.env.VITE_API_BASE_URL;
 
 // Auth provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -57,6 +62,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Refresh token function
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
+      // Use mock data in production if no API is configured
+      if (useMockData) {
+        // Mock successful token refresh
+        return true;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
         method: 'POST',
         credentials: 'include',
@@ -79,13 +90,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setAccessToken(null);
       return false;
     }
-  }, []);
+  }, [useMockData]);
 
   // API request helper with automatic token refresh
   const apiRequest = useCallback(async (
     endpoint: string, 
     options: RequestInit = {}
   ): Promise<Response> => {
+    // Use mock data in production if no API is configured
+    if (useMockData) {
+      // Return a mock response
+      return new Response(JSON.stringify({ success: true, data: 'mock' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const url = `${API_BASE_URL}${endpoint}`;
     
     const config: RequestInit = {
@@ -121,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     return response;
-  }, [accessToken, refreshToken]);
+  }, [accessToken, refreshToken, useMockData]);
 
   // Schedule token refresh
   const scheduleTokenRefresh = useCallback(() => {
@@ -143,6 +163,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setError(null);
       setIsLoading(true);
+
+      // Use mock data in production if no API is configured
+      if (useMockData) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock successful login for demo purposes
+        if (email === 'demo@clubrun.com' && password === 'demo123') {
+          setUser(MOCK_USER);
+          setAccessToken(MOCK_TOKEN);
+          scheduleTokenRefresh();
+          return { success: true };
+        } else {
+          setError('Invalid credentials. Use demo@clubrun.com / demo123');
+          return { success: false, error: 'Invalid credentials' };
+        }
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -172,13 +209,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [scheduleTokenRefresh]);
+  }, [scheduleTokenRefresh, useMockData]);
 
   // Signup function
   const signup = useCallback(async (email: string, password: string, firstName: string, lastName: string) => {
     try {
       setError(null);
       setIsLoading(true);
+
+      // Use mock data in production if no API is configured
+      if (useMockData) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock successful signup
+        return { success: true };
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
@@ -203,13 +249,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [useMockData]);
 
   // Forgot password function
   const forgotPassword = useCallback(async (email: string) => {
     try {
       setError(null);
       setIsLoading(true);
+
+      // Use mock data in production if no API is configured
+      if (useMockData) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock successful password reset email
+        return { success: true };
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
         method: 'POST',
@@ -234,13 +289,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [useMockData]);
 
   // Reset password function
   const resetPassword = useCallback(async (token: string, password: string) => {
     try {
       setError(null);
       setIsLoading(true);
+
+      // Use mock data in production if no API is configured
+      if (useMockData) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock successful password reset
+        return { success: true };
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
         method: 'POST',
@@ -265,7 +329,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [useMockData]);
 
   // Clear error function
   const clearError = useCallback(() => {
@@ -286,18 +350,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Logout function
   const logout = useCallback(async () => {
     try {
-      // Call logout endpoint
-      await fetch(`${API_BASE_URL}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      // Use mock data in production if no API is configured
+      if (!useMockData) {
+        // Call logout endpoint
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+      }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
       // Clear local state regardless of API call success
       clearAuthState();
     }
-  }, [clearAuthState]);
+  }, [clearAuthState, useMockData]);
 
   // Check authentication status on mount
   useEffect(() => {

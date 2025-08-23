@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import './AgentDashboard.css';
 
 const AgentDashboard: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const agents = [
     {

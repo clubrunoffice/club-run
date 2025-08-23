@@ -14,6 +14,10 @@ router.post('/forgot-password', AuthController.forgotPassword);
 router.post('/reset-password', AuthController.resetPassword);
 router.get('/verify-email', AuthController.verifyEmail);
 
+// Google OAuth routes
+router.post('/google', AuthController.googleAuth);
+router.get('/google/callback', AuthController.googleCallback);
+
 // Protected routes (authentication required)
 router.get('/me', AuthController.authenticate, AuthController.me);
 
@@ -46,6 +50,7 @@ router.get('/health', (req, res) => {
     features: {
       registration: 'enabled',
       login: 'enabled',
+      googleOAuth: 'enabled',
       tokenRefresh: 'enabled',
       passwordReset: 'enabled',
       emailVerification: 'enabled',
