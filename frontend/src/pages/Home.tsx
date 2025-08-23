@@ -57,13 +57,12 @@ const Home: React.FC = () => {
                 <Rocket className="w-5 h-5" />
                 <span>Launch Agent Dashboard</span>
               </Link>
-              <button 
+              <Link
+                to="/auth"
                 className="border border-white text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-white hover:text-black transition-all duration-200 text-lg"
-                onClick={() => setIsVideoPlaying(true)}
               >
-                <Play className="w-5 h-5" />
-                <span>View Demo</span>
-              </button>
+                <span>Get Started</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -129,11 +128,11 @@ const Home: React.FC = () => {
             Join hundreds of venues that have already optimized their operations with Club Run.
           </p>
           <Link
-            to="/agent-dashboard"
+            to="/auth"
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg flex items-center justify-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg mx-auto w-fit"
           >
             <Rocket className="w-5 h-5" />
-            <span>Launch Agent Dashboard</span>
+            <span>Get Started Today</span>
           </Link>
         </div>
       </section>

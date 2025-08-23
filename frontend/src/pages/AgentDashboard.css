@@ -1,0 +1,39 @@
+/* AgentDashboard.css */
+.agent-card {
+  transition: all 0.3s ease;
+}
+
+.agent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.agent-icon {
+  transition: all 0.3s ease;
+}
+
+.agent-card:hover .agent-icon {
+  transform: scale(1.1);
+}
+
+.status-badge {
+  transition: all 0.3s ease;
+}
+
+.quick-action-button {
+  transition: all 0.3s ease;
+}
+
+.quick-action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.role-feature-button {
+  transition: all 0.3s ease;
+}
+
+.role-feature-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+} 
