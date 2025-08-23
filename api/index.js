@@ -136,6 +136,8 @@ app.use('/api/users', loadRoute('../backend/src/routes/users', 'users'));
 app.use('/api/venues', loadRoute('../backend/src/routes/venues', 'venues'));
 app.use('/api/checkins', loadRoute('../backend/src/routes/checkins', 'checkins'));
 app.use('/api/missions', loadRoute('../backend/src/routes/missions', 'missions'));
+app.use('/api/p2p-missions', loadRoute('../backend/src/routes/p2p-missions', 'p2p-missions'));
+app.use('/api/teams', loadRoute('../backend/src/routes/teams', 'teams'));
 app.use('/api/expenses', loadRoute('../backend/src/routes/expenses', 'expenses'));
 app.use('/api/chat', loadRoute('../backend/src/routes/chat', 'chat'));
 app.use('/api/agents', loadRoute('../backend/src/routes/agents', 'agents'));
