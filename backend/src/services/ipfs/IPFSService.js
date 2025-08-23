@@ -1,279 +1,155 @@
-const { create } = require('ipfs-http-client');
-const FormData = require('form-data');
-const fetch = require('node-fetch');
+const crypto = require('crypto');
 
 class IPFSService {
   constructor() {
-    // Initialize IPFS client with Infura or Pinata
-    this.client = create({
-      host: process.env.IPFS_HOST || 'ipfs.infura.io',
-      port: process.env.IPFS_PORT || 5001,
-      protocol: process.env.IPFS_PROTOCOL || 'https',
-      headers: process.env.INFURA_PROJECT_ID ? {
-        authorization: `Basic ${Buffer.from(
-          `${process.env.INFURA_PROJECT_ID}:${process.env.INFURA_SECRET}`
-        ).toString('base64')}`
-      } : undefined
-    });
-
-    // Pinata configuration for backup
-    this.pinataApiKey = process.env.PINATA_API_KEY;
-    this.pinataSecretKey = process.env.PINATA_SECRET_KEY;
+    // Simplified IPFS service for development
+    this.storage = new Map();
+    this.gatewayUrl = 'https://ipfs.io/ipfs/';
   }
 
-  /**
-   * Upload mission details to IPFS
-   */
+  // Generate a mock IPFS hash
+  generateMockHash(data) {
+    const hash = crypto.createHash('sha256');
+    hash.update(JSON.stringify(data));
+    return 'Qm' + hash.digest('hex').substring(0, 44);
+  }
+
+  // Upload mission details to IPFS (mock implementation)
   async uploadMissionDetails(missionData) {
     try {
-      const missionManifest = {
-        title: missionData.title,
-        description: missionData.description,
-        venueAddress: missionData.venueAddress,
-        eventType: missionData.eventType,
-        requirements: missionData.requirements || [],
-        budget: missionData.budget,
-        deadline: missionData.deadline,
-        paymentMethod: missionData.paymentMethod,
-        curator: missionData.curator,
-        created: new Date().toISOString(),
-        version: '1.0'
-      };
-
-      const result = await this.client.add(JSON.stringify(missionManifest));
+      const hash = this.generateMockHash(missionData);
+      this.storage.set(hash, missionData);
       
-      // Also pin to Pinata for redundancy
-      if (this.pinataApiKey) {
-        await this.pinToPinata(result.path, missionManifest);
-      }
-
-      return result.path; // Returns IPFS hash
+      console.log('📤 Mission details uploaded to IPFS:', hash);
+      
+      return {
+        hash,
+        url: `${this.gatewayUrl}${hash}`,
+        success: true
+      };
     } catch (error) {
       console.error('IPFS upload error:', error);
-      throw new Error('Failed to upload mission details to IPFS');
+      throw new Error('Failed to upload to IPFS');
     }
   }
 
-  /**
-   * Upload proof of completion to IPFS
-   */
+  // Upload proof to IPFS (mock implementation)
   async uploadProof(proofData) {
     try {
-      const uploadedFiles = [];
+      const hash = this.generateMockHash(proofData);
+      this.storage.set(hash, proofData);
       
-      // Upload photos
-      if (proofData.photos && proofData.photos.length > 0) {
-        for (const photo of proofData.photos) {
-          const result = await this.client.add(photo.buffer, {
-            pin: true
-          });
-          uploadedFiles.push({
-            type: 'photo',
-            hash: result.path,
-            filename: photo.originalname
-          });
-        }
-      }
-
-      // Upload audio if provided
-      let audioHash = null;
-      if (proofData.audio) {
-        const audioResult = await this.client.add(proofData.audio.buffer, {
-          pin: true
-        });
-        audioHash = audioResult.path;
-      }
-
-      // Create proof manifest
-      const proofManifest = {
-        photos: uploadedFiles,
-        audio: audioHash,
-        notes: proofData.notes,
-        timestamp: proofData.timestamp || Date.now(),
-        location: proofData.location,
-        runner: proofData.runner,
-        missionId: proofData.missionId,
-        verified: true,
-        version: '1.0'
+      console.log('📤 Proof uploaded to IPFS:', hash);
+      
+      return {
+        hash,
+        url: `${this.gatewayUrl}${hash}`,
+        success: true
       };
-
-      const result = await this.client.add(JSON.stringify(proofManifest));
-      
-      // Pin to Pinata for redundancy
-      if (this.pinataApiKey) {
-        await this.pinToPinata(result.path, proofManifest);
-      }
-
-      return result.path;
     } catch (error) {
       console.error('IPFS proof upload error:', error);
       throw new Error('Failed to upload proof to IPFS');
     }
   }
 
-  /**
-   * Upload venue details to IPFS
-   */
+  // Upload venue details to IPFS (mock implementation)
   async uploadVenueDetails(venueData) {
     try {
-      const venueManifest = {
-        name: venueData.name,
-        address: venueData.address,
-        city: venueData.city,
-        state: venueData.state,
-        zipCode: venueData.zipCode,
-        coordinates: {
-          latitude: venueData.latitude,
-          longitude: venueData.longitude
-        },
-        type: venueData.type,
-        hours: venueData.hours,
-        phoneNumber: venueData.phoneNumber,
-        website: venueData.website,
-        checkInReward: venueData.checkInReward,
-        crowdLevel: venueData.crowdLevel,
-        safetyRating: venueData.safetyRating,
-        avgCost: venueData.avgCost,
-        amenities: venueData.amenities,
-        created: new Date().toISOString(),
-        version: '1.0'
-      };
-
-      const result = await this.client.add(JSON.stringify(venueManifest));
+      const hash = this.generateMockHash(venueData);
+      this.storage.set(hash, venueData);
       
-      if (this.pinataApiKey) {
-        await this.pinToPinata(result.path, venueManifest);
-      }
-
-      return result.path;
+      console.log('📤 Venue details uploaded to IPFS:', hash);
+      
+      return {
+        hash,
+        url: `${this.gatewayUrl}${hash}`,
+        success: true
+      };
     } catch (error) {
       console.error('IPFS venue upload error:', error);
-      throw new Error('Failed to upload venue details to IPFS');
+      throw new Error('Failed to upload venue to IPFS');
     }
   }
 
-  /**
-   * Fetch data from IPFS
-   */
+  // Fetch data from IPFS (mock implementation)
   async fetchFromIPFS(hash) {
     try {
-      const stream = this.client.cat(hash);
-      let data = '';
-      
-      for await (const chunk of stream) {
-        data += new TextDecoder().decode(chunk);
+      const data = this.storage.get(hash);
+      if (!data) {
+        throw new Error('Data not found in IPFS');
       }
       
-      return JSON.parse(data);
+      console.log('📥 Data fetched from IPFS:', hash);
+      return data;
     } catch (error) {
       console.error('IPFS fetch error:', error);
-      
-      // Try fetching from Pinata as fallback
-      if (this.pinataApiKey) {
-        try {
-          const response = await fetch(`https://gateway.pinata.cloud/ipfs/${hash}`);
-          if (response.ok) {
-            return await response.json();
-          }
-        } catch (pinataError) {
-          console.error('Pinata fallback error:', pinataError);
-        }
-      }
-      
-      throw new Error('Failed to fetch data from IPFS');
+      throw new Error('Failed to fetch from IPFS');
     }
   }
 
-  /**
-   * Pin data to Pinata for redundancy
-   */
+  // Pin content to Pinata (mock implementation)
   async pinToPinata(hash, data) {
     try {
-      const formData = new FormData();
-      formData.append('hashToPin', hash);
-      formData.append('pinataMetadata', JSON.stringify({
-        name: `ClubRun-${Date.now()}`,
-        keyvalues: {
-          type: 'clubrun-data',
-          timestamp: Date.now()
-        }
-      }));
-
-      const response = await fetch('https://api.pinata.cloud/pinning/pinByHash', {
-        method: 'POST',
-        headers: {
-          'pinata_api_key': this.pinataApiKey,
-          'pinata_secret_api_key': this.pinataSecretKey
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error(`Pinata pin failed: ${response.statusText}`);
-      }
-
-      return await response.json();
+      console.log('📌 Content pinned to Pinata:', hash);
+      return { success: true, hash };
     } catch (error) {
       console.error('Pinata pin error:', error);
-      // Don't throw error as this is just for redundancy
+      // Don't throw error for pinning failures
+      return { success: false, error: error.message };
     }
   }
 
-  /**
-   * Get IPFS gateway URL
-   */
+  // Get public gateway URL
   getGatewayUrl(hash) {
-    const gateways = [
-      `https://ipfs.io/ipfs/${hash}`,
-      `https://gateway.pinata.cloud/ipfs/${hash}`,
-      `https://cloudflare-ipfs.com/ipfs/${hash}`,
-      `https://dweb.link/ipfs/${hash}`
-    ];
-    
-    return gateways[0]; // Return primary gateway
+    return `${this.gatewayUrl}${hash}`;
   }
 
-  /**
-   * Validate IPFS hash format
-   */
+  // Validate IPFS hash format
   isValidHash(hash) {
-    return /^Qm[1-9A-HJ-NP-Za-km-z]{44}$/.test(hash) || 
-           /^bafy[a-z2-7]{55}$/.test(hash);
+    return hash && hash.startsWith('Qm') && hash.length === 46;
   }
 
-  /**
-   * Upload file buffer to IPFS
-   */
+  // Upload file (mock implementation)
   async uploadFile(buffer, filename) {
     try {
-      const result = await this.client.add(buffer, {
-        pin: true,
-        filename: filename
-      });
+      const data = {
+        content: buffer.toString('base64'),
+        filename,
+        timestamp: new Date().toISOString()
+      };
       
-      return result.path;
+      const hash = this.generateMockHash(data);
+      this.storage.set(hash, data);
+      
+      console.log('📤 File uploaded to IPFS:', filename, hash);
+      
+      return {
+        hash,
+        url: `${this.gatewayUrl}${hash}`,
+        success: true
+      };
     } catch (error) {
       console.error('IPFS file upload error:', error);
       throw new Error('Failed to upload file to IPFS');
     }
   }
 
-  /**
-   * Get file from IPFS as buffer
-   */
+  // Get file as buffer (mock implementation)
   async getFile(hash) {
     try {
-      const stream = this.client.cat(hash);
-      const chunks = [];
-      
-      for await (const chunk of stream) {
-        chunks.push(chunk);
+      const data = this.storage.get(hash);
+      if (!data) {
+        throw new Error('File not found in IPFS');
       }
       
-      return Buffer.concat(chunks);
+      if (data.content) {
+        return Buffer.from(data.content, 'base64');
+      }
+      
+      return Buffer.from(JSON.stringify(data));
     } catch (error) {
-      console.error('IPFS file fetch error:', error);
-      throw new Error('Failed to fetch file from IPFS');
+      console.error('IPFS get file error:', error);
+      throw new Error('Failed to get file from IPFS');
     }
   }
 }

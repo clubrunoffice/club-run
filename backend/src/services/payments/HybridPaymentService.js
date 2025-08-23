@@ -44,7 +44,7 @@ class HybridPaymentService {
   /**
    * Crypto payments (handled by smart contract)
    */
-  private async processCryptoPayment(
+  async processCryptoPayment(
     method, 
     amount, 
     recipientInfo, 
