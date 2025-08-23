@@ -12,14 +12,14 @@
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/club-run-clean/frontend/dist/assets/$1"
+      "dest": "/frontend/dist/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/club-run-clean/frontend/dist/index.html"
+      "dest": "/frontend/dist/index.html"
     }
   ],
-  "buildCommand": "cd club-run-clean/frontend && npm install && npm run build",
-  "outputDirectory": "club-run-clean/frontend/dist",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
   "installCommand": "npm install"
 } 
