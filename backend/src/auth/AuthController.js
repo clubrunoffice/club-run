@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
@@ -220,56 +220,25 @@ class AuthController {
         return res.status(400).json({ error: 'Email and password are required' });
       }
 
-      // Find user
-      const mockUsers = this.getMockUsers();
-      const user = mockUsers.find(u => u.email === email);
+      // Find user in database
+      const user = await req.prisma.user.findUnique({
+        where: { email: email }
+      });
 
       if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Check if account is locked
-      if (user.lockedUntil && new Date() < new Date(user.lockedUntil)) {
-        const remainingTime = Math.ceil((new Date(user.lockedUntil) - new Date()) / 1000);
-        return res.status(423).json({ 
-          error: 'Account is temporarily locked',
-          retryAfter: remainingTime
-        });
-      }
-
-      // Check if email is verified
-      if (!user.verified) {
-        // For development, allow login without verification
-        console.log('User not verified, but allowing login for development');
-        // return res.status(401).json({ 
-        //   error: 'Please verify your email before logging in',
-        //   needsVerification: true 
-        // });
+      // Check if user is active
+      if (!user.isActive) {
+        return res.status(401).json({ error: 'Account is deactivated' });
       }
 
       // Verify password
-      const isValidPassword = await this.comparePassword(password, user.password);
+      const isValidPassword = await this.comparePassword(password, user.passwordHash);
       if (!isValidPassword) {
-        // Increment failed login attempts
-        user.loginAttempts = (user.loginAttempts || 0) + 1;
-        
-        if (user.loginAttempts >= this.MAX_LOGIN_ATTEMPTS) {
-          user.lockedUntil = new Date(Date.now() + this.LOCKOUT_DURATION);
-          return res.status(423).json({ 
-            error: 'Account locked due to too many failed attempts',
-            retryAfter: Math.ceil(this.LOCKOUT_DURATION / 1000)
-          });
-        }
-
-        return res.status(401).json({ 
-          error: 'Invalid credentials',
-          remainingAttempts: this.MAX_LOGIN_ATTEMPTS - user.loginAttempts
-        });
+        return res.status(401).json({ error: 'Invalid credentials' });
       }
-
-      // Reset login attempts on successful login
-      user.loginAttempts = 0;
-      user.lockedUntil = null;
 
       // Generate tokens
       const { accessToken, refreshToken } = this.generateTokens(user.id, user.email);
@@ -289,10 +258,19 @@ class AuthController {
         user: {
           id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          name: user.name,
           role: user.role,
-          verified: user.verified
+          avatar: user.avatar,
+          walletAddress: user.walletAddress,
+          tokenBalance: user.tokenBalance,
+          currentStreak: user.currentStreak,
+          totalCheckIns: user.totalCheckIns,
+          missionsCompleted: user.missionsCompleted,
+          level: user.level,
+          theme: user.theme,
+          badges: user.badges,
+          teamId: user.teamId,
+          isActive: user.isActive
         }
       });
 

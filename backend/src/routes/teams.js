@@ -1,10 +1,10 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
-const { checkRole } = require('../middleware/rbac');
+const { requireRole } = require('../middleware/rbac');
 const router = express.Router();
 
 // Get all teams for a curator
-router.get('/', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, res) => {
+router.get('/', authenticateToken, requireRole(['CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const userId = req.user.id;
     
@@ -50,7 +50,7 @@ router.get('/', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, 
 });
 
 // Create a new team
-router.post('/', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, res) => {
+router.post('/', authenticateToken, requireRole(['CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const { name, description } = req.body;
     const curatorId = req.user.id;
@@ -150,7 +150,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 // Update team
-router.put('/:id', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, res) => {
+router.put('/:id', authenticateToken, requireRole(['CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const teamId = req.params.id;
     const curatorId = req.user.id;
@@ -195,7 +195,7 @@ router.put('/:id', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (re
 });
 
 // Invite runner to team
-router.post('/:id/invite', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, res) => {
+router.post('/:id/invite', authenticateToken, requireRole(['CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const teamId = req.params.id;
     const curatorId = req.user.id;
@@ -261,7 +261,7 @@ router.post('/:id/invite', authenticateToken, checkRole(['CURATOR', 'ADMIN']), a
 });
 
 // Remove runner from team
-router.delete('/:id/members/:runnerId', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, res) => {
+router.delete('/:id/members/:runnerId', authenticateToken, requireRole(['CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const teamId = req.params.id;
     const runnerId = req.params.runnerId;
@@ -402,7 +402,7 @@ router.get('/:id/missions', authenticateToken, async (req, res) => {
 });
 
 // Get team analytics
-router.get('/:id/analytics', authenticateToken, checkRole(['CURATOR', 'ADMIN']), async (req, res) => {
+router.get('/:id/analytics', authenticateToken, requireRole(['CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const teamId = req.params.id;
     const curatorId = req.user.id;

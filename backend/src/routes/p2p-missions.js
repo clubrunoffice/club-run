@@ -1,6 +1,6 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
-const { checkRole } = require('../middleware/rbac');
+const { requireRole } = require('../middleware/rbac');
 const ipfsService = require('../services/ipfs/IPFSService');
 const hybridPaymentService = require('../services/payments/HybridPaymentService');
 const router = express.Router();
@@ -107,7 +107,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Create P2P mission
-router.post('/', authenticateToken, checkRole(['CLIENT', 'CURATOR', 'ADMIN']), async (req, res) => {
+router.post('/', authenticateToken, requireRole(['CLIENT', 'CURATOR', 'ADMIN']), async (req, res) => {
   try {
     const {
       title,
@@ -204,7 +204,7 @@ router.post('/', authenticateToken, checkRole(['CLIENT', 'CURATOR', 'ADMIN']), a
 });
 
 // Accept P2P mission
-router.post('/:id/accept', authenticateToken, checkRole(['RUNNER']), async (req, res) => {
+router.post('/:id/accept', authenticateToken, requireRole(['RUNNER']), async (req, res) => {
   try {
     const missionId = req.params.id;
     const userId = req.user.id;

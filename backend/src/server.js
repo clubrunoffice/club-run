@@ -84,6 +84,8 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/venues', require('./routes/venues'));
 app.use('/api/checkins', require('./routes/checkins'));
 app.use('/api/missions', require('./routes/missions'));
+app.use('/api/p2p-missions', require('./routes/p2p-missions')); // P2P decentralized missions
+app.use('/api/teams', require('./routes/teams')); // Team management for curators
 app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/agents', require('./routes/agents'));
