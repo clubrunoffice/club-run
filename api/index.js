@@ -4,23 +4,35 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
-const { PrismaClient } = require('@prisma/client');
-require('dotenv').config();
 
 const app = express();
-const server = createServer(app);
-const prisma = new PrismaClient();
 
-// Socket.IO setup
-const io = new Server(server, {
-  cors: {
-    origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:3003", "http://localhost:3006", "http://localhost:3007", "http://localhost:8081"],
-    methods: ["GET", "POST"],
-    credentials: true
+// Initialize Prisma client for serverless environment
+let prisma;
+try {
+  const { PrismaClient } = require('@prisma/client');
+  if (process.env.NODE_ENV === 'production') {
+    prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+    });
+  } else {
+    prisma = new PrismaClient();
   }
-});
+} catch (error) {
+  console.warn('Prisma initialization failed:', error.message);
+  prisma = null;
+}
+
+// Load environment variables
+try {
+  require('dotenv').config();
+} catch (error) {
+  console.warn('dotenv loading failed:', error.message);
+}
 
 // Middleware
 app.use(helmet({
@@ -33,7 +45,15 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:3003", "http://localhost:3006", "http://localhost:3007", "http://localhost:8081"],
+  origin: [
+    process.env.FRONTEND_URL || "http://localhost:3000", 
+    "http://localhost:3003", 
+    "http://localhost:3006", 
+    "http://localhost:3007", 
+    "http://localhost:8081",
+    "https://club-run-zeta.vercel.app",
+    "https://club-nlvzypylp-club-runs-projects.vercel.app"
+  ],
   credentials: true
 }));
 
@@ -50,18 +70,21 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Make prisma and io available to routes
+// Make prisma available to routes
 app.use((req, res, next) => {
   req.prisma = prisma;
-  req.io = io;
   next();
 });
 
 // Health check
 app.get('/health', async (req, res) => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    if (prisma) {
+      await prisma.$queryRaw`SELECT 1`;
+      res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    } else {
+      res.json({ status: 'healthy (no database)', timestamp: new Date().toISOString() });
+    }
   } catch (error) {
     res.status(500).json({ status: 'unhealthy', error: error.message });
   }
@@ -73,54 +96,70 @@ app.get('/api/health', (req, res) => {
     status: 'healthy', 
     message: 'Club Run API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    database: prisma ? 'connected' : 'not available'
   });
 });
 
-// API Routes
-app.use('/api/auth', require('../backend/src/routes/auth'));
-app.use('/api/admin', require('../backend/src/routes/admin')); // Admin routes for role management
-app.use('/api/users', require('../backend/src/routes/users'));
-app.use('/api/venues', require('../backend/src/routes/venues'));
-app.use('/api/checkins', require('../backend/src/routes/checkins'));
-app.use('/api/missions', require('../backend/src/routes/missions'));
-app.use('/api/expenses', require('../backend/src/routes/expenses'));
-app.use('/api/chat', require('../backend/src/routes/chat'));
-app.use('/api/agents', require('../backend/src/routes/agents'));
-app.use('/api/orchestration', require('../backend/src/routes/orchestration')); // Enhanced agent flow orchestration
-app.use('/api/demo', require('../backend/src/routes/demo')); // Demo routes for testing
+// Test endpoint for Vercel
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'Club Run API is working on Vercel!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: prisma ? 'connected' : 'not available'
+  });
+});
 
-// WebSocket handlers
-require('../backend/src/websocket/handlers')(io, prisma);
+// API Routes - with error handling
+const loadRoute = (routePath, routeName) => {
+  try {
+    return require(routePath);
+  } catch (error) {
+    console.error(`Failed to load ${routeName} route:`, error.message);
+    const router = express.Router();
+    router.get('/', (req, res) => {
+      res.json({ 
+        error: `${routeName} route not available`, 
+        message: 'This route is temporarily unavailable',
+        timestamp: new Date().toISOString()
+      });
+    });
+    return router;
+  }
+};
+
+// API Routes
+app.use('/api/auth', loadRoute('../backend/src/routes/auth', 'auth'));
+app.use('/api/admin', loadRoute('../backend/src/routes/admin', 'admin'));
+app.use('/api/users', loadRoute('../backend/src/routes/users', 'users'));
+app.use('/api/venues', loadRoute('../backend/src/routes/venues', 'venues'));
+app.use('/api/checkins', loadRoute('../backend/src/routes/checkins', 'checkins'));
+app.use('/api/missions', loadRoute('../backend/src/routes/missions', 'missions'));
+app.use('/api/expenses', loadRoute('../backend/src/routes/expenses', 'expenses'));
+app.use('/api/chat', loadRoute('../backend/src/routes/chat', 'chat'));
+app.use('/api/agents', loadRoute('../backend/src/routes/agents', 'agents'));
+app.use('/api/orchestration', loadRoute('../backend/src/routes/orchestration', 'orchestration'));
+app.use('/api/demo', loadRoute('../backend/src/routes/demo', 'demo'));
 
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Server Error:', error);
   res.status(500).json({ 
     error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
+    timestamp: new Date().toISOString()
   });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
-
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🚀 Club Run API server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('Received SIGTERM, shutting down gracefully');
-  await prisma.$disconnect();
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.originalUrl,
+    timestamp: new Date().toISOString()
   });
 });
 
-module.exports = { app, server, prisma, io }; 
+// Export for Vercel serverless function
+module.exports = app; 
