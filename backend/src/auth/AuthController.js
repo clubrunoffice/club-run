@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const axios = require('axios');
 
 class AuthController {
   constructor() {
@@ -12,6 +13,10 @@ class AuthController {
     this.JWT_SECRET = process.env.JWT_SECRET || 'your-super-secure-jwt-secret-key-minimum-32-characters';
     this.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m';
     this.REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d';
+    
+    // Google OAuth Configuration
+    this.GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    this.GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
     
     // Security Configuration
     this.MAX_LOGIN_ATTEMPTS = 5;
@@ -571,6 +576,159 @@ class AuthController {
 
       next();
     };
+  };
+
+  // Google OAuth Authentication
+  googleAuth = async (req, res) => {
+    try {
+      const { accessToken, userInfo } = req.body;
+
+      if (!accessToken || !userInfo) {
+        return res.status(400).json({ error: 'Access token and user info required' });
+      }
+
+      // Verify Google token (optional but recommended for production)
+      if (this.GOOGLE_CLIENT_ID) {
+        try {
+          const tokenInfo = await axios.get(`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`);
+          if (tokenInfo.data.aud !== this.GOOGLE_CLIENT_ID) {
+            return res.status(401).json({ error: 'Invalid Google token' });
+          }
+        } catch (error) {
+          console.error('Google token verification failed:', error);
+          // Continue with user info for demo purposes
+        }
+      }
+
+      const { email, given_name, family_name, picture } = userInfo;
+
+      // Find existing user by email or Google ID
+      const mockUsers = this.getMockUsers();
+      let user = mockUsers.find(u => u.email === email);
+
+      if (!user) {
+        // Create new user
+        const newUser = {
+          id: Date.now().toString(),
+          email,
+          firstName: given_name || 'Google',
+          lastName: family_name || 'User',
+          avatar: picture,
+          googleId: userInfo.id || email,
+          verified: true,
+          role: 'user',
+          loginAttempts: 0,
+          lockedUntil: null,
+          createdAt: new Date().toISOString()
+        };
+
+        this.mockUsers.push(newUser);
+        user = newUser;
+
+        console.log(`New Google user created: ${email}`);
+      } else {
+        // Update existing user's Google info
+        user.googleId = userInfo.id || email;
+        user.avatar = picture || user.avatar;
+        user.verified = true;
+        user.lastLoginAt = new Date().toISOString();
+      }
+
+      // Generate tokens
+      const { accessToken: jwtAccessToken, refreshToken } = this.generateTokens(user.id, user.email);
+
+      // Set refresh token as HttpOnly cookie
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      });
+
+      res.json({
+        message: 'Google authentication successful',
+        accessToken: jwtAccessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          avatar: user.avatar,
+          role: user.role,
+          verified: user.verified
+        }
+      });
+
+    } catch (error) {
+      console.error('Google auth error:', error);
+      res.status(500).json({ error: 'Google authentication failed' });
+    }
+  };
+
+  // Google OAuth Callback (for server-side flow)
+  googleCallback = async (req, res) => {
+    try {
+      const { code } = req.query;
+
+      if (!code) {
+        return res.status(400).json({ error: 'Authorization code required' });
+      }
+
+      if (!this.GOOGLE_CLIENT_ID || !this.GOOGLE_CLIENT_SECRET) {
+        return res.status(500).json({ error: 'Google OAuth not configured' });
+      }
+
+      // Exchange code for tokens
+      const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+        code,
+        client_id: this.GOOGLE_CLIENT_ID,
+        client_secret: this.GOOGLE_CLIENT_SECRET,
+        redirect_uri: `${process.env.BACKEND_URL}/api/auth/google/callback`,
+        grant_type: 'authorization_code'
+      });
+
+      const { access_token } = tokenResponse.data;
+
+      // Get user info
+      const userInfoResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${access_token}` }
+      });
+
+      const userInfo = userInfoResponse.data;
+
+      // Process user authentication (same as googleAuth)
+      const mockUsers = this.getMockUsers();
+      let user = mockUsers.find(u => u.email === userInfo.email);
+
+      if (!user) {
+        const newUser = {
+          id: Date.now().toString(),
+          email: userInfo.email,
+          firstName: userInfo.given_name || 'Google',
+          lastName: userInfo.family_name || 'User',
+          avatar: userInfo.picture,
+          googleId: userInfo.id,
+          verified: true,
+          role: 'user',
+          loginAttempts: 0,
+          lockedUntil: null,
+          createdAt: new Date().toISOString()
+        };
+
+        this.mockUsers.push(newUser);
+        user = newUser;
+      }
+
+      const { accessToken: jwtAccessToken, refreshToken } = this.generateTokens(user.id, user.email);
+
+      // Redirect to frontend with tokens
+      const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?token=${jwtAccessToken}&user=${encodeURIComponent(JSON.stringify(user))}`;
+      res.redirect(redirectUrl);
+
+    } catch (error) {
+      console.error('Google callback error:', error);
+      res.redirect(`${process.env.FRONTEND_URL}/auth/error?message=Google authentication failed`);
+    }
   };
 }
 

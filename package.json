@@ -1,14 +1,49 @@
 {
   "name": "club-run",
-  "version": "1.0.0-pre",
-  "description": "AI-Powered Nightlife Operations Platform - Pre-MVP 1.0",
-  "main": "index.js",
+  "version": "3.0.0-pre",
+  "description": "AI-Powered Nightlife Operations Platform - PRE MVP 3.0 (Docker Update)",
+  "main": "api/index.js",
   "scripts": {
     "dev": "cd frontend && npm run dev",
+    "dev:api": "node api/index.js",
+    "dev:backend": "cd backend && npm run dev",
     "build": "cd frontend && npm run build",
     "preview": "cd frontend && npm run preview",
     "test": "echo 'Run tests'",
-    "deploy": "echo 'Deploy to production'"
+    "deploy": "echo 'Deploy to production'",
+    "start": "node api/index.js",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "axios": "^1.11.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.8.1",
+    "openai": "^4.28.0",
+    "googleapis": "^133.0.0",
+    "puppeteer": "^22.0.0",
+    "csv-writer": "^1.6.0",
+    "exceljs": "^4.4.0",
+    "multer": "^1.4.5-lts.1",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.2",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "prisma": "^5.22.0"
   },
   "keywords": [
     "club-run",
@@ -27,5 +62,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "prisma": {
+    "seed": "node backend/prisma/seed.js"
   }
 } 
