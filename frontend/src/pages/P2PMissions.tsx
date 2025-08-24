@@ -1,213 +1,169 @@
-'use client'
+import React, { useState, useEffect } from 'react';
+import { useRBAC } from '../contexts/RBACContext';
+import { PermissionGate } from '../components/RoleBasedUI';
 
-import { useState } from 'react'
-import { P2PMissionCreator } from '../components/missions/P2PMissionCreator'
-import { P2PMissionBoard } from '../components/missions/P2PMissionBoard'
-import { useAuth } from '../contexts/AuthContext'
+interface P2PMission {
+  id: string;
+  title: string;
+  description: string;
+  creator: string;
+  budget: number;
+  status: 'open' | 'in-progress' | 'completed';
+  createdAt: string;
+  deadline: string;
+  category: string;
+}
 
-export function P2PMissions() {
-  const { user } = useAuth()
-  const [activeTab, setActiveTab] = useState<'board' | 'create'>('board')
+export const P2PMissions: React.FC = () => {
+  const { user, isAuthenticated, hasPermission, getCurrentTheme } = useRBAC();
+  const [p2pMissions, setP2pMissions] = useState<P2PMission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const theme = getCurrentTheme();
+
+  // Mock data for demonstration
+  useEffect(() => {
+    const mockP2PMissions: P2PMission[] = [
+      {
+        id: '1',
+        title: 'Music Collaboration Project',
+        description: 'Looking for a producer to collaborate on a new track. I have the vocals, need help with the beat.',
+        creator: 'MusicMaker123',
+        budget: 200,
+        status: 'open',
+        createdAt: '2024-01-15',
+        deadline: '2024-02-15',
+        category: 'Music Production'
+      },
+      {
+        id: '2',
+        title: 'Event Planning Partnership',
+        description: 'Need a partner to help plan and execute a music festival. Split profits 50/50.',
+        creator: 'EventPro',
+        budget: 0,
+        status: 'open',
+        createdAt: '2024-01-12',
+        deadline: '2024-03-01',
+        category: 'Event Planning'
+      },
+      {
+        id: '3',
+        title: 'Studio Session Exchange',
+        description: 'I have a home studio, looking to exchange recording time for mixing services.',
+        creator: 'StudioOwner',
+        budget: 0,
+        status: 'in-progress',
+        createdAt: '2024-01-10',
+        deadline: '2024-01-30',
+        category: 'Studio Services'
+      }
+    ];
+
+    setTimeout(() => {
+      setP2pMissions(mockP2PMissions);
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
+          <p className="text-gray-600">Please log in to view P2P missions.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-tech-black">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-tech-black to-tech-gray border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              🌐 Peer-to-Peer Missions
-            </h1>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
-              Decentralized music servicing marketplace. Create missions, accept work, and get paid directly with crypto or traditional payment methods.
-            </p>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="flex justify-center mt-8">
-            <div className="bg-white/10 rounded-lg p-1 border border-white/20">
-              <button
-                onClick={() => setActiveTab('board')}
-                className={`px-6 py-3 rounded-md font-medium transition-all duration-300 ${
-                  activeTab === 'board'
-                    ? 'bg-tech-cyan text-tech-black shadow-lg'
-                    : 'text-white hover:bg-white/10'
-                }`}
-              >
-                🎵 Mission Board
-              </button>
-              <button
-                onClick={() => setActiveTab('create')}
-                className={`px-6 py-3 rounded-md font-medium transition-all duration-300 ${
-                  activeTab === 'create'
-                    ? 'bg-tech-cyan text-tech-black shadow-lg'
-                    : 'text-white hover:bg-white/10'
-                }`}
-              >
-                🚀 Create Mission
-              </button>
+    <div className="min-h-screen bg-black">
+      {/* Hero Header */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-black to-blue-900"></div>
+        <div className="relative z-10 container mx-auto px-4 py-12">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">P2P Missions</h1>
+              <p className="text-xl text-gray-300">
+                Peer-to-peer collaborations and partnerships
+              </p>
             </div>
+            <PermissionGate resource="p2p-missions" action="create">
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+                <span>Create P2P Mission</span>
+              </button>
+            </PermissionGate>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Decentralization Benefits Banner */}
-      <div className="bg-gradient-to-r from-tech-cyan/10 to-tech-blue/10 border-b border-tech-cyan/20">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="grid md:grid-cols-4 gap-6 text-center">
-            <div className="flex flex-col items-center">
-              <div className="text-3xl mb-2">🔷</div>
-              <h3 className="font-semibold text-white mb-1">Crypto Payments</h3>
-              <p className="text-sm text-white/70">MATIC, USDC, and more</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="text-3xl mb-2">💸</div>
-              <h3 className="font-semibold text-white mb-1">Traditional Payments</h3>
-              <p className="text-sm text-white/70">Cash App, Zelle, Venmo</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="text-3xl mb-2">⛓️</div>
-              <h3 className="font-semibold text-white mb-1">Blockchain Escrow</h3>
-              <p className="text-sm text-white/70">Secure payment protection</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="text-3xl mb-2">🌍</div>
-              <h3 className="font-semibold text-white mb-1">Global Access</h3>
-              <p className="text-sm text-white/70">Work with anyone, anywhere</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === 'board' ? (
-          <P2PMissionBoard />
-        ) : (
-          <div>
-            {!user ? (
+        {/* Content */}
+        <section className="py-20 bg-gray-900">
+          <div className="container mx-auto px-4">
+            {loading ? (
               <div className="text-center py-12">
-                <div className="text-6xl mb-4">🔐</div>
-                <h3 className="text-xl font-semibold text-white mb-2">Authentication Required</h3>
-                <p className="text-white/70 mb-6">Please log in to create P2P missions</p>
-                <button
-                  onClick={() => setActiveTab('board')}
-                  className="px-6 py-3 bg-tech-cyan text-tech-black font-semibold rounded-lg hover:bg-tech-cyan/90 transition-colors"
-                >
-                  Browse Missions Instead
-                </button>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div>
+                <p className="mt-4 text-gray-300">Loading P2P missions...</p>
               </div>
             ) : (
-              <P2PMissionCreator />
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {p2pMissions.map((mission) => (
+                  <div key={mission.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:shadow-lg transition-all duration-300">
+                    <div className="flex items-start justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-white">{mission.title}</h3>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        mission.status === 'open' ? 'bg-green-500 bg-opacity-20 text-green-400' :
+                        mission.status === 'in-progress' ? 'bg-blue-500 bg-opacity-20 text-blue-400' :
+                        'bg-gray-500 bg-opacity-20 text-gray-400'
+                      }`}>
+                        {mission.status}
+                      </span>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500 bg-opacity-20 text-purple-400 rounded-full">
+                        {mission.category}
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-300 text-sm mb-4">{mission.description}</p>
+                    
+                    <div className="space-y-2 text-sm mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Creator:</span>
+                        <span className="text-white">{mission.creator}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Budget:</span>
+                        <span className="text-blue-400">
+                          {mission.budget > 0 ? `$${mission.budget}` : 'Partnership'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Deadline:</span>
+                        <span className="text-white">{new Date(mission.deadline).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <PermissionGate resource="p2p-missions" action="accept">
+                        <button className="flex-1 px-3 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200">
+                          Join
+                        </button>
+                      </PermissionGate>
+                      
+                      <PermissionGate resource="p2p-missions" action="read">
+                        <button className="flex-1 px-3 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+                          View Details
+                        </button>
+                      </PermissionGate>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        )}
+        </section>
       </div>
-
-      {/* How It Works Section */}
-      <div className="bg-white/5 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">How P2P Missions Work</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-tech-cyan/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🎯</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">1. Create Mission</h3>
-              <p className="text-white/70">
-                Curators create missions with detailed requirements, budget, and preferred payment method. 
-                Mission details are stored on IPFS for decentralization.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-tech-cyan/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🤝</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">2. Accept & Execute</h3>
-              <p className="text-white/70">
-                Runners browse the decentralized mission board and accept missions that match their skills. 
-                Complete the work and submit proof to IPFS.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-tech-cyan/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">💰</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">3. Get Paid</h3>
-              <p className="text-white/70">
-                Curators review proof and approve payment. Funds are released directly to runners via 
-                their chosen payment method - crypto or traditional.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Payment Methods Section */}
-      <div className="bg-gradient-to-r from-tech-black to-tech-gray">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">Supported Payment Methods</h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">🔷</span>
-                <h3 className="text-lg font-semibold text-white">MATIC (Polygon)</h3>
-              </div>
-              <p className="text-white/70 text-sm mb-3">Direct peer-to-peer crypto payment on Polygon network</p>
-              <div className="text-tech-cyan text-sm">~$0.01 gas fee</div>
-            </div>
-
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">💵</span>
-                <h3 className="text-lg font-semibold text-white">USDC Stablecoin</h3>
-              </div>
-              <p className="text-white/70 text-sm mb-3">USD-pegged stable cryptocurrency for predictable payments</p>
-              <div className="text-tech-cyan text-sm">~$0.02 gas fee</div>
-            </div>
-
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">💸</span>
-                <h3 className="text-lg font-semibold text-white">Cash App</h3>
-              </div>
-              <p className="text-white/70 text-sm mb-3">Instant mobile payment with $cashtag or email</p>
-              <div className="text-tech-cyan text-sm">Free</div>
-            </div>
-
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">🏦</span>
-                <h3 className="text-lg font-semibold text-white">Zelle</h3>
-              </div>
-              <p className="text-white/70 text-sm mb-3">Bank-to-bank transfer for secure payments</p>
-              <div className="text-tech-cyan text-sm">Free</div>
-            </div>
-
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">💙</span>
-                <h3 className="text-lg font-semibold text-white">Venmo</h3>
-              </div>
-              <p className="text-white/70 text-sm mb-3">Social payment app with @username transfers</p>
-              <div className="text-tech-cyan text-sm">Free for bank transfers</div>
-            </div>
-
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">🔵</span>
-                <h3 className="text-lg font-semibold text-white">PayPal</h3>
-              </div>
-              <p className="text-white/70 text-sm mb-3">Global digital payments with email transfers</p>
-              <div className="text-tech-cyan text-sm">2.9% + $0.30 (Friends & Family free)</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+  );
+};

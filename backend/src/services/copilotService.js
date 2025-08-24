@@ -1,4 +1,5 @@
 const axios = require('axios');
+const enhancedChatGPTService = require('./ai/EnhancedChatGPTService');
 
 class CopilotService {
   constructor() {
@@ -12,13 +13,57 @@ class CopilotService {
       // Get user context
       const user = await this.getUserContext(prisma, userId);
       
-      // Analyze intent
+      // First, try the enhanced ChatGPT service for smart routing
+      const chatGPTResult = await enhancedChatGPTService.processQuery(
+        prisma, 
+        userId, 
+        message, 
+        user.role
+      );
+
+      // If ChatGPT handled it successfully, return the result
+      if (chatGPTResult.success) {
+        // Log conversation
+        await prisma.chatMessage.createMany({
+          data: [
+            { userId, type: 'user', message },
+            { userId, type: 'copilot', message: chatGPTResult.message, metadata: { source: chatGPTResult.source, cost: chatGPTResult.cost } }
+          ]
+        });
+
+        return {
+          success: true,
+          message: chatGPTResult.message,
+          actions: [],
+          data: null,
+          source: chatGPTResult.source,
+          cost: chatGPTResult.cost
+        };
+      }
+
+      // If ChatGPT failed or hit limits, fall back to local processing
+      if (chatGPTResult.fallback && chatGPTResult.localResponse) {
+        // Log conversation
+        await prisma.chatMessage.createMany({
+          data: [
+            { userId, type: 'user', message },
+            { userId, type: 'copilot', message: chatGPTResult.localResponse.message, metadata: { source: 'local', cost: 0 } }
+          ]
+        });
+
+        return {
+          success: true,
+          message: chatGPTResult.localResponse.message,
+          actions: [],
+          data: null,
+          source: 'local',
+          cost: 0
+        };
+      }
+
+      // Fallback to original copilot logic for complex actions
       const intent = await this.analyzeIntent(message, user);
-      
-      // Execute action
       const result = await this.executeAction(prisma, userId, intent);
-      
-      // Generate natural response
       const response = await this.generateResponse(intent, result, user);
       
       // Log conversation
@@ -33,8 +78,11 @@ class CopilotService {
         success: true,
         message: response.message,
         actions: response.actions || [],
-        data: result.data || null
+        data: result.data || null,
+        source: 'local',
+        cost: 0
       };
+
     } catch (error) {
       console.error('Copilot error:', error);
       return {

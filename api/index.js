@@ -142,6 +142,7 @@ app.use('/api/expenses', loadRoute('../backend/src/routes/expenses', 'expenses')
 app.use('/api/chat', loadRoute('../backend/src/routes/chat', 'chat'));
 app.use('/api/agents', loadRoute('../backend/src/routes/agents', 'agents'));
 app.use('/api/orchestration', loadRoute('../backend/src/routes/orchestration', 'orchestration'));
+app.use('/api/serato', loadRoute('../backend/src/routes/serato', 'serato'));
 app.use('/api/demo', loadRoute('../backend/src/routes/demo', 'demo'));
 
 // Error handling middleware

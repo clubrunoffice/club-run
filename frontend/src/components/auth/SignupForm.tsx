@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { User, Briefcase, Shield } from 'lucide-react';
 
 interface SignupFormProps {
   onSuccess?: () => void;
@@ -16,7 +17,8 @@ export const SignupForm: React.FC<SignupFormProps> = ({
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'CLIENT' // Default role
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [passwordStrength, setPasswordStrength] = useState({
@@ -111,15 +113,22 @@ export const SignupForm: React.FC<SignupFormProps> = ({
       formData.email,
       formData.password,
       formData.firstName,
-      formData.lastName
+      formData.lastName,
+      formData.role
     );
     
     if (result.success) {
-      onSuccess?.();
+      // Check if this is a CURATOR application that needs approval
+      if (result.needsApproval && result.role === 'CURATOR') {
+        // Redirect to curator thank you page
+        window.location.href = '/curator-thank-you';
+      } else {
+        onSuccess?.();
+      }
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -146,10 +155,10 @@ export const SignupForm: React.FC<SignupFormProps> = ({
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Join Club Run
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Join Club Run to start your mission journey
+            Choose your role and start your music mission journey
           </p>
         </div>
         
@@ -220,6 +229,100 @@ export const SignupForm: React.FC<SignupFormProps> = ({
               {validationErrors.email && (
                 <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
               )}
+            </div>
+
+            <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-3">
+                I want to join as a:
+              </label>
+              <div className="grid grid-cols-1 gap-3">
+                <label className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none ${
+                  formData.role === 'CLIENT' 
+                    ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-600' 
+                    : 'border-gray-300 bg-white hover:bg-gray-50'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="CLIENT"
+                    className="sr-only"
+                    checked={formData.role === 'CLIENT'}
+                    onChange={handleInputChange}
+                  />
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <User className={`h-6 w-6 ${formData.role === 'CLIENT' ? 'text-blue-600' : 'text-gray-400'}`} />
+                    </div>
+                    <div className="ml-3">
+                      <div className={`text-sm font-medium ${formData.role === 'CLIENT' ? 'text-blue-900' : 'text-gray-900'}`}>
+                        Client
+                      </div>
+                      <div className={`text-sm ${formData.role === 'CLIENT' ? 'text-blue-700' : 'text-gray-500'}`}>
+                        I need music services for my events
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <label className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none ${
+                  formData.role === 'RUNNER' 
+                    ? 'border-green-600 bg-green-50 ring-2 ring-green-600' 
+                    : 'border-gray-300 bg-white hover:bg-gray-50'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="DJ"
+                    className="sr-only"
+                    checked={formData.role === 'DJ'}
+                    onChange={handleInputChange}
+                  />
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <Briefcase className={`h-6 w-6 ${formData.role === 'DJ' ? 'text-green-600' : 'text-gray-400'}`} />
+                    </div>
+                    <div className="ml-3">
+                      <div className={`text-sm font-medium ${formData.role === 'DJ' ? 'text-green-900' : 'text-gray-900'}`}>
+                        DJ
+                      </div>
+                      <div className={`text-sm ${formData.role === 'DJ' ? 'text-green-700' : 'text-gray-500'}`}>
+                        I'm a DJ who wants to earn money playing music
+                      </div>
+                      <div className={`text-xs mt-1 ${formData.role === 'DJ' ? 'text-green-600' : 'text-gray-400'}`}>
+                        ⚠️ Requires verification to access automatic Serato verification
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <label className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none ${
+                  formData.role === 'CURATOR' 
+                    ? 'border-purple-600 bg-purple-50 ring-2 ring-purple-600' 
+                    : 'border-gray-300 bg-white hover:bg-gray-50'
+                }`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="CURATOR"
+                    className="sr-only"
+                    checked={formData.role === 'CURATOR'}
+                    onChange={handleInputChange}
+                  />
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <Shield className={`h-6 w-6 ${formData.role === 'CURATOR' ? 'text-purple-600' : 'text-gray-400'}`} />
+                    </div>
+                    <div className="ml-3">
+                      <div className={`text-sm font-medium ${formData.role === 'CURATOR' ? 'text-purple-900' : 'text-gray-900'}`}>
+                        Curator
+                      </div>
+                      <div className={`text-sm ${formData.role === 'CURATOR' ? 'text-purple-700' : 'text-gray-500'}`}>
+                        I manage and oversee platform operations
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
 
             <div>
@@ -318,7 +421,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({
                   Creating account...
                 </div>
               ) : (
-                'Create account'
+                `Create ${formData.role.toLowerCase()} account`
               )}
             </button>
           </div>

@@ -1,6 +1,6 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
-const { requireRole } = require('../middleware/rbac');
+const { requireRole, requireVerifiedDJ, requireRunnerOrVerifiedDJ } = require('../middleware/rbac');
 const ipfsService = require('../services/ipfs/IPFSService');
 const hybridPaymentService = require('../services/payments/HybridPaymentService');
 const router = express.Router();
@@ -204,7 +204,7 @@ router.post('/', authenticateToken, requireRole(['CLIENT', 'CURATOR', 'ADMIN']),
 });
 
 // Accept P2P mission
-router.post('/:id/accept', authenticateToken, requireRole(['RUNNER']), async (req, res) => {
+router.post('/:id/accept', authenticateToken, requireRunnerOrVerifiedDJ, async (req, res) => {
   try {
     const missionId = req.params.id;
     const userId = req.user.id;

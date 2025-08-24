@@ -141,11 +141,17 @@ class AuthController {
   // Register user
   register = async (req, res) => {
     try {
-      const { email, password, firstName, lastName } = req.body;
+      const { email, password, firstName, lastName, role } = req.body;
 
       // Input validation
       if (!email || !password || !firstName || !lastName) {
         return res.status(400).json({ error: 'All fields are required' });
+      }
+
+      // Role validation
+      const validRoles = ['CLIENT', 'RUNNER', 'CURATOR'];
+      if (role && !validRoles.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role. Must be CLIENT, RUNNER, or CURATOR' });
       }
 
       // Email validation
@@ -183,10 +189,11 @@ class AuthController {
         password: hashedPassword,
         firstName,
         lastName,
-        verified: false,
+        verified: role === 'CURATOR' ? false : false, // CURATOR accounts need manual approval
         verificationToken,
         verificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-        role: 'user',
+        role: role || 'CLIENT', // Default to CLIENT if no role specified
+        needsApproval: role === 'CURATOR', // Flag for CURATOR approval
         loginAttempts: 0,
         lockedUntil: null,
         createdAt: new Date().toISOString()
@@ -199,10 +206,22 @@ class AuthController {
       // Send verification email (mock)
       console.log(`Verification email sent to ${email} with token: ${verificationToken}`);
 
-      res.status(201).json({
-        message: 'Registration successful. Please check your email to verify your account.',
-        userId: newUser.id
-      });
+      // Different response based on role
+      if (role === 'CURATOR') {
+        res.status(201).json({
+          message: 'Curator application submitted successfully. Your account will be reviewed and approved within 24-48 hours.',
+          userId: newUser.id,
+          needsApproval: true,
+          role: 'CURATOR'
+        });
+      } else {
+        res.status(201).json({
+          message: 'Registration successful. Please check your email to verify your account.',
+          userId: newUser.id,
+          needsApproval: false,
+          role: role
+        });
+      }
 
     } catch (error) {
       console.error('Registration error:', error);
@@ -220,22 +239,30 @@ class AuthController {
         return res.status(400).json({ error: 'Email and password are required' });
       }
 
-      // Find user in database
-      const user = await req.prisma.user.findUnique({
-        where: { email: email }
-      });
+      // Find user in mock data (for development)
+      const mockUsers = this.getMockUsers();
+      const user = mockUsers.find(u => u.email === email);
 
       if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Check if user is active
-      if (!user.isActive) {
-        return res.status(401).json({ error: 'Account is deactivated' });
+      // Check if user is active (mock users are always active)
+      // if (!user.isActive) {
+      //   return res.status(401).json({ error: 'Account is deactivated' });
+      // }
+
+      // Check if CURATOR account needs approval
+      if (user.role === 'CURATOR' && user.needsApproval) {
+        return res.status(401).json({ 
+          error: 'Your curator account is pending approval. You will be notified once approved.',
+          needsApproval: true,
+          role: 'CURATOR'
+        });
       }
 
       // Verify password
-      const isValidPassword = await this.comparePassword(password, user.passwordHash);
+      const isValidPassword = await this.comparePassword(password, user.password);
       if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
@@ -258,19 +285,11 @@ class AuthController {
         user: {
           id: user.id,
           email: user.email,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           role: user.role,
-          avatar: user.avatar,
-          walletAddress: user.walletAddress,
-          tokenBalance: user.tokenBalance,
-          currentStreak: user.currentStreak,
-          totalCheckIns: user.totalCheckIns,
-          missionsCompleted: user.missionsCompleted,
-          level: user.level,
-          theme: user.theme,
-          badges: user.badges,
-          teamId: user.teamId,
-          isActive: user.isActive
+          verified: user.verified,
+          needsApproval: user.needsApproval
         }
       });
 

@@ -17,7 +17,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  signup: (email: string, password: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (email: string, password: string, firstName: string, lastName: string, role?: string) => Promise<{ success: boolean; error?: string; needsApproval?: boolean; role?: string }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (token: string, password: string) => Promise<{ success: boolean; error?: string }>;
   refreshToken: () => Promise<boolean>;
@@ -173,6 +173,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (email === 'demo@clubrun.com' && password === 'demo123') {
           setUser(MOCK_USER);
           setAccessToken(MOCK_TOKEN);
+          // Store in localStorage for persistence
+          localStorage.setItem('authToken', MOCK_TOKEN);
+          localStorage.setItem('authUser', JSON.stringify(MOCK_USER));
           scheduleTokenRefresh();
           return { success: true };
         } else {
@@ -196,6 +199,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Update authentication state
         setUser(data.user);
         setAccessToken(data.accessToken);
+        // Store in localStorage for persistence
+        localStorage.setItem('authToken', data.accessToken);
+        localStorage.setItem('authUser', JSON.stringify(data.user));
         scheduleTokenRefresh();
         return { success: true };
       } else {
@@ -212,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [scheduleTokenRefresh, useMockData]);
 
   // Signup function
-  const signup = useCallback(async (email: string, password: string, firstName: string, lastName: string) => {
+  const signup = useCallback(async (email: string, password: string, firstName: string, lastName: string, role?: string) => {
     try {
       setError(null);
       setIsLoading(true);
@@ -231,12 +237,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName }),
+        body: JSON.stringify({ email, password, firstName, lastName, role }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        // Check if this is a CURATOR application that needs approval
+        if (data.needsApproval && data.role === 'CURATOR') {
+          return { success: true, needsApproval: true, role: 'CURATOR' };
+        }
         return { success: true };
       } else {
         setError(data.error || 'Registration failed');
@@ -341,6 +351,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setAccessToken(null);
     setError(null);
+    // Clear localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('authUser');
     if (refreshTimeout) {
       clearTimeout(refreshTimeout);
       setRefreshTimeout(null);
@@ -370,8 +383,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Don't clear auth state on mount - let it persist
-        // Just set loading to false
+        // Check if we have stored auth data
+        const storedToken = localStorage.getItem('authToken');
+        const storedUser = localStorage.getItem('authUser');
+        
+        if (storedToken && storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            setUser(user);
+            setAccessToken(storedToken);
+            scheduleTokenRefresh();
+          } catch (parseError) {
+            console.error('Failed to parse stored user data:', parseError);
+            // Clear invalid stored data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+          }
+        }
+        
         setIsLoading(false);
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -380,7 +409,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     checkAuth();
-  }, []);
+  }, [scheduleTokenRefresh]);
 
   // Cleanup timeout on unmount
   useEffect(() => {

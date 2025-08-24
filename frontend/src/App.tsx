@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { UIAgentProvider } from './contexts/UIAgentContext';
+import { RBACProvider } from './contexts/RBACContext';
+import { RoleBasedNavigation, RoleBasedDashboard } from './components/RoleBasedUI';
+import { RBACDebug } from './components/RBACDebug';
 import { LoginForm } from './components/auth/LoginForm';
 import { SignupForm } from './components/auth/SignupForm';
 import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
@@ -11,10 +14,15 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import MissionDashboard from './pages/MissionDashboard';
 import AgentDashboard from './pages/AgentDashboard';
+import EnhancedAgentDashboard from './pages/EnhancedAgentDashboard';
 import Features from './pages/Features';
 import Contact from './pages/Contact';
 import { P2PMissions } from './pages/P2PMissions';
+import { Missions } from './pages/Missions';
+import { Expenses } from './pages/Expenses';
 import { CuratorDashboardPage } from './pages/CuratorDashboard';
+import CuratorThankYou from './pages/CuratorThankYou';
+import ChatGPTAnalytics from './components/admin/ChatGPTAnalytics';
 import './App.css';
 
 // Authentication pages component
@@ -23,10 +31,10 @@ const AuthPages: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to homepage if already authenticated
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
@@ -35,8 +43,8 @@ const AuthPages: React.FC = () => {
       {authMode === 'login' && (
         <LoginForm
           onSuccess={() => {
-            // Redirect to dashboard after successful login
-            navigate('/dashboard');
+            // Redirect to homepage after successful login
+            navigate('/');
           }}
           onSwitchToSignup={() => setAuthMode('signup')}
           onSwitchToForgotPassword={() => setAuthMode('forgot-password')}
@@ -63,53 +71,9 @@ const AuthPages: React.FC = () => {
   );
 };
 
-// Header component with navigation
+// Header component with navigation - using RoleBasedNavigation for RBAC
 const Header: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-  };
-
-  return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-gray-900">Club Run</Link>
-          </div>
-          <nav className="flex items-center space-x-6">
-            <Link to="/" className="text-gray-600 hover:text-gray-900">Home</Link>
-            <Link to="/features" className="text-gray-600 hover:text-gray-900">Features</Link>
-            <Link to="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link>
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-700">
-                  Welcome, {user?.firstName || user?.email}!
-                </span>
-                <Link to="/dashboard" className="text-blue-600 hover:text-blue-700">Dashboard</Link>
-                <Link to="/missions" className="text-blue-600 hover:text-blue-700">Missions</Link>
-                <Link to="/p2p-missions" className="text-blue-600 hover:text-blue-700">P2P Missions</Link>
-                {user?.role === 'CURATOR' && (
-                  <Link to="/curator-dashboard" className="text-blue-600 hover:text-blue-700">Curator Dashboard</Link>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link to="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                Sign In
-              </Link>
-            )}
-          </nav>
-        </div>
-      </div>
-    </header>
-  );
+  return <RoleBasedNavigation />;
 };
 
 // Main app content with routing
@@ -126,13 +90,15 @@ const AppContent: React.FC = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/auth" element={<AuthPages />} />
             <Route path="/agent-dashboard" element={<AgentDashboard />} />
+            <Route path="/enhanced-agent-dashboard" element={<EnhancedAgentDashboard />} />
+            <Route path="/curator-thank-you" element={<CuratorThankYou />} />
             
             {/* Protected routes */}
             <Route 
               path="/dashboard" 
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <RoleBasedDashboard />
                 </ProtectedRoute>
               } 
             />
@@ -140,7 +106,7 @@ const AppContent: React.FC = () => {
               path="/missions" 
               element={
                 <ProtectedRoute>
-                  <MissionDashboard />
+                  <Missions />
                 </ProtectedRoute>
               } 
             />
@@ -153,10 +119,26 @@ const AppContent: React.FC = () => {
               } 
             />
             <Route 
+              path="/expenses" 
+              element={
+                <ProtectedRoute>
+                  <Expenses />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/curator-dashboard" 
               element={
                 <ProtectedRoute>
                   <CuratorDashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/chatgpt-analytics" 
+              element={
+                <ProtectedRoute>
+                  <ChatGPTAnalytics />
                 </ProtectedRoute>
               } 
             />
@@ -168,13 +150,15 @@ const AppContent: React.FC = () => {
   );
 };
 
-// Main App component with AuthProvider
+// Main App component with AuthProvider and RBACProvider
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <UIAgentProvider>
-        <AppContent />
-      </UIAgentProvider>
+      <RBACProvider>
+        <UIAgentProvider>
+          <AppContent />
+        </UIAgentProvider>
+      </RBACProvider>
     </AuthProvider>
   );
 };
