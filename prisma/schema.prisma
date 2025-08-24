@@ -17,7 +17,7 @@ model User {
   googleId         String?   @unique
   avatar           String?
   walletAddress    String?   @unique
-  role             String    @default("RUNNER") // GUEST, RUNNER, CLIENT, OPERATIONS, PARTNER, ADMIN
+  role             String    @default("GUEST") // GUEST, DJ, VERIFIED_DJ, CLIENT, CURATOR, OPERATIONS, PARTNER, ADMIN
   tokenBalance     Int       @default(0)
   currentStreak    Int       @default(0)
   totalCheckIns    Int       @default(0)

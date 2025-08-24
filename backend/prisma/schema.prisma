@@ -1,7 +1,6 @@
 // prisma/schema.prisma
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -18,7 +17,7 @@ model User {
   googleId         String?   @unique
   avatar           String?
   walletAddress    String?   @unique
-  role             String    @default("RUNNER") // GUEST, RUNNER, CLIENT, CURATOR, OPERATIONS, PARTNER, ADMIN
+  role             String    @default("DJ") // GUEST, DJ, VERIFIED_DJ, CLIENT, CURATOR, OPERATIONS, PARTNER, ADMIN
   tokenBalance     Int       @default(0)
   currentStreak    Int       @default(0)
   totalCheckIns    Int       @default(0)
@@ -28,9 +27,16 @@ model User {
   badges           String
   isActive         Boolean   @default(true)
   lastLoginAt      DateTime?
-  teamId           String?   // Team membership for runners
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  
+  // Serato Integration Fields
+  seratoAccessToken     String?
+  seratoRefreshToken    String?
+  seratoTokenExpiresAt  DateTime?
+  seratoUsername        String?
+  seratoDisplayName     String?
+  seratoConnectedAt     DateTime?
   
   // Relations
   checkIns         CheckIn[]
@@ -40,29 +46,11 @@ model User {
   sessions         UserSession[]
   curatedMissions  P2pMission[] @relation("CuratedMissions")
   runningMissions  P2pMission[] @relation("RunningMissions")
-  
-  // Team relations
-  ownedTeams       Team[]    @relation("TeamOwner")
-  teamMembership   Team?     @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull)
+  chatGPTCostLogs  ChatGPTCostLog[]
+  curatedTeams     Team[]        @relation("CuratedTeams")
+  memberTeams      Team[]        @relation("TeamMembers")
   
   @@map("users")
-}
-
-model Team {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  curatorId   String   // User who owns/manages this team
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  // Relations
-  owner       User     @relation("TeamOwner", fields: [curatorId], references: [id], onDelete: Cascade)
-  members     User[]   @relation("TeamMembers")
-  missions    P2pMission[] @relation("TeamMissions")
-  
-  @@map("teams")
 }
 
 model UserSession {
@@ -162,6 +150,23 @@ model UserMission {
   @@map("user_missions")
 }
 
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  curatorId   String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  curator     User     @relation("CuratedTeams", fields: [curatorId], references: [id], onDelete: Cascade)
+  members     User[]   @relation("TeamMembers")
+  missions    P2pMission[] @relation("TeamMissions")
+  
+  @@map("teams")
+}
+
 model P2pMission {
   id                String   @id @default(cuid())
   curatorId         String
@@ -188,6 +193,14 @@ model P2pMission {
   disputeReason     String?
   disputeEvidence   String?
   disputeRaisedAt   DateTime?
+  
+  // Enhanced verification fields
+  verificationMethod String?  // "manual", "serato_automated", "manual_with_proof"
+  verificationDetails String? // JSON string of verification results
+  trackRequirements   String? // JSON string of specific track requirements
+  verificationWindow  String? // JSON string of time window for verification
+  autoVerifyEnabled   Boolean @default(false) // Whether to use automatic Serato verification
+  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   
@@ -227,4 +240,17 @@ model ChatMessage {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("chat_messages")
+}
+
+model ChatGPTCostLog {
+  id        String   @id @default(cuid())
+  userId    String
+  cost      Float    @default(0)
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, timestamp])
+  @@index([timestamp])
 }

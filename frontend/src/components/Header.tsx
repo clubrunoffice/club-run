@@ -1,24 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Home, Trophy, Users, Settings } from 'lucide-react';
+import { Activity, Home, Trophy, Users, Settings, Menu, X, BarChart3 } from 'lucide-react';
 import { useUIAgent } from '../contexts/UIAgentContext';
+import { useRBAC } from '../contexts/RBACContext';
 
 const Header: React.FC = () => {
   const location = useLocation();
   const { state } = useUIAgent();
   const { currentRole } = state;
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
     { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
     { href: '/dashboard', label: 'Dashboard', icon: <Activity className="w-4 h-4" /> },
-    { href: '/agent-dashboard', label: 'Agent Dashboard', icon: <Activity className="w-4 h-4" /> },
     { href: '/features', label: 'Features', icon: <Trophy className="w-4 h-4" /> },
     { href: '/contact', label: 'Contact', icon: <Users className="w-4 h-4" /> }
   ];
 
+  // Add agent dashboard for authenticated users only
+  if (currentRole && currentRole !== 'GUEST') {
+    navItems.push(
+      { href: '/agent-dashboard', label: 'Agent Dashboard', icon: <Activity className="w-4 h-4" /> }
+    );
+  }
+
   // Add admin navigation for ADMIN role
   if (currentRole === 'ADMIN') {
-    navItems.push({ href: '/admin', label: 'Admin', icon: <Settings className="w-4 h-4" /> });
+    navItems.push(
+      { href: '/admin', label: 'Admin', icon: <Settings className="w-4 h-4" /> },
+      { href: '/chatgpt-analytics', label: 'ChatGPT Analytics', icon: <BarChart3 className="w-4 h-4" /> }
+    );
+  }
+
+  // Add ChatGPT Analytics for OPERATIONS role too
+  if (currentRole === 'OPERATIONS') {
+    navItems.push({ href: '/chatgpt-analytics', label: 'ChatGPT Analytics', icon: <BarChart3 className="w-4 h-4" /> });
   }
 
   const getRoleIcon = () => {
@@ -89,6 +105,7 @@ const Header: React.FC = () => {
             <span className="text-xl font-bold text-white">Club Run</span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
@@ -108,7 +125,7 @@ const Header: React.FC = () => {
 
           <div className="flex items-center space-x-4">
             {/* Role Indicator */}
-            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-800 border border-gray-600">
+            <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-800 border border-gray-600">
               <span className="text-sm">{getRoleIcon()}</span>
               <span className="text-sm text-gray-300">{getRoleDisplayName()}</span>
               <div className={`w-2 h-2 rounded-full ${getRoleColor()}`}></div>
@@ -120,8 +137,46 @@ const Header: React.FC = () => {
             <button className="text-gray-300 hover:text-white text-sm">
               Sign Up
             </button>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-gray-300 hover:text-white"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-gray-800 border-t border-gray-700">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-all duration-200 ${
+                    location.pathname === item.href
+                      ? 'text-blue-400 bg-blue-400 bg-opacity-10'
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+              
+              {/* Mobile Role Indicator */}
+              <div className="flex items-center space-x-2 px-3 py-2">
+                <span className="text-sm">{getRoleIcon()}</span>
+                <span className="text-sm text-gray-300">{getRoleDisplayName()}</span>
+                <div className={`w-2 h-2 rounded-full ${getRoleColor()}`}></div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
