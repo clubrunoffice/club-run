@@ -1,25 +1,24 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { UIAgentProvider } from './contexts/UIAgentContext';
 import { RBACProvider } from './contexts/RBACContext';
 import { RoleBasedNavigation, RoleBasedDashboard } from './components/RoleBasedUI';
-import { RBACDebug } from './components/RBACDebug';
 import { LoginForm } from './components/auth/LoginForm';
 import { SignupForm } from './components/auth/SignupForm';
 import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import ChatBot from './components/ChatBot';
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import MissionDashboard from './pages/MissionDashboard';
 import AgentDashboard from './pages/AgentDashboard';
 import EnhancedAgentDashboard from './pages/EnhancedAgentDashboard';
 import Features from './pages/Features';
 import Contact from './pages/Contact';
 import { P2PMissions } from './pages/P2PMissions';
 import { Missions } from './pages/Missions';
-import { Expenses } from './pages/Expenses';
+import MissionCreate from './pages/MissionCreate';
+import DynamicPayoutSystem from './components/payments/DynamicPayoutSystem';
+import MissionTest from './pages/MissionTest';
 import { CuratorDashboardPage } from './pages/CuratorDashboard';
 import CuratorThankYou from './pages/CuratorThankYou';
 import ChatGPTAnalytics from './components/admin/ChatGPTAnalytics';
@@ -92,6 +91,7 @@ const AppContent: React.FC = () => {
             <Route path="/agent-dashboard" element={<AgentDashboard />} />
             <Route path="/enhanced-agent-dashboard" element={<EnhancedAgentDashboard />} />
             <Route path="/curator-thank-you" element={<CuratorThankYou />} />
+            <Route path="/mission-test" element={<MissionTest />} />
             
             {/* Protected routes */}
             <Route 
@@ -111,6 +111,14 @@ const AppContent: React.FC = () => {
               } 
             />
             <Route 
+              path="/missions/create" 
+              element={
+                <ProtectedRoute>
+                  <MissionCreate />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/p2p-missions" 
               element={
                 <ProtectedRoute>
@@ -122,7 +130,7 @@ const AppContent: React.FC = () => {
               path="/expenses" 
               element={
                 <ProtectedRoute>
-                  <Expenses />
+                  <DynamicPayoutSystem />
                 </ProtectedRoute>
               } 
             />

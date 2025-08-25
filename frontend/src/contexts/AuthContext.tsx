@@ -17,7 +17,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  signup: (email: string, password: string, firstName: string, lastName: string, role?: string) => Promise<{ success: boolean; error?: string; needsApproval?: boolean; role?: string }>;
+  signup: (email: string, password: string, firstName: string, lastName: string, role?: string, seratoVerified?: boolean) => Promise<{ success: boolean; error?: string; needsApproval?: boolean; role?: string }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (token: string, password: string) => Promise<{ success: boolean; error?: string }>;
   refreshToken: () => Promise<boolean>;
@@ -218,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [scheduleTokenRefresh, useMockData]);
 
   // Signup function
-  const signup = useCallback(async (email: string, password: string, firstName: string, lastName: string, role?: string) => {
+  const signup = useCallback(async (email: string, password: string, firstName: string, lastName: string, role?: string, seratoVerified?: boolean) => {
     try {
       setError(null);
       setIsLoading(true);
@@ -237,7 +237,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName, role }),
+        body: JSON.stringify({ email, password, firstName, lastName, role, seratoVerified }),
       });
 
       const data = await response.json();

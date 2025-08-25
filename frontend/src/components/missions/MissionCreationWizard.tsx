@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { MapPin, Calendar, Users, DollarSign, Music, Clock, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { MapPin, Music, Clock, CheckCircle, ArrowRight, ArrowLeft, Phone, User } from 'lucide-react';
+import { DJServicePack } from './DJServicePackSelector';
 
 interface MissionData {
-  eventDetails: {
-    eventType: string;
-    guestCount: number;
-    eventDate: string;
-    eventTime: string;
+  clubDetails: {
+    clubName: string;
     address: string;
-    venueName: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    clubHours: string;
+    contactPhone: string;
+  };
+  clientDetails: {
+    clientName: string;
+    artistName: string;
+    contactPhone: string;
+    contactEmail: string;
   };
   musicRequirements: {
     servicePack: string;
     duration: number;
     specialRequests: string;
+    selectedPack?: DJServicePack;
+    servicePackLink?: string;
   };
   budget: {
     min: number;
     max: number;
     suggested: number;
-  };
-  contactInfo: {
-    name: string;
-    phone: string;
-    email: string;
   };
 }
 
@@ -36,107 +41,43 @@ interface MissionCreationWizardProps {
 const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplete, onCancel }) => {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+  
+  // Debug log to verify component is loading correctly
+  console.log('MissionCreationWizard loaded with totalSteps:', 4);
+  
   const [missionData, setMissionData] = useState<MissionData>({
-    eventDetails: {
-      eventType: '',
-      guestCount: 50,
-      eventDate: '',
-      eventTime: '',
+    clubDetails: {
+      clubName: '',
       address: '',
-      venueName: ''
+      city: '',
+      state: '',
+      zipCode: '',
+      clubHours: '',
+      contactPhone: ''
+    },
+    clientDetails: {
+      clientName: '',
+      artistName: '',
+      contactPhone: '',
+      contactEmail: user?.email || ''
     },
     musicRequirements: {
       servicePack: '',
       duration: 4,
-      specialRequests: ''
+      specialRequests: '',
+      selectedPack: undefined,
+      servicePackLink: ''
     },
     budget: {
       min: 200,
       max: 800,
       suggested: 500
-    },
-    contactInfo: {
-      name: user?.firstName || user?.email || '',
-      phone: '',
-      email: user?.email || ''
     }
   });
 
   const totalSteps = 4;
 
-  const eventTypes = [
-    { value: 'corporate', label: 'Corporate Event', icon: '🏢', avgBudget: 800 },
-    { value: 'wedding', label: 'Wedding', icon: '💒', avgBudget: 1200 },
-    { value: 'birthday', label: 'Birthday Party', icon: '🎂', avgBudget: 400 },
-    { value: 'club', label: 'Club/Bar', icon: '🎧', avgBudget: 600 },
-    { value: 'party', label: 'General Party', icon: '🎉', avgBudget: 350 },
-    { value: 'concert', label: 'Concert/Show', icon: '🎤', avgBudget: 1500 }
-  ];
 
-  const servicePacks = [
-    {
-      id: 'basic',
-      name: 'Basic DJ Package',
-      price: '$200-400',
-      includes: ['DJ + Sound System', '4 hours', 'Basic lighting', 'Music selection'],
-      equipment: ['Professional sound system', 'Basic LED lights', 'Wireless microphone'],
-      duration: 4
-    },
-    {
-      id: 'premium',
-      name: 'Premium DJ Package',
-      price: '$500-800',
-      includes: ['DJ + Premium Sound', '6 hours', 'LED lighting', 'MC services', 'Custom playlist'],
-      equipment: ['High-end sound system', 'LED lighting rig', 'Wireless microphones', 'Fog machine'],
-      duration: 6
-    },
-    {
-      id: 'luxury',
-      name: 'Luxury Package',
-      price: '$1000+',
-      includes: ['Full setup', '8 hours', 'Photo booth', 'Live streaming', 'Custom lighting design'],
-      equipment: ['Professional sound system', 'Advanced lighting', 'Photo booth', 'Streaming equipment'],
-      duration: 8
-    }
-  ];
-
-  const calculateSuggestedBudget = (eventType: string, guestCount: number) => {
-    const baseBudget = eventTypes.find(t => t.value === eventType)?.avgBudget || 500;
-    const guestMultiplier = Math.max(0.8, Math.min(1.5, guestCount / 100));
-    return Math.round(baseBudget * guestMultiplier);
-  };
-
-  const handleEventTypeChange = (eventType: string) => {
-    const suggested = calculateSuggestedBudget(eventType, missionData.eventDetails.guestCount);
-    setMissionData(prev => ({
-      ...prev,
-      eventDetails: { ...prev.eventDetails, eventType },
-      budget: { ...prev.budget, suggested }
-    }));
-  };
-
-  const handleGuestCountChange = (guestCount: number) => {
-    const suggested = calculateSuggestedBudget(missionData.eventDetails.eventType, guestCount);
-    setMissionData(prev => ({
-      ...prev,
-      eventDetails: { ...prev.eventDetails, guestCount },
-      budget: { ...prev.budget, suggested }
-    }));
-  };
-
-  const handleServicePackSelect = (packId: string) => {
-    const pack = servicePacks.find(p => p.id === packId);
-    if (pack) {
-      setMissionData(prev => ({
-        ...prev,
-        musicRequirements: {
-          ...prev.musicRequirements,
-          servicePack: packId,
-          duration: pack.duration
-        }
-      }));
-    }
-  };
 
   const nextStep = () => {
     if (currentStep < totalSteps) {
@@ -153,15 +94,16 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return missionData.eventDetails.eventType && 
-               missionData.eventDetails.eventDate && 
-               missionData.eventDetails.address;
+        return missionData.clubDetails.clubName && 
+               missionData.clubDetails.address && 
+               missionData.clubDetails.clubHours;
       case 2:
-        return missionData.musicRequirements.servicePack;
+        return missionData.clientDetails.clientName && 
+               missionData.clientDetails.artistName;
       case 3:
-        return missionData.budget.min > 0 && missionData.budget.max >= missionData.budget.min;
+        return missionData.musicRequirements.duration > 0;
       case 4:
-        return missionData.contactInfo.name && missionData.contactInfo.phone;
+        return missionData.musicRequirements.servicePackLink;
       default:
         return false;
     }
@@ -170,121 +112,164 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
   const renderStep1 = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Event Details</h3>
-        <p className="text-gray-600 mb-6">Tell us about your event so we can find the perfect music service.</p>
-      </div>
-
-      {/* Event Type */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">Event Type</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {eventTypes.map(type => (
-            <button
-              key={type.value}
-              onClick={() => handleEventTypeChange(type.value)}
-              className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                missionData.eventDetails.eventType === type.value
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="text-2xl mb-2">{type.icon}</div>
-              <div className="font-medium text-gray-900">{type.label}</div>
-              <div className="text-sm text-gray-500">Avg: ${type.avgBudget}</div>
-            </button>
-          ))}
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Step 1: Club Location & Details</h3>
+        <p className="text-gray-600 mb-6">Provide the club location and contact information for RUNNERS to complete the mission.</p>
+        
+        {/* Requirements Card */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-blue-900 mb-3">Your 3 Requirements:</h4>
+          <div className="space-y-2">
+            <div className="flex items-center text-blue-800">
+              <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-medium mr-2">1</span>
+              <span>Club Name * (required)</span>
+            </div>
+            <div className="flex items-center text-blue-800">
+              <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-medium mr-2">2</span>
+              <span>Street Address * (required)</span>
+            </div>
+            <div className="flex items-center text-blue-800">
+              <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-medium mr-2">3</span>
+              <span>Club Hours * (required) ← Your #3 requirement</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Guest Count */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          <Users className="w-4 h-4 inline mr-1" />
-          Expected Guest Count
-        </label>
-        <input
-          type="number"
-          min="1"
-          max="1000"
-          value={missionData.eventDetails.guestCount}
-          onChange={(e) => handleGuestCountChange(parseInt(e.target.value) || 50)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-        />
-        <p className="text-sm text-gray-500 mt-1">
-          This helps determine the appropriate sound system and service level.
-        </p>
-      </div>
-
-      {/* Date and Time */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Calendar className="w-4 h-4 inline mr-1" />
-            Event Date
-          </label>
-          <input
-            type="date"
-            value={missionData.eventDetails.eventDate}
-            onChange={(e) => setMissionData(prev => ({
-              ...prev,
-              eventDetails: { ...prev.eventDetails, eventDate: e.target.value }
-            }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Clock className="w-4 h-4 inline mr-1" />
-            Event Time
-          </label>
-          <input
-            type="time"
-            value={missionData.eventDetails.eventTime}
-            onChange={(e) => setMissionData(prev => ({
-              ...prev,
-              eventDetails: { ...prev.eventDetails, eventTime: e.target.value }
-            }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-      </div>
-
-      {/* Venue Information */}
+      {/* Club Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           <MapPin className="w-4 h-4 inline mr-1" />
-          Venue Name (Optional)
+          Club Name *
         </label>
         <input
           type="text"
-          placeholder="e.g., Atlanta Convention Center"
-          value={missionData.eventDetails.venueName}
+          value={missionData.clubDetails.clubName}
           onChange={(e) => setMissionData(prev => ({
             ...prev,
-            eventDetails: { ...prev.eventDetails, venueName: e.target.value }
+            clubDetails: { ...prev.clubDetails, clubName: e.target.value }
           }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter club name"
         />
       </div>
 
+      {/* Address */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           <MapPin className="w-4 h-4 inline mr-1" />
-          Venue Address
+          Street Address *
         </label>
         <input
           type="text"
-          placeholder="Enter the full address"
-          value={missionData.eventDetails.address}
+          value={missionData.clubDetails.address}
           onChange={(e) => setMissionData(prev => ({
             ...prev,
-            eventDetails: { ...prev.eventDetails, address: e.target.value }
+            clubDetails: { ...prev.clubDetails, address: e.target.value }
           }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter street address"
+        />
+      </div>
+
+      {/* City, State, Zip */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+          <input
+            type="text"
+            value={missionData.clubDetails.city}
+            onChange={(e) => setMissionData(prev => ({
+              ...prev,
+              clubDetails: { ...prev.clubDetails, city: e.target.value }
+            }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="City"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+          <input
+            type="text"
+            value={missionData.clubDetails.state}
+            onChange={(e) => setMissionData(prev => ({
+              ...prev,
+              clubDetails: { ...prev.clubDetails, state: e.target.value }
+            }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="State"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
+          <input
+            type="text"
+            value={missionData.clubDetails.zipCode}
+            onChange={(e) => setMissionData(prev => ({
+              ...prev,
+              clubDetails: { ...prev.clubDetails, zipCode: e.target.value }
+            }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="ZIP Code"
+          />
+        </div>
+      </div>
+
+      {/* Club Hours */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <Clock className="w-4 h-4 inline mr-1" />
+          Club Hours *
+        </label>
+        <input
+          type="text"
+          value={missionData.clubDetails.clubHours}
+          onChange={(e) => setMissionData(prev => ({
+            ...prev,
+            clubDetails: { ...prev.clubDetails, clubHours: e.target.value }
+          }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="e.g., 9:00 PM - 2:00 AM, Tuesday - Saturday"
         />
         <p className="text-sm text-gray-500 mt-1">
-          This helps runners calculate travel time and costs.
+          This helps RUNNERS know when the club is open for the mission.
         </p>
+      </div>
+
+      {/* Club Contact Phone */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <Phone className="w-4 h-4 inline mr-1" />
+          Club Contact Phone
+        </label>
+        <input
+          type="tel"
+          value={missionData.clubDetails.contactPhone}
+          onChange={(e) => setMissionData(prev => ({
+            ...prev,
+            clubDetails: { ...prev.clubDetails, contactPhone: e.target.value }
+          }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter club contact phone"
+        />
+      </div>
+
+      {/* Step 1 Summary */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <h4 className="font-semibold text-gray-900 mb-3">Step 1 Summary:</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Club Name:</span>
+            <span className="font-medium">{missionData.clubDetails.clubName || 'Not provided'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Address:</span>
+            <span className="font-medium">{missionData.clubDetails.address || 'Not provided'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Club Hours:</span>
+            <span className="font-medium">{missionData.clubDetails.clubHours || 'Not provided'}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -292,56 +277,165 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
   const renderStep2 = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Music Requirements</h3>
-        <p className="text-gray-600 mb-6">Choose the service package that best fits your event.</p>
-      </div>
-
-      {/* Service Packages */}
-      <div className="space-y-4">
-        {servicePacks.map(pack => (
-          <div
-            key={pack.id}
-            onClick={() => handleServicePackSelect(pack.id)}
-            className={`p-6 border-2 rounded-lg cursor-pointer transition-colors ${
-              missionData.musicRequirements.servicePack === pack.id
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h4 className="text-lg font-semibold text-gray-900">{pack.name}</h4>
-                <p className="text-2xl font-bold text-blue-600">{pack.price}</p>
-              </div>
-              {missionData.musicRequirements.servicePack === pack.id && (
-                <CheckCircle className="w-6 h-6 text-blue-500" />
-              )}
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Step 2: Client & Artist Information</h3>
+        <p className="text-gray-600 mb-6">Provide client and artist details for the RUNNERS to contact.</p>
+        
+        {/* Requirements Card */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-green-900 mb-3">Your 2 Requirements:</h4>
+          <div className="space-y-2">
+            <div className="flex items-center text-green-800">
+              <span className="bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs font-medium mr-2">1</span>
+              <span>Client Name * (required)</span>
             </div>
-            
-            <div className="mb-4">
-              <h5 className="font-medium text-gray-900 mb-2">Includes:</h5>
-              <ul className="space-y-1">
-                {pack.includes.map((item, index) => (
-                  <li key={index} className="flex items-center text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h5 className="font-medium text-gray-900 mb-2">Equipment:</h5>
-              <div className="flex flex-wrap gap-2">
-                {pack.equipment.map((item, index) => (
-                  <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                    {item}
-                  </span>
-                ))}
-              </div>
+            <div className="flex items-center text-green-800">
+              <span className="bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs font-medium mr-2">2</span>
+              <span>Artist Name * (required)</span>
             </div>
           </div>
-        ))}
+        </div>
+      </div>
+
+      {/* Client Name */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <User className="w-4 h-4 inline mr-1" />
+          Client Name *
+        </label>
+        <input
+          type="text"
+          value={missionData.clientDetails.clientName}
+          onChange={(e) => setMissionData(prev => ({
+            ...prev,
+            clientDetails: { ...prev.clientDetails, clientName: e.target.value }
+          }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter client name"
+        />
+      </div>
+
+      {/* Artist Name */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <Music className="w-4 h-4 inline mr-1" />
+          Artist Name *
+        </label>
+        <input
+          type="text"
+          value={missionData.clientDetails.artistName}
+          onChange={(e) => setMissionData(prev => ({
+            ...prev,
+            clientDetails: { ...prev.clientDetails, artistName: e.target.value }
+          }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter artist name"
+        />
+      </div>
+
+      {/* Contact Information */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Phone className="w-4 h-4 inline mr-1" />
+            Contact Phone
+          </label>
+          <input
+            type="tel"
+            value={missionData.clientDetails.contactPhone}
+            onChange={(e) => setMissionData(prev => ({
+              ...prev,
+              clientDetails: { ...prev.clientDetails, contactPhone: e.target.value }
+            }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter contact phone"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <User className="w-4 h-4 inline mr-1" />
+            Contact Email
+          </label>
+          <input
+            type="email"
+            value={missionData.clientDetails.contactEmail}
+            onChange={(e) => setMissionData(prev => ({
+              ...prev,
+              clientDetails: { ...prev.clientDetails, contactEmail: e.target.value }
+            }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter contact email"
+          />
+        </div>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 className="font-semibold text-blue-900 mb-2">Important Note</h4>
+        <p className="text-blue-800 text-sm">
+          <strong>ONLY RUNNERS can be assigned to missions.</strong> This information will be provided to RUNNERS 
+          so they can contact the client and artist to coordinate the mission details.
+        </p>
+      </div>
+
+      {/* Step 2 Summary */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <h4 className="font-semibold text-gray-900 mb-3">Step 2 Summary:</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Client Name:</span>
+            <span className="font-medium">{missionData.clientDetails.clientName || 'Not provided'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Artist Name:</span>
+            <span className="font-medium">{missionData.clientDetails.artistName || 'Not provided'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Step 3: Mission Requirements</h3>
+        <p className="text-gray-600 mb-6">Provide additional mission requirements and special requests for RUNNERS.</p>
+        
+        {/* Requirements Card */}
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-purple-900 mb-3">Mission Requirements:</h4>
+          <div className="space-y-2">
+            <div className="flex items-center text-purple-800">
+              <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded-full text-xs font-medium mr-2">1</span>
+              <span>Expected Mission Duration (Hours) * (required)</span>
+            </div>
+            <div className="flex items-center text-purple-800">
+              <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded-full text-xs font-medium mr-2">2</span>
+              <span>Special Requests (Optional)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mission Duration */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <Clock className="w-4 h-4 inline mr-1" />
+          Expected Mission Duration (Hours)
+        </label>
+        <input
+          type="number"
+          min="1"
+          max="24"
+          value={missionData.musicRequirements.duration}
+          onChange={(e) => setMissionData(prev => ({
+            ...prev,
+            musicRequirements: { ...prev.musicRequirements, duration: parseInt(e.target.value) || 4 }
+          }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="4"
+        />
+        <p className="text-sm text-gray-500 mt-1">
+          This helps RUNNERS understand the time commitment required.
+        </p>
       </div>
 
       {/* Special Requests */}
@@ -351,91 +445,49 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
           Special Requests (Optional)
         </label>
         <textarea
-          placeholder="Any specific music preferences, special equipment needs, or other requirements..."
+          placeholder="Any specific music preferences, special equipment needs, venue requirements, or other special instructions..."
           value={missionData.musicRequirements.specialRequests}
           onChange={(e) => setMissionData(prev => ({
             ...prev,
             musicRequirements: { ...prev.musicRequirements, specialRequests: e.target.value }
           }))}
-          rows={3}
+          rows={4}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
         />
-      </div>
-    </div>
-  );
-
-  const renderStep3 = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget & Pricing</h3>
-        <p className="text-gray-600 mb-6">Set your budget range to help runners understand your expectations.</p>
-      </div>
-
-      {/* AI Budget Suggestion */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
-        <div className="flex items-center mb-2">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-            <span className="text-blue-600 font-bold">AI</span>
-          </div>
-          <h4 className="font-medium text-gray-900">Budget Recommendation</h4>
-        </div>
-        <p className="text-sm text-gray-700">
-          Based on similar {missionData.eventDetails.eventType} events with {missionData.eventDetails.guestCount} guests, 
-          we recommend a budget range of <strong>${missionData.budget.suggested - 100}-${missionData.budget.suggested + 200}</strong> 
-          for high-quality service within 24 hours.
+        <p className="text-sm text-gray-500 mt-1">
+          These details will be provided to RUNNERS to ensure they can meet all requirements.
         </p>
       </div>
 
-      {/* Budget Range */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-4">
-          <DollarSign className="w-4 h-4 inline mr-1" />
-          Your Budget Range
-        </label>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Minimum</label>
-            <input
-              type="number"
-              min="100"
-              max="2000"
-              value={missionData.budget.min}
-              onChange={(e) => setMissionData(prev => ({
-                ...prev,
-                budget: { ...prev.budget, min: parseInt(e.target.value) || 100 }
-              }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
+      {/* Mission Summary */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 className="font-semibold text-blue-900 mb-2">Mission Summary</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-blue-700">Club:</span>
+            <span className="text-blue-900">{missionData.clubDetails.clubName}</span>
           </div>
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Maximum</label>
-            <input
-              type="number"
-              min="100"
-              max="2000"
-              value={missionData.budget.max}
-              onChange={(e) => setMissionData(prev => ({
-                ...prev,
-                budget: { ...prev.budget, max: parseInt(e.target.value) || 2000 }
-              }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
+          <div className="flex justify-between">
+            <span className="text-blue-700">Client:</span>
+            <span className="text-blue-900">{missionData.clientDetails.clientName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-blue-700">Artist:</span>
+            <span className="text-blue-900">{missionData.clientDetails.artistName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-blue-700">Duration:</span>
+            <span className="text-blue-900">{missionData.musicRequirements.duration} hours</span>
           </div>
         </div>
-        <p className="text-sm text-gray-500 mt-2">
-          Higher budgets typically attract more experienced runners and faster response times.
-        </p>
       </div>
 
-      {/* Budget Tips */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <h4 className="font-medium text-yellow-800 mb-2">💡 Budget Tips</h4>
-        <ul className="text-sm text-yellow-700 space-y-1">
-          <li>• Include travel costs in your budget for runners outside your area</li>
-          <li>• Higher budgets often result in better equipment and more experienced DJs</li>
-          <li>• Consider tipping for exceptional service (typically 10-20%)</li>
-          <li>• Weekends and holidays may have higher rates</li>
-        </ul>
+        <h4 className="font-semibold text-yellow-900 mb-2">Next Step</h4>
+        <p className="text-yellow-800 text-sm">
+          In the next step, you'll provide the DJ service package link that RUNNERS will use to access 
+          complete service details, equipment specifications, and pricing information.
+        </p>
       </div>
     </div>
   );
@@ -443,50 +495,62 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
   const renderStep4 = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
-        <p className="text-gray-600 mb-6">Provide your contact details so runners can reach you with questions.</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Step 4: DJ Service Package Link</h3>
+        <p className="text-gray-600 mb-6">Provide the DJ service package link for RUNNERS to access detailed information.</p>
+        
+        {/* Requirements Card */}
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-orange-900 mb-3">CLIENT/CURATOR Requirement:</h4>
+          <div className="space-y-2">
+            <div className="flex items-center text-orange-800">
+              <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded-full text-xs font-medium mr-2">1</span>
+              <span>DJ Service Package Link * (required)</span>
+            </div>
+            <p className="text-orange-700 text-sm mt-2">
+              <strong>CLIENT/CURATOR provides the link</strong> - RUNNERS will access this link to view complete service details, 
+              equipment specifications, pricing, and per diem allowances.
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Contact Form */}
+      {/* Service Pack Link */}
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            <Music className="w-4 h-4 inline mr-1" />
+            DJ Service Package Link *
+          </label>
           <input
-            type="text"
-            value={missionData.contactInfo.name}
+            type="url"
+            value={missionData.musicRequirements.servicePackLink}
             onChange={(e) => setMissionData(prev => ({
               ...prev,
-              contactInfo: { ...prev.contactInfo, name: e.target.value }
+              musicRequirements: { ...prev.musicRequirements, servicePackLink: e.target.value }
             }))}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="https://example.com/dj-service-package"
           />
+          <p className="text-sm text-gray-500 mt-1">
+            This link will be provided to RUNNERS so they can view the complete service package details.
+          </p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-          <input
-            type="tel"
-            value={missionData.contactInfo.phone}
-            onChange={(e) => setMissionData(prev => ({
-              ...prev,
-              contactInfo: { ...prev.contactInfo, phone: e.target.value }
-            }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-          <input
-            type="email"
-            value={missionData.contactInfo.email}
-            onChange={(e) => setMissionData(prev => ({
-              ...prev,
-              contactInfo: { ...prev.contactInfo, email: e.target.value }
-            }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+        {missionData.musicRequirements.servicePackLink && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-semibold text-blue-900 mb-2">Service Package Link Preview</h4>
+            <p className="text-blue-800 text-sm mb-2">
+              RUNNERS will access this link to view:
+            </p>
+            <ul className="text-blue-700 text-sm space-y-1">
+              <li>• Complete equipment specifications</li>
+              <li>• Service duration and pricing</li>
+              <li>• Per diem allowances</li>
+              <li>• Feature requirements</li>
+              <li>• Setup and breakdown times</li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Mission Preview */}
@@ -494,26 +558,42 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
         <h4 className="font-medium text-gray-900 mb-3">Mission Preview</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600">Event:</span>
-            <span className="font-medium">{eventTypes.find(t => t.value === missionData.eventDetails.eventType)?.label}</span>
+            <span className="text-gray-600">Club:</span>
+            <span className="font-medium">{missionData.clubDetails.clubName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Date:</span>
-            <span className="font-medium">{missionData.eventDetails.eventDate}</span>
+            <span className="text-gray-600">Location:</span>
+            <span className="font-medium">{missionData.clubDetails.address}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Guests:</span>
-            <span className="font-medium">{missionData.eventDetails.guestCount}</span>
+            <span className="text-gray-600">Hours:</span>
+            <span className="font-medium">{missionData.clubDetails.clubHours}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Service:</span>
-            <span className="font-medium">{servicePacks.find(p => p.id === missionData.musicRequirements.servicePack)?.name}</span>
+            <span className="text-gray-600">Client:</span>
+            <span className="font-medium">{missionData.clientDetails.clientName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Budget:</span>
-            <span className="font-medium">${missionData.budget.min}-${missionData.budget.max}</span>
+            <span className="text-gray-600">Artist:</span>
+            <span className="font-medium">{missionData.clientDetails.artistName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Duration:</span>
+            <span className="font-medium">{missionData.musicRequirements.duration} hours</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Service Link:</span>
+            <span className="font-medium">{missionData.musicRequirements.servicePackLink ? 'Provided' : 'Not provided'}</span>
           </div>
         </div>
+      </div>
+
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+        <h4 className="font-semibold text-green-900 mb-2">Mission Ready</h4>
+        <p className="text-green-800 text-sm">
+          <strong>ONLY RUNNERS will be assigned to this mission.</strong> The DJ service package link will be provided 
+          to RUNNERS so they can access complete service details and requirements.
+        </p>
       </div>
     </div>
   );
@@ -533,7 +613,10 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Create Music Mission</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Create Music Mission</h2>
+            <p className="text-sm text-blue-600 mt-1">Updated: 4-Step Process with DJ Service Package Link</p>
+          </div>
           <button
             onClick={onCancel}
             className="text-gray-400 hover:text-gray-600"
@@ -546,7 +629,7 @@ const MissionCreationWizard: React.FC<MissionCreationWizardProps> = ({ onComplet
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
-              Step {currentStep} of {totalSteps}
+              Step {currentStep} of {totalSteps} - {currentStep === 1 ? 'Club Location' : currentStep === 2 ? 'Client/Artist Info' : currentStep === 3 ? 'Mission Requirements' : 'DJ Service Package Link'}
             </span>
             <span className="text-sm text-gray-500">
               {Math.round((currentStep / totalSteps) * 100)}% Complete

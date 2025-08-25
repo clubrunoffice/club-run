@@ -30,43 +30,43 @@
 | `user:delete` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 
 ### **Mission Management**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
-| `missions:read` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `missions:create` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| `missions:update` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `missions:delete` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| `missions:apply` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| `missions:accept` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| `missions:complete` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
+| `missions:read` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `missions:create` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| `missions:update` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `missions:delete` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| `missions:apply` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `missions:accept` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `missions:complete` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ### **P2P Mission Management**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
-| `p2p-missions:read` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `p2p-missions:create` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| `p2p-missions:update` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `p2p-missions:delete` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| `p2p-missions:accept` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| `p2p-missions:complete` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
+| `p2p-missions:read` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `p2p-missions:create` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| `p2p-missions:update` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `p2p-missions:delete` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| `p2p-missions:accept` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `p2p-missions:complete` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ### **Team Management**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
 | `teams:create` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
 | `teams:read` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
 | `teams:update` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
 | `teams:delete` | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
 
 ### **Venue & Check-in Management**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
 | `checkins:create` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | `checkins:read` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ### **Financial Management**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
 | `expenses:create` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
 | `expenses:read` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
 | `payments:send` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
@@ -75,8 +75,8 @@
 | `payments:process` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 
 ### **System & Analytics**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
 | `stats:read` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
 | `logs:read` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 | `chat:read` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -84,8 +84,8 @@
 | `chat:moderate` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 
 ### **Special Features**
-| Permission | GUEST | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
-|------------|-------|----|-------------|--------|---------|------------|---------|-------|
+| Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
+|------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
 | `serato:connect` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | `serato:verify` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | `*:*` (All Permissions) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |

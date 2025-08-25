@@ -5,10 +5,93 @@ const seratoService = require('../services/serato/SeratoIntegrationService');
 const router = express.Router();
 
 /**
- * Initiate Serato OAuth connection
+ * Initiate Serato OAuth connection (for signup)
  * GET /api/serato/connect
  */
-router.get('/connect', authenticateToken, requireVerifiedDJ, async (req, res) => {
+router.get('/connect', async (req, res) => {
+  try {
+    const userId = req.query.userId || `signup_${Date.now()}`;
+    const state = req.query.state || `signup_${userId}_${Date.now()}`;
+    
+    // Generate OAuth URL
+    const authUrl = seratoService.generateAuthUrl(userId, state);
+    
+    res.json({
+      success: true,
+      authUrl,
+      state,
+      message: 'Redirect user to this URL to connect Serato account'
+    });
+  } catch (error) {
+    console.error('Serato connect error:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate Serato connection URL',
+      message: error.message 
+    });
+  }
+});
+
+/**
+ * Handle Serato OAuth callback (for signup)
+ * POST /api/serato/callback
+ */
+router.post('/callback', async (req, res) => {
+  try {
+    const { code, state } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ 
+        error: 'Authorization code not provided' 
+      });
+    }
+
+    // Exchange code for tokens
+    const tokenData = await seratoService.exchangeCodeForToken(code);
+    
+    // Extract user ID from state
+    const userId = state.split('_')[1];
+    
+    // Get user profile from Serato
+    const seratoProfile = await seratoService.getUserProfile(tokenData.accessToken);
+    
+    // For signup flow, we'll store the verification in session
+    // In production, this would be stored in the database
+    const verificationData = {
+      userId,
+      seratoAccessToken: tokenData.accessToken,
+      seratoRefreshToken: tokenData.refreshToken,
+      seratoTokenExpiresAt: new Date(Date.now() + tokenData.expiresIn * 1000),
+      seratoUsername: seratoProfile.username,
+      seratoDisplayName: seratoProfile.display_name,
+      seratoConnectedAt: new Date(),
+      verified: true
+    };
+    
+    res.json({
+      success: true,
+      message: 'Serato account connected successfully',
+      profile: {
+        username: seratoProfile.username,
+        displayName: seratoProfile.display_name,
+        connectedAt: verificationData.seratoConnectedAt
+      },
+      verificationData
+    });
+    
+  } catch (error) {
+    console.error('Serato callback error:', error);
+    res.status(500).json({ 
+      error: 'Failed to complete Serato connection',
+      message: error.message 
+    });
+  }
+});
+
+/**
+ * Initiate Serato OAuth connection (for authenticated users)
+ * GET /api/serato/connect-auth
+ */
+router.get('/connect-auth', authenticateToken, requireVerifiedDJ, async (req, res) => {
   try {
     const userId = req.user.id;
     const state = req.query.state || `user_${userId}_${Date.now()}`;
@@ -32,10 +115,10 @@ router.get('/connect', authenticateToken, requireVerifiedDJ, async (req, res) =>
 });
 
 /**
- * Handle Serato OAuth callback
- * GET /api/serato/callback
+ * Handle Serato OAuth callback (for authenticated users)
+ * GET /api/serato/callback-auth
  */
-router.get('/callback', async (req, res) => {
+router.get('/callback-auth', authenticateToken, async (req, res) => {
   try {
     const { code, state, error } = req.query;
     
@@ -79,7 +162,7 @@ router.get('/callback', async (req, res) => {
  * Get user's Serato connection status
  * GET /api/serato/status
  */
-router.get('/status', authenticateToken, requireVerifiedDJ, async (req, res) => {
+router.get('/status', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     
@@ -119,7 +202,7 @@ router.get('/status', authenticateToken, requireVerifiedDJ, async (req, res) => 
  * Refresh Serato connection
  * POST /api/serato/refresh
  */
-router.post('/refresh', authenticateToken, requireVerifiedDJ, async (req, res) => {
+router.post('/refresh', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     
@@ -154,7 +237,7 @@ router.post('/refresh', authenticateToken, requireVerifiedDJ, async (req, res) =
  * Disconnect Serato account
  * DELETE /api/serato/disconnect
  */
-router.delete('/disconnect', authenticateToken, requireVerifiedDJ, async (req, res) => {
+router.delete('/disconnect', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     
@@ -275,40 +358,29 @@ router.post('/test-verification', authenticateToken, requireVerifiedDJ, async (r
   }
 });
 
-// Database helper functions (to be implemented with your database client)
-async function saveSeratoConnection(userId, tokenData, seratoProfile) {
-  // This would save to your database
-  console.log(`Saving Serato connection for user ${userId}`, {
-    accessToken: tokenData.accessToken,
-    refreshToken: tokenData.refreshToken,
-    expiresAt: new Date(Date.now() + tokenData.expiresIn * 1000),
-    seratoUsername: seratoProfile.username,
-    seratoDisplayName: seratoProfile.display_name
-  });
+// Helper functions (in production, these would interact with the database)
+async function saveSeratoConnection(userId, tokenData, profile) {
+  // In production, save to database
+  console.log('Saving Serato connection for user:', userId);
+  return true;
 }
 
 async function getSeratoConnection(userId) {
-  // This would retrieve from your database
-  // For now, returning mock data
-  return {
-    userId,
-    seratoAccessToken: "mock_access_token",
-    seratoRefreshToken: "mock_refresh_token",
-    seratoTokenExpiresAt: new Date(Date.now() + 3600000),
-    seratoUsername: "mock_serato_user",
-    seratoDisplayName: "Mock Serato User",
-    connectedAt: new Date()
-  };
+  // In production, retrieve from database
+  console.log('Getting Serato connection for user:', userId);
+  return null;
 }
 
 async function updateSeratoConnection(userId, tokenData) {
-  // This would update your database
-  console.log(`Updating Serato connection for user ${userId}`, tokenData);
+  // In production, update in database
+  console.log('Updating Serato connection for user:', userId);
+  return true;
 }
 
 async function removeSeratoConnection(userId) {
-  // This would remove from your database
-  console.log(`Removing Serato connection for user ${userId}`);
+  // In production, remove from database
+  console.log('Removing Serato connection for user:', userId);
+  return true;
 }
 
 module.exports = router;

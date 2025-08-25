@@ -283,6 +283,12 @@ const ChatBot: React.FC = () => {
         break;
       case 'expenses':
         navigate('/expenses');
+        // Add interactive feedback
+        addMessage('💰 Opening Mission Expense Logger - Log parking, gas, food, and venue cover charges...', true);
+        break;
+      case 'log-expense':
+        addMessage('📝 Opening Expense Logger for essential mission expenses (parking, gas, food, venue cover)...', true);
+        // In a real implementation, this would open the expense logger modal
         break;
       case 'settings':
         navigate('/settings');
@@ -418,6 +424,15 @@ const ChatBot: React.FC = () => {
             textColor: "text-purple-700",
             borderColor: "border-purple-200",
             hoverColor: "hover:bg-purple-100"
+          },
+          { 
+            icon: <Plus className="w-3.5 h-3.5" />, 
+            text: "📝 Log Expense", 
+            action: "log-expense",
+            bgColor: "bg-orange-50", 
+            textColor: "text-orange-700",
+            borderColor: "border-orange-200",
+            hoverColor: "hover:bg-orange-100"
           },
           { 
             icon: <MessageCircle className="w-3.5 h-3.5" />, 

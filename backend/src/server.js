@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 // Socket.IO setup
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:3003", "http://localhost:3006", "http://localhost:3007", "http://localhost:8081"],
+    origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:3003", "http://localhost:3006", "http://localhost:3007", "http://localhost:3008", "http://localhost:8081"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -33,7 +33,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:3003", "http://localhost:3006", "http://localhost:3007", "http://localhost:8081"],
+  origin: [process.env.FRONTEND_URL || "http://localhost:3000", "http://localhost:3003", "http://localhost:3006", "http://localhost:3007", "http://localhost:3008", "http://localhost:8081"],
   credentials: true
 }));
 
@@ -91,6 +91,7 @@ app.use('/api/chat', require('./routes/chat'));
 app.use('/api/agents', require('./routes/agents'));
 app.use('/api/orchestration', require('./routes/orchestration')); // Enhanced agent flow orchestration
 app.use('/api/demo', require('./routes/demo')); // Demo routes for testing
+app.use('/api/serato-file', require('./routes/serato-file-verification')); // Serato file verification
 
 // WebSocket handlers
 require('./websocket/handlers')(io, prisma);

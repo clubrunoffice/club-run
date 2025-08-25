@@ -35,7 +35,92 @@ class AuthController {
         firstName: 'Admin',
         lastName: 'User',
         verified: true,
-        role: 'admin',
+        role: 'ADMIN',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      // Demo accounts for each role
+      {
+        id: '2',
+        email: 'runner@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'Alex',
+        lastName: 'Runner',
+        verified: true,
+        role: 'RUNNER',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '3',
+        email: 'dj@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'Maria',
+        lastName: 'DJ',
+        verified: true,
+        role: 'DJ',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '4',
+        email: 'verified-dj@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'DJ',
+        lastName: 'Verified',
+        verified: true,
+        role: 'VERIFIED_DJ',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '5',
+        email: 'client@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'Sarah',
+        lastName: 'Client',
+        verified: true,
+        role: 'CLIENT',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '6',
+        email: 'curator@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'Mike',
+        lastName: 'Curator',
+        verified: true,
+        role: 'CURATOR',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '7',
+        email: 'operations@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'Lisa',
+        lastName: 'Operations',
+        verified: true,
+        role: 'OPERATIONS',
+        loginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '8',
+        email: 'partner@demo.com',
+        password: '$2a$12$KywgAkb9a0LKDSOyvjRiMe48UGujwMoPZ1rANCtIfZIP60BlPMq9W', // 'Demo123!'
+        firstName: 'David',
+        lastName: 'Partner',
+        verified: true,
+        role: 'PARTNER',
         loginAttempts: 0,
         lockedUntil: null,
         createdAt: new Date().toISOString()
@@ -149,9 +234,20 @@ class AuthController {
       }
 
       // Role validation
-      const validRoles = ['CLIENT', 'RUNNER', 'CURATOR'];
+      const validRoles = ['CLIENT', 'RUNNER', 'DJ', 'VERIFIED_DJ', 'CURATOR'];
       if (role && !validRoles.includes(role)) {
-        return res.status(400).json({ error: 'Invalid role. Must be CLIENT, RUNNER, or CURATOR' });
+        return res.status(400).json({ error: 'Invalid role. Must be CLIENT, RUNNER, DJ, VERIFIED_DJ, or CURATOR' });
+      }
+
+      // Check if VERIFIED_DJ requires Serato verification
+      if (role === 'VERIFIED_DJ') {
+        const { seratoVerified } = req.body;
+        if (!seratoVerified) {
+          return res.status(400).json({ 
+            error: 'VERIFIED_DJ accounts require Serato verification',
+            requiresSerato: true 
+          });
+        }
       }
 
       // Email validation

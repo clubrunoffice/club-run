@@ -9,6 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useRBAC } from '../contexts/RBACContext';
+import { SeratoVerificationButton } from '../components/verification/SeratoVerificationButton';
 import './AgentDashboard.css';
 
 const AgentDashboard: React.FC = () => {
@@ -306,6 +307,25 @@ const AgentDashboard: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* DJ Serato Verification Section */}
+      {isAuthenticated && user && (user.role === 'DJ' || user.role === 'VERIFIED_DJ') && (
+        <section className="py-16 bg-black">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+                🎛️ Serato DJ Verification
+              </h2>
+              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                Verify your DJ skills by analyzing your Serato library and get professional credibility.
+              </p>
+            </div>
+            <div className="max-w-2xl mx-auto">
+              <SeratoVerificationButton />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Quick Actions Section */}
       <section className="py-16 bg-black">

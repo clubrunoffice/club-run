@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRBAC } from '../contexts/RBACContext';
 import { PermissionGate } from '../components/RoleBasedUI';
 
@@ -14,6 +15,7 @@ interface Mission {
 }
 
 export const Missions: React.FC = () => {
+  const navigate = useNavigate();
   const { user, isAuthenticated, hasPermission, getCurrentTheme } = useRBAC();
   const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +93,10 @@ export const Missions: React.FC = () => {
               </p>
             </div>
             <PermissionGate resource="missions" action="create">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+              <button 
+                onClick={() => navigate('/missions/create')}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+              >
                 <span>Create Mission</span>
               </button>
             </PermissionGate>
