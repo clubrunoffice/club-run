@@ -240,9 +240,14 @@ export class LangGraphWorkflowService {
         status: 'idle',
         currentStep: templateData.steps[0].id,
         steps: templateData.steps.map(step => ({
-          ...step,
-          status: 'pending' as const,
-          nextSteps: this.getNextSteps(step.id)
+          id: step.id,
+          name: step.name,
+          type: step.type as 'agent' | 'condition' | 'action' | 'decision',
+          agentId: step.agentId,
+          condition: step.condition,
+          action: step.action,
+          nextSteps: this.getNextSteps(step.id),
+          status: 'pending' as const
         })),
         data: {},
         metadata: {
@@ -286,7 +291,9 @@ export class LangGraphWorkflowService {
         if (step.status === 'pending') {
           await this.executeStep(workflow, step);
           
-          if (workflow.status === 'failed') {
+          // Check if step failed
+          if (step.status === 'failed') {
+            workflow.status = 'failed';
             break;
           }
         }

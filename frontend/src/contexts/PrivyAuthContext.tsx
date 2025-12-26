@@ -115,6 +115,10 @@ export const PrivyAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (authenticated && privyUser) {
         try {
           const token = await getAccessToken();
+          if (!token) {
+            console.error('❌ Failed to get access token');
+            return;
+          }
           console.log('✅ Got access token');
           setAccessToken(token);
           
