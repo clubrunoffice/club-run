@@ -52,6 +52,21 @@ export interface WorkflowEdge {
   weight: number;
 }
 
+type WorkflowTemplateStep = {
+  id: string;
+  name: string;
+  type: WorkflowStep['type'];
+  agentId?: string;
+  condition?: string;
+  action?: string;
+};
+
+type WorkflowTemplate = {
+  name: string;
+  description: string;
+  steps: WorkflowTemplateStep[];
+};
+
 export class LangGraphWorkflowService {
   private static instance: LangGraphWorkflowService;
   private workflows: Map<string, WorkflowState> = new Map();
@@ -59,7 +74,7 @@ export class LangGraphWorkflowService {
   private edges: Map<string, WorkflowEdge[]> = new Map();
 
   // Predefined workflow templates
-  private readonly WORKFLOW_TEMPLATES = {
+  private readonly WORKFLOW_TEMPLATES: Record<string, WorkflowTemplate> = {
     musicCuration: {
       name: 'Music Curation Workflow',
       description: 'Automated music submission review and playlist creation',
@@ -288,15 +303,12 @@ export class LangGraphWorkflowService {
 
       // Execute workflow steps
       for (const step of workflow.steps) {
-        if (step.status === 'pending') {
-          await this.executeStep(workflow, step);
-          
-          // Check if step failed
-          if (step.status === 'failed') {
-            workflow.status = 'failed';
-            break;
-          }
-        }
+        if (step.status !== 'pending') continue;
+
+        await this.executeStep(workflow, step);
+
+        // `executeStep` is responsible for setting workflow.status='failed' on error.
+        if ((workflow.status as unknown as WorkflowState['status']) === 'failed') break;
       }
 
       if (workflow.status === 'running') {
@@ -343,6 +355,7 @@ export class LangGraphWorkflowService {
       console.error(`❌ Step execution failed: ${step.name}`, error);
       step.status = 'failed';
       step.error = error instanceof Error ? error.message : 'Unknown error';
+      workflow.status = 'failed';
     }
   }
 
