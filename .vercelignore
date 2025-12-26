@@ -1,5 +1,14 @@
-# Don't ignore backend - we need it for API routes
-!backend/**
+# Backend folder - deploy separately or use lighter approach
+backend/
+
+# Don't ignore these specific backend files needed by API
+!backend/routes/
+!backend/middleware/
+
+# Ignore large dependencies
+backend/node_modules/
+node_modules/puppeteer/
+node_modules/@prisma/engines/
 
 # Ignore test files
 *.test.js
