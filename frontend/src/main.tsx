@@ -54,13 +54,33 @@ function MissingPrivyAppId() {
   );
 }
 
+function InvalidPrivyAppId({ reason }: { reason: string }) {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+      <div className="max-w-xl w-full space-y-4">
+        <h1 className="text-xl font-semibold">Privy misconfigured</h1>
+        <p className="text-sm text-white/80">
+          The value of <span className="font-mono">VITE_PRIVY_APP_ID</span> doesn’t look like a Privy App ID.
+        </p>
+        <p className="text-sm text-white/80">
+          Fix: In Privy Dashboard → Settings → Basics, copy <b>App ID</b> (not the <b>Client ID</b> from the Clients
+          page), set it as <span className="font-mono">VITE_PRIVY_APP_ID</span> in Vercel, then redeploy.
+        </p>
+        <pre className="text-xs bg-white/5 border border-white/10 rounded p-3 overflow-auto">{reason}</pre>
+      </div>
+    </div>
+  );
+}
+
 const privyAppId = (import.meta.env.VITE_PRIVY_APP_ID as string | undefined)?.trim();
 const hasPrivyAppId = Boolean(privyAppId);
+const looksLikeClientId = Boolean(privyAppId && /^client-/i.test(privyAppId));
+const hasValidPrivyAppId = hasPrivyAppId && !looksLikeClientId;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RootErrorBoundary>
-      {hasPrivyAppId ? (
+      {hasValidPrivyAppId ? (
         <PrivyProvider
           appId={privyAppId as string}
           config={{
@@ -83,6 +103,8 @@ createRoot(document.getElementById('root')!).render(
         >
           <App />
         </PrivyProvider>
+      ) : looksLikeClientId ? (
+        <InvalidPrivyAppId reason="Detected a value starting with 'client-'. That is a Privy Client ID, not an App ID." />
       ) : (
         <MissingPrivyAppId />
       )}
