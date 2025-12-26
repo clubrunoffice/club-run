@@ -1,0 +1,20 @@
+# Don't ignore backend - we need it for API routes
+!backend/**
+
+# Ignore test files
+*.test.js
+*.spec.js
+__tests__/
+
+# Ignore documentation
+*.md
+!README.md
+
+# Ignore local development files
+.env.local
+.env.development.local
+
+# Ignore unnecessary folders
+club-run-nextjs/
+contracts/
+monitoring/
