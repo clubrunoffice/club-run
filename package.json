@@ -15,7 +15,6 @@
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
     "@privy-io/server-auth": "^1.32.5",
     "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.11.0",

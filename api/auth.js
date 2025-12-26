@@ -1,12 +1,13 @@
-// Lightweight Privy auth routes for Vercel serverless
+// Lightweight Privy auth routes for Vercel serverless (using Supabase)
 const { PrivyClient } = require('@privy-io/server-auth');
-const { PrismaClient } = require('@prisma/client');
+const { createClient } = require('@supabase/supabase-js');
 
-const prisma = new PrismaClient();
 const privy = new PrivyClient(
   process.env.PRIVY_APP_ID,
   process.env.PRIVY_APP_SECRET
 );
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Authenticate user via Privy token
 async function authenticate(req) {
@@ -18,33 +19,40 @@ async function authenticate(req) {
 
   const verifiedClaims = await privy.verifyAuthToken(authToken);
   
-  // Fetch user from database
-  const user = await prisma.user.findUnique({
-    where: { privyId: verifiedClaims.userId },
-    select: {
-      id: true,
-      privyId: true,
-      email: true,
-      name: true,
-      role: true,
-      walletAddress: true,
-      phone: true,
-      badges: true,
-      createdAt: true
-    }
-  });
+  // Fetch user from Supabase
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('id,privyId,email,name,role,walletAddress,phone,badges,createdAt')
+    .eq('privyId', verifiedClaims.userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Supabase select error:', error.message || error);
+    throw new Error('Database error');
+  }
 
   if (!user) {
     // Auto-create user if not exists
-    const newUser = await prisma.user.create({
-      data: {
-        privyId: verifiedClaims.userId,
-        email: verifiedClaims.email || `user_${verifiedClaims.userId.slice(-8)}@privy.generated`,
-        name: verifiedClaims.email?.split('@')[0] || `User_${verifiedClaims.userId.slice(-8)}`,
-        role: 'GUEST'
-      }
-    });
-    return newUser;
+    const insert = {
+      privyId: verifiedClaims.userId,
+      email: verifiedClaims.email || `user_${verifiedClaims.userId.slice(-8)}@privy.generated`,
+      name: (verifiedClaims.email && verifiedClaims.email.split('@')[0]) || `User_${verifiedClaims.userId.slice(-8)}`,
+      role: 'GUEST',
+      createdAt: new Date().toISOString()
+    };
+
+    const { data: newUsers, error: insertErr } = await supabase
+      .from('users')
+      .insert([insert])
+      .select('id,privyId,email,name,role,walletAddress,phone,badges,createdAt')
+      .limit(1);
+
+    if (insertErr) {
+      console.error('Supabase insert error:', insertErr.message || insertErr);
+      throw new Error('Database insert error');
+    }
+
+    return Array.isArray(newUsers) ? newUsers[0] : newUsers;
   }
 
   return user;
@@ -79,10 +87,17 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'walletAddress is required' });
       }
 
-      const updatedUser = await prisma.user.update({
-        where: { id: user.id },
-        data: { walletAddress }
-      });
+      const { data: updatedUser, error: updateErr } = await supabase
+        .from('users')
+        .update({ walletAddress })
+        .eq('id', user.id)
+        .select('id,privyId,email,name,role,walletAddress,phone,badges,createdAt')
+        .maybeSingle();
+
+      if (updateErr) {
+        console.error('Supabase update error:', updateErr.message || updateErr);
+        return res.status(500).json({ error: 'Failed to update wallet' });
+      }
 
       return res.json({ success: true, user: updatedUser });
     }
@@ -91,26 +106,28 @@ module.exports = async (req, res) => {
     if (path === '/privy-webhook' && req.method === 'POST') {
       const { user_id, email, wallet_address, phone } = req.body;
 
-      const user = await prisma.user.upsert({
-        where: { privyId: user_id },
-        update: {
-          email: email || undefined,
-          phone: phone || undefined,
-          walletAddress: wallet_address || undefined,
-          updatedAt: new Date()
-        },
-        create: {
-          privyId: user_id,
-          email: email || `user_${user_id.slice(-8)}@privy.generated`,
-          phone: phone,
-          name: email?.split('@')[0] || phone || `User_${user_id.slice(-8)}`,
-          walletAddress: wallet_address,
-          role: 'GUEST',
-          badges: ''
-        }
-      });
+      // Upsert via Supabase
+      const row = {
+        privyId: user_id,
+        email: email || `user_${user_id.slice(-8)}@privy.generated`,
+        phone: phone,
+        name: (email && email.split('@')[0]) || phone || `User_${user_id.slice(-8)}`,
+        walletAddress: wallet_address || null,
+        role: 'GUEST'
+      };
 
-      return res.json({ success: true, userId: user.id });
+      const { data: upserted, error: upsertErr } = await supabase
+        .from('users')
+        .upsert(row, { onConflict: 'privyId' })
+        .select('id')
+        .maybeSingle();
+
+      if (upsertErr) {
+        console.error('Supabase upsert error:', upsertErr.message || upsertErr);
+        return res.status(500).json({ error: 'Failed to sync user' });
+      }
+
+      return res.json({ success: true, userId: upserted?.id });
     }
 
     // 404 for unknown routes
