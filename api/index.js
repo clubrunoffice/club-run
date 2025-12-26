@@ -107,21 +107,51 @@ app.get('/api/test', (req, res) => {
     message: 'Club Run API is working on Vercel!',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    database: prisma ? 'connected' : 'not available'
+    database: prisma ? 'connected' : 'not available',
+    nodeVersion: process.version,
+    routesLoaded: app._router ? 'yes' : 'no'
   });
+});
+
+// Debug endpoint to check loaded routes
+app.get('/api/debug/routes', (req, res) => {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      routes.push({
+        path: middleware.route.path,
+        methods: Object.keys(middleware.route.methods)
+      });
+    } else if (middleware.name === 'router') {
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          routes.push({
+            path: handler.route.path,
+            methods: Object.keys(handler.route.methods)
+          });
+        }
+      });
+    }
+  });
+  res.json({ routes, timestamp: new Date().toISOString() });
 });
 
 // API Routes - with error handling
 const loadRoute = (routePath, routeName) => {
   try {
-    return require(routePath);
+    console.log(`📦 Loading route: ${routeName} from ${routePath}`);
+    const route = require(routePath);
+    console.log(`✅ Successfully loaded ${routeName} route`);
+    return route;
   } catch (error) {
-    console.error(`Failed to load ${routeName} route:`, error.message);
+    console.error(`❌ Failed to load ${routeName} route:`, error.message);
+    console.error('Error stack:', error.stack);
     const router = express.Router();
-    router.get('/', (req, res) => {
-      res.json({ 
+    router.all('*', (req, res) => {
+      res.status(503).json({ 
         error: `${routeName} route not available`, 
-        message: 'This route is temporarily unavailable',
+        message: 'This route failed to load',
+        details: error.message,
         timestamp: new Date().toISOString()
       });
     });
