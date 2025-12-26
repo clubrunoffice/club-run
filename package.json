@@ -1,7 +1,7 @@
 {
   "name": "club-run",
-  "version": "3.777.0",
-  "description": "AI-Powered Nightlife Operations Platform - PRE MVP 3.777 (Revolutionary Local Serato Verification)",
+  "version": "4.1.0",
+  "description": "AI-Powered Nightlife Operations Platform - PRE MVP 4.1 (Production Deployment Fixes)",
   "main": "api/index.js",
   "scripts": {
     "dev": "cd frontend && npm run dev",

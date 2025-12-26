@@ -1,6 +1,6 @@
 {
   "name": "club-run-frontend",
-  "version": "1.0.0-pre",
+  "version": "4.1.0",
   "description": "Club Run Frontend - AI-Powered Nightlife Operations Platform",
   "type": "module",
   "scripts": {
