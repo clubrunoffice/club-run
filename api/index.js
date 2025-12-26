@@ -113,8 +113,16 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Debug endpoint to check loaded routes
+// Debug endpoint to check loaded routes (protected in production)
 app.get('/api/debug/routes', (req, res) => {
+  // Disable in production for security
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ 
+      error: 'Debug endpoints are disabled in production',
+      timestamp: new Date().toISOString()
+    });
+  }
+  
   const routes = [];
   app._router.stack.forEach((middleware) => {
     if (middleware.route) {
