@@ -130,7 +130,7 @@ export const PrivyAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             console.log('💼 Updating wallet address:', primaryWallet.address || '');
             await axios.post(
               `${API_URL}/auth/update-wallet`,
-              { walletAddress: primaryWallet.address },
+              { walletAddress: primaryWallet.address || '' },
               { headers: { Authorization: `Bearer ${token}` } }
             );
           }

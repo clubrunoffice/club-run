@@ -23,6 +23,7 @@ export interface WorkflowStep {
   status: 'pending' | 'running' | 'completed' | 'failed';
   result?: any;
   error?: string;
+  lastActivity?: Date;
 }
 
 export interface WorkflowMetadata {
@@ -240,7 +241,7 @@ export class LangGraphWorkflowService {
         currentStep: templateData.steps[0].id,
         steps: templateData.steps.map(step => ({
           ...step,
-          status: 'pending',
+          status: 'pending' as const,
           nextSteps: this.getNextSteps(step.id)
         })),
         data: {},
@@ -285,8 +286,7 @@ export class LangGraphWorkflowService {
         if (step.status === 'pending') {
           await this.executeStep(workflow, step);
           
-          if (step.status === 'failed') {
-            workflow.status = 'failed';
+          if (workflow.status === 'failed') {
             break;
           }
         }

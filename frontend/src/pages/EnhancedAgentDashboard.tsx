@@ -593,7 +593,7 @@ const EnhancedAgentDashboard: React.FC = () => {
             )}
 
             {/* DJ Verification Section */}
-            {isAuthenticated && user && (user.role === 'DJ' || user.role === 'VERIFIED_DJ') && (
+            {isAuthenticated && user && user.role !== 'ADMIN' && (user.role === 'DJ' || user.role === 'VERIFIED_DJ') && (
               <div className="mt-6 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg p-6 border border-green-400">
                 <div className="flex items-center justify-between">
                   <div>
