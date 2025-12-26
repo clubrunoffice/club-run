@@ -78,7 +78,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', require('../routes/privyAuth')); // 🆕 Privy authentication routes
 app.use('/api/admin', require('./routes/admin')); // Admin routes for role management
 app.use('/api/users', require('./routes/users'));
 app.use('/api/venues', require('./routes/venues'));

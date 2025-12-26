@@ -67,12 +67,14 @@
 ### **Financial Management**
 | Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |
 |------------|-------|--------|----|-------------|--------|---------|------------|---------|-------|
-| `expenses:create` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| `expenses:read` | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| `expenses:create` | ❌ | ✅ | ❌* | ❌* | ✅ | ✅ | ❌ | ✅ |
+| `expenses:read` | ❌ | ✅ | ❌* | ❌* | ✅ | ✅ | ❌ | ✅ |
 | `payments:send` | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
 | `payments:receive` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | `payments:read` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
 | `payments:process` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+
+**Note**: *DJs and VERIFIED_DJs do **NOT** have expense permissions by default. Only users with RUNNER role (or dual DJ+RUNNER role) can access expenses.*
 
 ### **System & Analytics**
 | Permission | GUEST | RUNNER | DJ | VERIFIED_DJ | CLIENT | CURATOR | OPERATIONS | PARTNER | ADMIN |

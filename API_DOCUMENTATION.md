@@ -432,6 +432,75 @@ Content-Type: application/json
 }
 ```
 
+#### Get Online Status
+```http
+GET /api/auth/online-status
+Authorization: Bearer <privy_jwt_token>
+```
+
+**Description**: Get the current user's online availability status for receiving missions.
+
+**Authorization**: Requires Privy JWT authentication
+
+**Response:**
+```json
+{
+  "isOnline": true
+}
+```
+
+#### Update Online Status
+```http
+POST /api/auth/online-status
+Authorization: Bearer <privy_jwt_token>
+Content-Type: application/json
+
+{
+  "isOnline": true
+}
+```
+
+**Description**: Toggle user's online availability for receiving missions. Used by the Go Online toggle in ChatBot interface.
+
+**Authorization**: RUNNER, DJ, VERIFIED_DJ only
+
+**Request Body:**
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| isOnline | boolean | Yes | true = go online, false = go offline |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "isOnline": true,
+  "lastOnlineAt": "2025-12-25T10:30:00.000Z"
+}
+```
+
+**Error Response (403 - Forbidden):**
+```json
+{
+  "error": "Only RUNNER, DJ, and VERIFIED_DJ can go online"
+}
+```
+
+**Error Response (401 - Unauthorized):**
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+**Database Updates:**
+- Updates `User.isOnline` field
+- Sets `User.lastOnlineAt` to current timestamp when going online
+
+**Frontend Integration:**
+- Component: `GoOnlineToggle` in `frontend/src/components/GoOnlineToggle/`
+- Location: ChatBot interface only
+- See: `GO_ONLINE_SYSTEM_DOCUMENTATION.md` for full details
+
 ### Admin Endpoints
 
 #### Get All Users (Admin Only)

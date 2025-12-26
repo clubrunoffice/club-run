@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, Mic, ChevronDown, Wallet, CheckCircle, MapPin, Smartphone, Users, Music, Plus, Settings } from 'lucide-react';
 import { useRBAC } from '../contexts/RBACContext';
 import { useNavigate } from 'react-router-dom';
+import { GoOnlineToggle } from './GoOnlineToggle';
 
 // TypeScript declarations for speech recognition
 declare global {
@@ -146,7 +147,7 @@ const ChatBot: React.FC = () => {
           } else {
             switch (user.role) {
               case 'RUNNER':
-                botResponse = "Hello Runner! I can help you browse missions, check in, submit expenses, and manage your settings. How can I assist you?";
+                botResponse = "Hello Runner! I can help you browse missions, check in at venues, submit expenses, and manage your settings. How can I assist you?";
                 break;
               case 'DJ':
                 botResponse = "Hello DJ! I can help you review music submissions, manage your library, and create playlists. How can I assist you?";
@@ -466,9 +467,9 @@ const ChatBot: React.FC = () => {
             hoverColor: "hover:bg-purple-100"
           },
           { 
-            icon: <Wallet className="w-3.5 h-3.5" />, 
-            text: "💳 Expenses", 
-            action: "expenses",
+            icon: <Music className="w-3.5 h-3.5" />, 
+            text: "🎧 Gigs", 
+            action: "gigs",
             bgColor: "bg-green-50", 
             textColor: "text-green-700",
             borderColor: "border-green-200",
@@ -731,6 +732,11 @@ const ChatBot: React.FC = () => {
 
               {/* Quick Actions - Always Visible */}
               <div className="px-4 pb-3 flex-shrink-0">
+                {/* Go Online Toggle for eligible roles */}
+                <div className="mb-3 flex justify-center">
+                  <GoOnlineToggle variant="pill" size="sm" />
+                </div>
+                
                 <div className="grid grid-cols-2 gap-2">
                   {actionButtons.map((button, index) => (
                     <button

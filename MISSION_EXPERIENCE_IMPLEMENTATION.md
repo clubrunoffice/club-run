@@ -2,7 +2,92 @@
 
 ## 🚀 **Overview**
 
-This document outlines the comprehensive UX improvements implemented for the Club Run mission experience, transforming it from a basic platform into a sophisticated, trust-building, efficient marketplace that serves both clients needing music services and runners looking to earn money.
+This document outlines the comprehensive UX improvements implemented for the Club Run mission experience, transforming it from a basic platform into a sophisticated, trust-building, efficient marketplace that serves both clients needing music services and DJs/runners looking to earn money.
+
+## 🎭 **Role-Based Mission Dashboard (Updated)**
+
+### **New Two-Tab Mission System**
+The missions dashboard now implements a sophisticated two-section layout with role-based content filtering:
+
+#### **Platform Missions Tab**
+- Browse all available missions based on your role
+- **Role-Specific Filtering**:
+  - **DJ/VERIFIED_DJ**: See only gig missions (weddings, clubs, corporate events)
+  - **RUNNER**: See only service missions (delivery, tasks, setup assistance)
+  - **CLIENT**: See all missions (for reference and management)
+  - **CURATOR**: See all missions (to assign to teams)
+  - **ADMIN/OPERATIONS**: See all missions (platform oversight)
+
+#### **My Missions Tab**
+Status-based organization for tracking your work:
+- **Pending**: Applied missions awaiting client response
+- **Active**: Confirmed bookings in progress
+- **In Review**: Completed work awaiting approval and payment
+- **Cancelled**: Rejected or withdrawn applications
+
+### **Mission Target Roles**
+Each mission now includes `targetRole` and `missionType` fields:
+
+```typescript
+interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  client: string;
+  budget: number;
+  status: 'open' | 'in-progress' | 'completed';
+  createdAt: string;
+  deadline: string;
+  targetRole?: string[];  // ['DJ', 'VERIFIED_DJ'] or ['RUNNER']
+  missionType?: 'gig' | 'delivery' | 'task' | 'service';
+}
+```
+
+### **Role-Specific Mission Examples**
+
+**DJ/VERIFIED_DJ Gig Missions**:
+- "DJ for Corporate Holiday Party" - Professional DJ for corporate event
+- "Club Night Resident DJ" - Weekly residency with electronic music
+- "Wedding Reception DJ" - 5-hour event with MC services
+
+**RUNNER Service Missions**:
+- "Music Equipment Delivery" - Pick up and deliver DJ equipment
+- "Flyer Distribution - Music Festival" - Distribute promotional materials
+- "Vinyl Record Pickup & Cataloging" - Handle vintage record collection
+
+## 🛡️ **Three-Layer Access Control**
+
+The missions system implements three security layers:
+
+### **1. ProtectedRoute (Authentication)**
+```typescript
+<ProtectedRoute>
+  <Missions />
+</ProtectedRoute>
+```
+- Ensures user is authenticated before accessing missions
+- Redirects to login if not authenticated
+- Route-level protection
+
+### **2. PermissionGate (UI Visibility)**
+```typescript
+<PermissionGate resource="missions" action="create">
+  <button>Create Mission</button>
+</PermissionGate>
+```
+- Controls visibility of UI elements
+- Only CLIENT, CURATOR, ADMIN, OPERATIONS can create missions
+- Component-level protection
+
+### **3. Role-Based Filtering (Content)**
+```typescript
+const filteredMissions = allMissions.filter(mission => 
+  mission.targetRole?.includes(userRole)
+);
+```
+- Dynamically filters mission content
+- Shows only relevant missions per role
+- Data-level protection
 
 ## 🎵 **Key UX Improvements Implemented**
 

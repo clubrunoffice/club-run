@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Activity, Home, Trophy, Users, Settings, Menu, X, BarChart3 } from 'lucide-react';
 import { useUIAgent } from '../contexts/UIAgentContext';
 import { useRBAC } from '../contexts/RBACContext';
+import { useAuth } from '../contexts/PrivyAuthContext';
 
 const Header: React.FC = () => {
   const location = useLocation();
   const { state } = useUIAgent();
   const { currentRole } = state;
+  const { login, logout, isAuthenticated, user } = useAuth(); // Add logout and user
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  // Debug auth state
+  useEffect(() => {
+    console.log('🔍 Header Auth State:', { isAuthenticated, hasUser: !!user, userEmail: user?.email });
+  }, [isAuthenticated, user]);
 
   const navItems = [
     { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
@@ -131,12 +139,67 @@ const Header: React.FC = () => {
               <div className={`w-2 h-2 rounded-full ${getRoleColor()}`}></div>
             </div>
             
-            <button className="text-gray-300 hover:text-white text-sm">
-              Sign In
-            </button>
-            <button className="text-gray-300 hover:text-white text-sm">
-              Sign Up
-            </button>
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button 
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-all duration-200"
+                >
+                  <span className="text-sm text-gray-300">
+                    {user.email?.includes('privy.generated') 
+                      ? user.role.charAt(0) + user.role.slice(1).toLowerCase()
+                      : (user.email?.split('@')[0] || user.name)
+                    }
+                  </span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                </button>
+                
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+                    <div className="px-4 py-3 border-b border-gray-700">
+                      <p className="text-sm text-gray-400">Signed in as</p>
+                      <p className="text-sm font-medium text-white truncate">
+                        {user.email?.includes('privy.generated') ? 'Wallet User' : user.email}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">{user.role}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        console.log('🚪 Logging out...');
+                        logout();
+                        setShowUserMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 transition-all"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <button 
+                  onClick={() => {
+                    console.log('🔵 Sign In button clicked in Header');
+                    console.log('📊 isAuthenticated:', isAuthenticated);
+                    console.log('🔑 login function:', typeof login);
+                    login();
+                  }}
+                  className="text-gray-300 hover:text-white text-sm font-medium hover:bg-gray-800 px-4 py-2 rounded-lg transition-all duration-200"
+                >
+                  Sign In
+                </button>
+                <button 
+                  onClick={() => {
+                    console.log('🟣 Sign Up button clicked in Header');
+                    login();
+                  }}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200"
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
 
             {/* Mobile menu button */}
             <button

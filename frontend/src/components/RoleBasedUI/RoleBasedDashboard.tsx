@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRBAC } from '../../contexts/RBACContext';
 import { PermissionGate } from './PermissionGate';
+import { GoOnlineToggle } from '../GoOnlineToggle';
 
 interface DashboardCard {
   title: string;
@@ -191,6 +192,59 @@ export const RoleBasedDashboard: React.FC = () => {
       href: '/profile',
       theme
     });
+
+    // RUNNER-specific cards
+    if (hasRole('RUNNER')) {
+      baseCards.push(
+        {
+          title: 'Browse Missions',
+          description: 'Find and apply to available gigs and missions',
+          icon: (
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          ),
+          href: '/missions',
+          permission: { resource: 'missions', action: 'read' },
+          theme
+        },
+        {
+          title: 'My Applications',
+          description: 'Track your mission applications and status',
+          icon: (
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          ),
+          href: '/missions',
+          permission: { resource: 'missions', action: 'read' },
+          theme
+        },
+        {
+          title: 'Check-Ins',
+          description: 'View your check-in history and streaks',
+          icon: (
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          ),
+          href: '/checkins',
+          permission: { resource: 'checkins', action: 'read' },
+          theme
+        },
+        {
+          title: 'Upgrade to DJ',
+          description: 'Learn how to become a professional DJ and accept missions',
+          icon: (
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          ),
+          href: '/profile',
+          theme
+        }
+      );
+    }
 
     // DJ-specific cards
     if (hasRole('DJ') || hasRole('VERIFIED_DJ')) {
@@ -444,7 +498,7 @@ export const RoleBasedDashboard: React.FC = () => {
   const quickActions = getQuickActions();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Enhanced Role-Based Header */}
         <div className="px-4 py-6 sm:px-0">
@@ -460,7 +514,9 @@ export const RoleBasedDashboard: React.FC = () => {
                 <span className="text-3xl">{getRoleBadge(user.role)}</span>
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">
-                    Welcome back, {user.name || user.email}!
+                    Welcome back, {user.email?.includes('privy.generated') 
+                      ? user.role.charAt(0) + user.role.slice(1).toLowerCase()
+                      : (user.email?.split('@')[0] || user.name)}!
                   </h1>
                   <p className="mt-1 text-lg text-gray-600">
                     {getRoleSubtitle(user.role)}

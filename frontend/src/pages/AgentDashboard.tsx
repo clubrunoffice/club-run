@@ -7,7 +7,7 @@ import {
   Settings
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/PrivyAuthContext';
 import { useRBAC } from '../contexts/RBACContext';
 import { SeratoVerificationButton } from '../components/verification/SeratoVerificationButton';
 import './AgentDashboard.css';

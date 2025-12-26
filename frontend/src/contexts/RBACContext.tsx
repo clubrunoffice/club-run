@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from './PrivyAuthContext';
 
 // Role hierarchy with numeric levels for comparison
 const ROLE_HIERARCHY = {
@@ -120,13 +120,12 @@ const BASE_PERMISSIONS = {
     'missions:complete',
     'checkins:create',
     'checkins:read',
-    'expenses:create',
-    'expenses:read',
     'chat:read',
     'chat:send',
     'p2p-missions:accept',
     'p2p-missions:complete',
-    'payments:receive'
+    'payments:receive',
+    'online-status:toggle'
   ],
   VERIFIED_DJ: [
     'serato:connect',
@@ -331,23 +330,32 @@ interface RBACProviderProps {
 
 export const RBACProvider: React.FC<RBACProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(rbacReducer, initialState);
-  const { user: authUser, isAuthenticated: authIsAuthenticated } = useAuth();
+  const { user: authUser, isAuthenticated: authIsAuthenticated, loading: authLoading } = useAuth();
 
   // Sync with AuthContext
   useEffect(() => {
+    console.log('🔄 RBAC syncing with Privy auth:', { authUser, authIsAuthenticated, authLoading });
+    
+    if (authLoading) {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      return;
+    }
+
     if (authUser && authIsAuthenticated) {
       // Convert AuthContext user to RBAC user format
       const rbacUser: User = {
         id: authUser.id,
         email: authUser.email,
         role: authUser.role.toUpperCase() as Role,
-        name: authUser.firstName ? `${authUser.firstName} ${authUser.lastName || ''}`.trim() : authUser.email
+        name: authUser.name || authUser.email
       };
+      console.log('✅ RBAC user set:', rbacUser);
       dispatch({ type: 'SET_USER', payload: rbacUser });
     } else {
+      console.log('❌ RBAC user cleared');
       dispatch({ type: 'SET_USER', payload: null });
     }
-  }, [authUser, authIsAuthenticated]);
+  }, [authUser, authIsAuthenticated, authLoading]);
 
   // Permission checking functions
   const hasPermission = (resource: string, action: string): boolean => {

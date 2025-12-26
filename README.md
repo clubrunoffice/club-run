@@ -1,15 +1,18 @@
-# 🎵 Club Run - Clean Repository
+# 🎵 Club Run - Mission & Music Platform
 
 ## 🚀 Overview
 
-Club Run is a revolutionary music education platform that combines AI-powered learning with community-driven development. This repository contains the clean, GitHub-compatible version of our codebase.
+Club Run is a revolutionary mission-based platform connecting DJs, Runners, Clients, and Curators through a sophisticated RBAC system. Built with modern web technologies and AI-powered features, Club Run enables seamless mission assignment, real-time availability tracking, and community collaboration.
+
+**Current Version**: PRE MVP 4.0 (December 25, 2025)
 
 ## 📊 Repository Status
 
-- **Size**: 472KB (down from 213MB original)
+- **Version**: PRE MVP 4.0
+- **Status**: ✅ Production Ready
 - **GitHub Compatibility**: ✅ Ready
-- **Large Files**: ✅ Removed
-- **Collaboration**: ✅ Enabled
+- **Documentation**: 📚 Comprehensive
+- **Testing**: ✅ Verified
 
 ## 🛠️ Technical Stack
 
@@ -101,40 +104,62 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 
 ## 📚 Documentation
 
-- [Implementation Summary](IMPLEMENTATION_SUMMARY.md)
-- [Release Notes](RELEASE_NOTES.md)
-- [API Documentation](API_DOCUMENTATION.md)
-- [Community Guidelines](COMMUNITY_GUIDELINES.md)
+### Core Documentation
+- **[PRE MVP 4.0 Release Notes](PRE_MVP_4.0_RELEASE_NOTES.md)** - Latest release features and changes
+- [API Documentation](API_DOCUMENTATION.md) - Complete API endpoint reference
+- [RBAC Role System](RBAC_ROLE_SYSTEM_DOCUMENTATION.md) - Role-based access control guide
+- [RBAC Testing Guide](RBAC_TESTING_GUIDE.md) - Comprehensive testing scenarios
+
+### Feature Documentation
+- **[Go Online System](GO_ONLINE_SYSTEM_DOCUMENTATION.md)** - Real-time availability tracking (NEW in 4.0)
+- [Deployment Guide](DEPLOYMENT_GUIDE.md) - Production deployment instructions
+- [Authentication System](AUTHENTICATION_SYSTEM.md) - Privy OAuth integration
+- [Expense System](ENHANCED_EXPENSES_SYSTEM.md) - RUNNER-only expense tracking
+
+### Developer Resources
+- [Implementation Summary](IMPLEMENTATION_SUMMARY.md) - Technical overview
+- [Setup Guide](SETUP_COMPLETE.md) - Local development setup
+- [Production Setup](PRODUCTION_SETUP_GUIDE.md) - Production environment configuration
 
 ## 🎵 Community
 
-- **Discord**: [Join our community](your-discord-link)
-- **Email**: [Subscribe to updates](your-email-link)
-- **Social Media**: [Follow us](your-social-links)
+- **Support**: Check documentation or file an issue
+- **Contributions**: See [Contributing Guidelines](CONTRIBUTING.md)
+- **Updates**: Follow release notes for latest features
 
-## 🏆 Recent Achievements
+## 🏆 Version History
 
-- ✅ **Repository Cleanup**: Reduced size from 213MB to 472KB
-- ✅ **GitHub Compatibility**: Ready for open source collaboration
-- ✅ **Documentation**: Comprehensive guides and tutorials
-- ✅ **Community Tools**: Beta testing and hackathon programs
+### PRE MVP 4.0 (December 25, 2025) - CURRENT
+- ✅ **Go Online System**: Real-time availability tracking for RUNNER/DJ/VERIFIED_DJ
+- ✅ **Role Refinement**: Removed expenses from DJ role (RUNNER-exclusive)
+- ✅ **Enhanced Navigation**: Added Home button to all pages
+- ✅ **Database Migration**: Added isOnline/lastOnlineAt fields
+- ✅ **Full Documentation**: 6 files updated with comprehensive guides
+
+### Previous Releases
+- [PRE MVP 3.777 Release Notes](RELEASE_NOTES_3.777.md)
+- [PRE MVP 3.6 Release Notes](RELEASE_NOTES_3.6.md)
+- [PRE MVP 3.5 Release Notes](RELEASE_NOTES_3.5.md)
+- [PRE MVP 3.0 Release Notes](RELEASE_NOTES_3.0.md)
+- [PRE MVP 1.0 Release Notes](RELEASE_NOTES_1.0.md)
 
 ## 🚀 Roadmap
 
-### Phase 1: Foundation (Complete)
-- [x] Repository cleanup and optimization
-- [x] Documentation and guides
-- [x] Community announcement
+### Phase 4.1: Real-time Enhancements (Next)
+- [ ] WebSocket integration for cross-tab sync
+- [ ] Auto-offline after inactivity
+- [ ] Mission notifications when online
+- [ ] Analytics dashboard for availability metrics
 
-### Phase 2: Community Launch (In Progress)
-- [ ] Beta testing program
-- [ ] Hackathon event
-- [ ] Technical AMA
-- [ ] Open source contributions
+### Phase 5.0: Advanced Features (Planned)
+- [ ] Scheduling online/offline times
+- [ ] Busy status intermediate state
+- [ [ ] Geolocation tracking for online runners
+- [ ] Mission queue display
 
-### Phase 3: Scale (Planned)
-- [ ] Advanced AI features
+### Long-term Vision
 - [ ] Mobile application
+- [ ] Advanced AI mission matching
 - [ ] International expansion
 - [ ] Enterprise features
 

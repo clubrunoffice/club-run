@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MissionCreationWizard from '../components/missions/MissionCreationWizard';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/PrivyAuthContext';
 
 const MissionCreate: React.FC = () => {
   const navigate = useNavigate();

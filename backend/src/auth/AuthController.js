@@ -3,9 +3,11 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
+const { PrismaClient } = require('@prisma/client');
 
 class AuthController {
   constructor() {
+    this.prisma = new PrismaClient();
     this.supabaseEnabled = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
     this.supabase = this.supabaseEnabled ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY) : null;
     
@@ -332,21 +334,59 @@ class AuthController {
 
       // Input validation
       if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required' });
+        return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Find user in mock data (for development)
+      // Normalize email to lowercase for case-insensitive comparison
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Try to find user in Prisma database first
+      let user = await this.prisma.user.findUnique({
+        where: { email: normalizedEmail }
+      });
+
+      // If found in database
+      if (user) {
+        console.log(`✅ User found in database: ${email}`);
+        
+        // Verify password from database
+        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        if (!isValidPassword) {
+          return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // Generate tokens
+        const { accessToken, refreshToken } = this.generateTokens(user.id, user.email);
+
+        // Set refresh token as HttpOnly cookie
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+        });
+
+        // Return access token and user info
+        return res.json({
+          message: 'Login successful',
+          accessToken,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            verified: true
+          }
+        });
+      }
+
+      // Fallback to mock users for backward compatibility
       const mockUsers = this.getMockUsers();
-      const user = mockUsers.find(u => u.email === email);
+      user = mockUsers.find(u => u.email.toLowerCase() === normalizedEmail);
 
       if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
-
-      // Check if user is active (mock users are always active)
-      // if (!user.isActive) {
-      //   return res.status(401).json({ error: 'Account is deactivated' });
-      // }
 
       // Check if CURATOR account needs approval
       if (user.role === 'CURATOR' && user.needsApproval) {
@@ -357,7 +397,7 @@ class AuthController {
         });
       }
 
-      // Verify password
+      // Verify password for mock users
       const isValidPassword = await this.comparePassword(password, user.password);
       if (!isValidPassword) {
         return res.status(401).json({ error: 'Invalid credentials' });

@@ -1,13 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { PrivyAuthProvider } from './contexts/PrivyAuthContext';
 import { UIAgentProvider } from './contexts/UIAgentContext';
 import { RBACProvider } from './contexts/RBACContext';
 import { RoleBasedNavigation, RoleBasedDashboard } from './components/RoleBasedUI';
-import { LoginForm } from './components/auth/LoginForm';
-import { SignupForm } from './components/auth/SignupForm';
-import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuth } from './contexts/PrivyAuthContext';
+import { ProtectedRoute } from './components/ProtectedRoutePrivy';
 import ChatBot from './components/ChatBot';
 import Home from './pages/Home';
 import AgentDashboard from './pages/AgentDashboard';
@@ -22,72 +20,23 @@ import MissionTest from './pages/MissionTest';
 import { CuratorDashboardPage } from './pages/CuratorDashboard';
 import CuratorThankYou from './pages/CuratorThankYou';
 import ChatGPTAnalytics from './components/admin/ChatGPTAnalytics';
+import Profile from './pages/Profile';
+import UserManagement from './pages/admin/UserManagement';
+import SystemAnalytics from './pages/admin/SystemAnalytics';
 import './App.css';
-
-// Authentication pages component
-const AuthPages: React.FC = () => {
-  const [authMode, setAuthMode] = React.useState<'login' | 'signup' | 'forgot-password'>('login');
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect to homepage if already authenticated
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-    }
-  }, [isAuthenticated, navigate]);
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {authMode === 'login' && (
-        <LoginForm
-          onSuccess={() => {
-            // Redirect to homepage after successful login
-            navigate('/');
-          }}
-          onSwitchToSignup={() => setAuthMode('signup')}
-          onSwitchToForgotPassword={() => setAuthMode('forgot-password')}
-        />
-      )}
-      {authMode === 'signup' && (
-        <SignupForm
-          onSuccess={() => {
-            setAuthMode('login');
-            alert('Registration successful! Please check your email to verify your account.');
-          }}
-          onSwitchToLogin={() => setAuthMode('login')}
-        />
-      )}
-      {authMode === 'forgot-password' && (
-        <ForgotPasswordForm
-          onSuccess={() => {
-            // Success message is shown in the component
-          }}
-          onSwitchToLogin={() => setAuthMode('login')}
-        />
-      )}
-    </div>
-  );
-};
-
-// Header component with navigation - using RoleBasedNavigation for RBAC
-const Header: React.FC = () => {
-  return <RoleBasedNavigation />;
-};
 
 // Main app content with routing
 const AppContent: React.FC = () => {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <RoleBasedNavigation />
         <main>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Home />} />
             <Route path="/features" element={<Features />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/auth" element={<AuthPages />} />
             <Route path="/agent-dashboard" element={<AgentDashboard />} />
             <Route path="/enhanced-agent-dashboard" element={<EnhancedAgentDashboard />} />
             <Route path="/curator-thank-you" element={<CuratorThankYou />} />
@@ -150,6 +99,30 @@ const AppContent: React.FC = () => {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <ProtectedRoute>
+                  <UserManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/stats" 
+              element={
+                <ProtectedRoute>
+                  <SystemAnalytics />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </main>
         <ChatBot />
@@ -158,16 +131,16 @@ const AppContent: React.FC = () => {
   );
 };
 
-// Main App component with AuthProvider and RBACProvider
+// Main App component with PrivyAuthProvider and RBACProvider
 const App: React.FC = () => {
   return (
-    <AuthProvider>
+    <PrivyAuthProvider>
       <RBACProvider>
         <UIAgentProvider>
           <AppContent />
         </UIAgentProvider>
       </RBACProvider>
-    </AuthProvider>
+    </PrivyAuthProvider>
   );
 };
 

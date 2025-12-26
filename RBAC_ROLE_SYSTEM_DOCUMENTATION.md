@@ -2,26 +2,109 @@
 
 ## Overview
 
-Club Run implements a comprehensive Role-Based Access Control (RBAC) system with distinct roles for different user types. The system includes a **VERIFIED_DJ** role that's separate from **RUNNER**, requiring manual verification by operations before accessing Serato integration and advanced features.
+Club Run implements a comprehensive Role-Based Access Control (RBAC) system with distinct roles for different user types. The system includes **three layers of access control**:
+
+1. **ProtectedRoute**: Authentication-level access control
+2. **PermissionGate**: UI element visibility control
+3. **Role-Based Content Filtering**: Dynamic content filtering based on user role
 
 ## 🎯 Role Hierarchy
 
 ```
-GUEST (0) < RUNNER (1) < VERIFIED_DJ (2) < CLIENT (3) < CURATOR (4) < OPERATIONS (5) < PARTNER (6) < ADMIN (7)
+GUEST (0) < RUNNER (1) < DJ (1) < VERIFIED_DJ (2) < CLIENT (3) < CURATOR (4) < OPERATIONS (5) < PARTNER (6) < ADMIN (7)
 ```
+
+### Dual Role Support
+Users can have **combined roles** to access features from multiple role types:
+- **DJ + RUNNER**: Gets both DJ gig permissions AND runner service permissions
+- **Example**: A DJ who also runs delivery missions can track expenses and accept both gig and service missions
+- **Implementation**: Role string includes both roles (e.g., "DJ+RUNNER" or role checks for `.includes('RUNNER')`)
+- **UI Behavior**: Navigation and features adapt based on combined permissions
+
+## 🔐 Three-Layer Access Control System
+
+### Layer 1: ProtectedRoute (Authentication)
+```typescript
+// Wraps entire routes - ensures user is authenticated
+<ProtectedRoute>
+  <Missions />
+</ProtectedRoute>
+```
+- **Purpose**: Verify user authentication before page access
+- **Action**: Redirects unauthenticated users to login
+- **Scope**: Route-level protection
+- **Example**: `/missions` requires authentication
+
+### Layer 2: PermissionGate (UI Element Control)
+```typescript
+// Controls visibility of specific UI elements
+<PermissionGate resource="missions" action="create">
+  <button>Create Mission</button>
+</PermissionGate>
+```
+- **Purpose**: Show/hide UI elements based on permissions
+- **Action**: Conditionally renders components
+- **Scope**: Component-level protection
+- **Example**: Only CLIENT, CURATOR, ADMIN can see "Create Mission" button
+
+### Layer 3: Role-Based Content Filtering (Dynamic Data)
+```typescript
+// Filters mission content based on user role
+const filteredMissions = allMissions.filter(mission => 
+  mission.targetRole?.includes(userRole)
+);
+```
+- **Purpose**: Display role-appropriate content
+- **Action**: Filters data before rendering
+- **Scope**: Data-level protection
+- **Example**: DJs see only gig missions, RUNNERs see only service missions
+
+## 🎭 Mission Role Targeting
+
+### Mission Types by Role
+
+**DJ/VERIFIED_DJ Missions (Gig Type)**:
+- Corporate events and holiday parties
+- Wedding receptions with MC services
+- Club night residencies
+- Festival performances
+- Private party entertainment
+
+**RUNNER Missions (Service Type)**:
+- Equipment delivery and pickup
+- Flyer distribution and marketing
+- Vinyl record handling and cataloging
+- Event setup assistance
+- Music gear transportation
+
+**CLIENT Missions**:
+- Can create missions targeting specific roles
+- See all missions they've created
+- Manage mission applicants
+
+**CURATOR Missions**:
+- See all platform missions
+- Assign missions to team members
+- Manage multiple role assignments
+
+**ADMIN/OPERATIONS Missions**:
+- Full visibility to all missions
+- Platform oversight and management
+- System-wide mission control
 
 ### Role Levels and Permissions
 
-| Role | Level | Description | Key Permissions |
-|------|-------|-------------|-----------------|
-| **GUEST** | 0 | Unregistered users | Public read, auth login/register |
-| **DJ** | 1 | Basic DJ account | Missions, check-ins, expenses, P2P missions |
-| **VERIFIED_DJ** | 2 | Verified DJ with Serato access | Serato integration, P2P missions, payments |
-| **CLIENT** | 3 | Event organizers, labels | Mission creation, payments |
-| **CURATOR** | 4 | Content curators, team managers | Team management, advanced missions |
-| **OPERATIONS** | 5 | Platform operations team | User verification, system management |
-| **PARTNER** | 6 | Business partners | Analytics, partner features |
-| **ADMIN** | 7 | System administrators | Full system access |
+| Role | Level | Description | Mission Access | Key Permissions |
+|------|-------|-------------|----------------|-----------------|
+| **GUEST** | 0 | Unregistered users | None - must authenticate | Public read, auth login/register |
+| **RUNNER** | 1 | Service providers | Service missions only | Apply, accept service missions |
+| **DJ** | 1 | Basic DJ account | Gig missions only | Apply, accept gig missions |
+| **VERIFIED_DJ** | 2 | Verified DJ with Serato access | Premium gig missions | Serato integration, exclusive gigs |
+| **CLIENT** | 3 | Event organizers, labels | All missions (view only) | Create missions, manage bookings |
+| **CURATOR** | 4 | Content curators, team managers | All missions (assign teams) | Team management, mission assignment |
+| **OPERATIONS** | 5 | Platform operations team | All missions (oversight) | User verification, system management |
+| **PARTNER** | 6 | Business partners | Relevant partnership missions | Analytics, partner features |
+| **ADMIN** | 7 | System administrators | All missions (full control) | Full system access |
 
 ## 🔑 Detailed Role Permissions
 
@@ -51,35 +134,43 @@ permissions: [
   'missions:complete',
   'checkins:create',
   'checkins:read',
-  'expenses:create',
-  'expenses:read',
   'chat:read',
   'chat:send',
   'p2p-missions:accept',
   'p2p-missions:complete',
-  'payments:receive'
+  'payments:receive',
+  'online-status:toggle'  // ✅ Can go online to receive missions
 ]
 ```
-- Basic user functionality
-- Apply for and accept missions (including P2P)
-- Create check-ins and expenses
+- Basic DJ functionality focused on music/gig missions
+- Apply for and accept gig missions (including P2P)
+- Create check-ins at venues
 - Chat with other users
-- Receive payments for completed missions
+- Receive payments for completed gigs
+- **✅ Go Online/Offline** - Toggle availability for receiving gig missions
+- **❌ NO EXPENSES** - DJs do not track expenses (use RUNNER role for that)
 - **Cannot access Serato automatic verification**
+
+**Note on DJ + RUNNER Dual Role**: 
+- DJs who also want to run service missions can opt-in to RUNNER role
+- Dual role users get combined permissions including `expenses:create` and `expenses:read`
+- Expenses menu item only appears if user has RUNNER role or role includes "RUNNER"
 
 ### VERIFIED_DJ (Level 2) - Verified DJ
 ```javascript
 permissions: [
-  // All RUNNER permissions +
+  // All DJ permissions +
   'serato:connect',
-  'serato:verify'
+  'serato:verify',
+  'online-status:toggle'  // ✅ Can go online to receive missions
 ]
 ```
-- All RUNNER permissions
+- All DJ permissions
 - **Serato account connection**
 - **Automatic mission verification**
 - **Seamless mission completion**
 - **Professional proof logging**
+- **✅ Go Online/Offline** - Toggle availability with verified status
 
 ### CLIENT (Level 3)
 ```javascript

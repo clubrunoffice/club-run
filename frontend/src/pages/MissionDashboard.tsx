@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/PrivyAuthContext';
 import MissionBoard from '../components/missions/MissionBoard';
 import MissionCreationWizard from '../components/missions/MissionCreationWizard';
 import { Plus, MapPin, DollarSign, Clock, Star, CheckCircle } from 'lucide-react';

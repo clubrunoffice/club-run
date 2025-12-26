@@ -18,7 +18,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/PrivyAuthContext';
 import { useRBAC } from '../contexts/RBACContext';
 import { pqcSecurity } from '../services/pqc/PQCSecurityService';
 import { langGraphWorkflow, WorkflowState, AgentNode } from '../services/langgraph/LangGraphWorkflowService';
@@ -45,6 +45,29 @@ const EnhancedAgentDashboard: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { user, hasRole, getCurrentTheme } = useRBAC();
   const theme = getCurrentTheme();
+
+  // Admin-only access control
+  if (!isAuthenticated || !user || user.role !== 'ADMIN') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+        <div className="bg-slate-800/90 backdrop-blur-sm border border-red-500/30 rounded-lg shadow-2xl p-8 max-w-md w-full text-center">
+          <div className="mb-6">
+            <Shield className="w-16 h-16 mx-auto text-red-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-4">Admin Access Required</h2>
+          <p className="text-gray-300 mb-6">
+            This dashboard is restricted to administrators only. Only users with ADMIN role can view the complete agent system.
+          </p>
+          <Link 
+            to="/dashboard" 
+            className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // State management
   const [agents, setAgents] = useState<EnhancedAgent[]>([]);
@@ -148,6 +171,143 @@ const EnhancedAgentDashboard: React.FC = () => {
       return [];
     }
 
+    // ADMIN sees ALL agents from all roles
+    if (user.role === 'ADMIN') {
+      return [
+        // Platform Guide Agent (GUEST)
+        {
+          id: 'platformGuideAgent',
+          title: 'Platform Guide Agent',
+          icon: <Eye className="w-6 h-6" />,
+          iconBg: 'bg-gray-500',
+          efficiency: '100%',
+          status: 'ACTIVE',
+          description: 'Helps guests explore Club Run features and benefits',
+          latestUpdate: 'Guiding new users - 45 active explorers',
+          borderColor: 'border-l-gray-500',
+          role: 'GUEST'
+        },
+        // Music Curation Agent (DJ)
+        {
+          id: 'musicCurationAgent',
+          title: 'Music Curation Agent',
+          icon: <Music className="w-6 h-6" />,
+          iconBg: 'bg-blue-500',
+          efficiency: '95%',
+          status: 'ACTIVE',
+          description: 'Assists DJs with music submissions and playlist management',
+          latestUpdate: '24 new submissions received - 3 high priority',
+          borderColor: 'border-l-blue-500',
+          role: 'DJ'
+        },
+        // Enhanced Music Agent (VERIFIED_DJ)
+        {
+          id: 'enhancedMusicAgent',
+          title: 'Enhanced Music Agent',
+          icon: <Music className="w-6 h-6" />,
+          iconBg: 'bg-green-500',
+          efficiency: '98%',
+          status: 'ACTIVE',
+          description: 'Advanced music curation with Serato integration',
+          latestUpdate: '8 Serato libraries synced - 1,892 tracks analyzed',
+          borderColor: 'border-l-green-500',
+          role: 'VERIFIED_DJ'
+        },
+        // Mission Management Agent (CLIENT)
+        {
+          id: 'missionManagementAgent',
+          title: 'Mission Management Agent',
+          icon: <Search className="w-6 h-6" />,
+          iconBg: 'bg-purple-500',
+          efficiency: '92%',
+          status: 'ACTIVE',
+          description: 'Helps clients create and manage missions',
+          latestUpdate: '15 missions created - 7 active, 4 completed',
+          borderColor: 'border-l-purple-500',
+          role: 'CLIENT'
+        },
+        // Team Coordination Agent (CURATOR)
+        {
+          id: 'teamCoordinationAgent',
+          title: 'Team Coordination Agent',
+          icon: <Users className="w-6 h-6" />,
+          iconBg: 'bg-orange-500',
+          efficiency: '96%',
+          status: 'ACTIVE',
+          description: 'Manages team collaboration and project coordination',
+          latestUpdate: '5 teams coordinated - 12 projects tracked',
+          borderColor: 'border-l-orange-500',
+          role: 'CURATOR'
+        },
+        // System Operations Agent (OPERATIONS)
+        {
+          id: 'systemOperationsAgent',
+          title: 'System Operations Agent',
+          icon: <Activity className="w-6 h-6" />,
+          iconBg: 'bg-red-500',
+          efficiency: '99%',
+          status: 'ACTIVE',
+          description: 'Monitors platform health and manages system operations',
+          latestUpdate: 'System health: 99.8% uptime - All services optimal',
+          borderColor: 'border-l-red-500',
+          role: 'OPERATIONS'
+        },
+        // Business Intelligence Agent (PARTNER)
+        {
+          id: 'businessIntelligenceAgent',
+          title: 'Business Intelligence Agent',
+          icon: <BarChart3 className="w-6 h-6" />,
+          iconBg: 'bg-cyan-500',
+          efficiency: '94%',
+          status: 'ACTIVE',
+          description: 'Provides business analytics and partnership insights',
+          latestUpdate: 'Analytics: Revenue +25%, User growth +40%',
+          borderColor: 'border-l-cyan-500',
+          role: 'PARTNER'
+        },
+        // System Administration Agent (ADMIN)
+        {
+          id: 'systemAdministrationAgent',
+          title: 'System Administration Agent',
+          icon: <Shield className="w-6 h-6" />,
+          iconBg: 'bg-red-600',
+          efficiency: '100%',
+          status: 'ACTIVE',
+          description: 'Complete system control and oversight',
+          latestUpdate: 'Full system access - All controls operational',
+          borderColor: 'border-l-red-600',
+          role: 'ADMIN'
+        },
+        // Research Agent (All roles)
+        {
+          id: 'researchAgent',
+          title: 'Research Agent',
+          icon: <Search className="w-6 h-6" />,
+          iconBg: 'bg-indigo-500',
+          efficiency: '97%',
+          status: 'ACTIVE',
+          description: 'Market research and trend analysis',
+          latestUpdate: '42 trends identified - 8 actionable insights',
+          borderColor: 'border-l-indigo-500',
+          role: 'ALL'
+        },
+        // Reporting Agent (All roles)
+        {
+          id: 'reportingAgent',
+          title: 'Reporting Agent',
+          icon: <BarChart3 className="w-6 h-6" />,
+          iconBg: 'bg-teal-500',
+          efficiency: '98%',
+          status: 'ACTIVE',
+          description: 'Automated reporting and analytics',
+          latestUpdate: '156 reports generated - 23 scheduled',
+          borderColor: 'border-l-teal-500',
+          role: 'ALL'
+        }
+      ];
+    }
+
+    // Role-specific agents for non-admin users
     switch (user.role) {
       case 'DJ':
         return [
@@ -374,7 +534,7 @@ const EnhancedAgentDashboard: React.FC = () => {
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-4">
               <h1 className="text-4xl md:text-5xl font-bold text-white mr-4">
-                {!isAuthenticated || !user ? 'Enhanced AI Agent Dashboard' : `${user.role} AI Agents`}
+                Complete AI Agent System
               </h1>
               {isSecurityEnabled && (
                 <div className="flex items-center bg-green-600 bg-opacity-20 border border-green-400 rounded-lg px-3 py-1">
@@ -384,16 +544,10 @@ const EnhancedAgentDashboard: React.FC = () => {
               )}
             </div>
             <p className="text-xl text-gray-300 mb-4">
-              {!isAuthenticated || !user ? 'AI-Powered Platform Operations with Quantum Security' :
-               user.role === 'DJ' ? 'AI-Powered Music Curation with LangGraph Workflows' :
-               user.role === 'CLIENT' ? 'AI-Powered Mission Management with PQC Protection' :
-               user.role === 'CURATOR' ? 'AI-Powered Team Management with Quantum Security' :
-               user.role === 'OPERATIONS' || user.role === 'ADMIN' ? 'AI-Powered System Management with Enhanced Security' :
-               'AI-Powered Operations with Quantum-Resistant Security'}
+              Administrator View: All 10 Working AI Agents with Quantum Security & LangGraph Workflows
             </p>
             <p className="text-gray-400 text-lg">
-              {!isAuthenticated || !user ? 'Sign up to access personalized AI agents with quantum security' :
-               'Role-based AI agents optimized for your workflow with LangGraph orchestration'}
+              Complete system overview with role-based AI agents and LangGraph orchestration
             </p>
           
             {/* Security Controls */}
