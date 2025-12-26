@@ -129,8 +129,8 @@ const loadRoute = (routePath, routeName) => {
   }
 };
 
-// API Routes
-app.use('/api/auth', loadRoute('../backend/src/routes/auth', 'auth'));
+// API Routes - using Privy auth system
+app.use('/api/auth', loadRoute('../backend/routes/privyAuth', 'auth'));
 app.use('/api/admin', loadRoute('../backend/src/routes/admin', 'admin'));
 app.use('/api/users', loadRoute('../backend/src/routes/users', 'users'));
 app.use('/api/venues', loadRoute('../backend/src/routes/venues', 'venues'));
