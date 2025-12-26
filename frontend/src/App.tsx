@@ -1,10 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PrivyAuthProvider } from './contexts/PrivyAuthContext';
 import { UIAgentProvider } from './contexts/UIAgentContext';
 import { RBACProvider } from './contexts/RBACContext';
 import { RoleBasedNavigation, RoleBasedDashboard } from './components/RoleBasedUI';
-import { useAuth } from './contexts/PrivyAuthContext';
 import { ProtectedRoute } from './components/ProtectedRoutePrivy';
 import ChatBot from './components/ChatBot';
 import Home from './pages/Home';

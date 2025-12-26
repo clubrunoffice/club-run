@@ -154,7 +154,7 @@ const EnhancedAgentDashboard: React.FC = () => {
   }, [isAuthenticated, user, isSecurityEnabled]);
 
   // Get workflow template based on agent type
-  const getWorkflowTemplateForAgent = (agentId: string): string => {
+  const getWorkflowTemplateForAgent = (agentId: string): 'musicCuration' | 'missionManagement' | 'teamCoordination' => {
     if (agentId.includes('music') || agentId.includes('playlist') || agentId.includes('library')) {
       return 'musicCuration';
     } else if (agentId.includes('mission') || agentId.includes('p2p') || agentId.includes('budget')) {
@@ -421,7 +421,6 @@ const EnhancedAgentDashboard: React.FC = () => {
         ];
       
       case 'OPERATIONS':
-      case 'ADMIN':
         return [
           {
             id: 'userAgent',
