@@ -43,28 +43,28 @@ const Home: React.FC = () => {
         return {
           title: `Welcome Back, ${runnerName}! 🏃‍♂️`,
           subtitle: "Ready to earn? Browse available missions and start building your reputation today.",
-          badge: `Music Runner • Level ${user.level || 'Navigator'}`
+          badge: `Music Runner • Level Navigator`
         };
       case 'DJ':
         const djName = user.email?.includes('privy.generated') ? 'DJ' : (user.email?.split('@')[0] || user.name);
         return {
           title: `Welcome Back, ${djName}! 🎵`,
           subtitle: "Your professional dashboard is ready. Accept missions, manage submissions, and grow your business.",
-          badge: `Professional DJ • ${user.missionsCompleted || 0} Missions Completed`
+          badge: `Professional DJ • 0 Missions Completed`
         };
       case 'VERIFIED_DJ':
         const verifiedDjName = user.email?.includes('privy.generated') ? 'Verified DJ' : (user.email?.split('@')[0] || user.name);
         return {
           title: `Welcome Back, ${verifiedDjName}! ✅`,
           subtitle: "As a verified DJ, you have access to premium features and higher-paying missions.",
-          badge: `Verified DJ • ${user.missionsCompleted || 0} Missions Completed`
+          badge: `Verified DJ • 0 Missions Completed`
         };
       case 'CLIENT':
         const clientName = user.email?.includes('privy.generated') ? 'Client' : (user.email?.split('@')[0] || user.name);
         return {
           title: `Welcome Back, ${clientName}! 🎯`,
           subtitle: "Post new missions, manage your team, and track project progress from your dashboard.",
-          badge: `Client • ${user.missionsCompleted || 0} Missions Created`
+          badge: `Client • 0 Missions Created`
         };
       case 'CURATOR':
         const curatorName = user.email?.includes('privy.generated') ? 'Curator' : (user.email?.split('@')[0] || user.name);

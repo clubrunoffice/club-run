@@ -311,7 +311,7 @@ const DJVerificationButton: React.FC<DJVerificationButtonProps> = ({
             <div className="bg-red-600 bg-opacity-20 border border-red-400 rounded-lg p-3">
               <h4 className="text-red-400 font-semibold mb-2">Missing Requirements:</h4>
               <ul className="text-red-300 text-sm space-y-1">
-                {eligibility.missingRequirements.map((requirement, index) => (
+                {eligibility.missingRequirements.map((requirement: string, index: number) => (
                   <li key={index} className="flex items-center">
                     <XCircle className="w-3 h-3 mr-2" />
                     {requirement}

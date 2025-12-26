@@ -61,7 +61,7 @@ export const Missions: React.FC = () => {
 
   const handleDeleteMission = (mission: Mission) => {
     if (confirm(`Delete mission: ${mission.title}?`)) {
-      setMissions(prev => prev.filter(m => m.id !== mission.id));
+      setPlatformMissions(prev => prev.filter(m => m.id !== mission.id));
       alert('Mission deleted successfully');
     }
   };
@@ -360,12 +360,12 @@ export const Missions: React.FC = () => {
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Missions Dashboard</h1>
               <p className="text-xl text-gray-300">
-                {user.role === 'RUNNER' ? 'Browse platform missions and track your applications' :
-                 user.role === 'CLIENT' ? 'View all missions and manage your created ones' :
-                 user.role === 'DJ' ? 'Find DJ gigs and performance opportunities' :
-                 user.role === 'CURATOR' ? 'Browse missions and manage team assignments' :
-                 user.role === 'OPERATIONS' ? 'Monitor all platform missions and user activities' :
-                 user.role === 'ADMIN' ? 'Full mission management and platform oversight' :
+                {user?.role === 'RUNNER' ? 'Browse platform missions and track your applications' :
+                 user?.role === 'CLIENT' ? 'View all missions and manage your created ones' :
+                 user?.role === 'DJ' ? 'Find DJ gigs and performance opportunities' :
+                 user?.role === 'CURATOR' ? 'Browse missions and manage team assignments' :
+                 user?.role === 'OPERATIONS' ? 'Monitor all platform missions and user activities' :
+                 user?.role === 'ADMIN' ? 'Full mission management and platform oversight' :
                  'Browse available missions'}
               </p>
             </div>

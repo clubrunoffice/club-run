@@ -60,7 +60,8 @@ export const withRoleCheck = <P extends object>(
     }
 
     if (fallbackComponent) {
-      return <fallbackComponent {...props} />;
+      const FallbackComponent = fallbackComponent;
+      return <FallbackComponent {...props} />;
     }
 
     return null;

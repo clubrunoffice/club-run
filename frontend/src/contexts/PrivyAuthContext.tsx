@@ -127,7 +127,7 @@ export const PrivyAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           // Update wallet address if available
           if (walletsReady && wallets.length > 0) {
             const primaryWallet = wallets[0];
-            console.log('💼 Updating wallet address:', primaryWallet.address);
+            console.log('💼 Updating wallet address:', primaryWallet.address || '');
             await axios.post(
               `${API_URL}/auth/update-wallet`,
               { walletAddress: primaryWallet.address },
