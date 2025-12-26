@@ -20,6 +20,8 @@ export const GoOnlineToggle: React.FC<GoOnlineToggleProps> = ({
   const [isOnline, setIsOnline] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const apiBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim() || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api');
+
   // Only show for RUNNER, DJ, VERIFIED_DJ
   const canGoOnline = user?.role && ['RUNNER', 'DJ', 'VERIFIED_DJ'].includes(user.role);
 
@@ -45,7 +47,7 @@ export const GoOnlineToggle: React.FC<GoOnlineToggleProps> = ({
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth/online-status`, {
+      const response = await fetch(`${apiBaseUrl}/auth/online-status`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -73,7 +75,7 @@ export const GoOnlineToggle: React.FC<GoOnlineToggleProps> = ({
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth/online-status`, {
+      const response = await fetch(`${apiBaseUrl}/auth/online-status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

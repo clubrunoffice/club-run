@@ -29,7 +29,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const DEFAULT_API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:3001/api';
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.trim() || DEFAULT_API_URL;
 
 export const PrivyAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { 
