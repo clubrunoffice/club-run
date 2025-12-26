@@ -1,9 +1,8 @@
 # Backend folder - deploy separately or use lighter approach
 backend/
 
-# Don't ignore these specific backend files needed by API
-!backend/routes/
-!backend/middleware/
+# Backend files should be excluded from Vercel packaging
+# deploy backend separately if needed
 
 # Ignore large dependencies
 backend/node_modules/
