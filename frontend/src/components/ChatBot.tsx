@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, Mic, ChevronDown, Wallet, CheckCircle, MapPin, Smartphone, Users, Music, Plus, Settings } from 'lucide-react';
 import { useRBAC } from '../contexts/RBACContext';
+import { useAuth } from '../contexts/PrivyAuthContext';
 import { useNavigate } from 'react-router-dom';
 import { GoOnlineToggle } from './GoOnlineToggle';
 
@@ -22,6 +23,7 @@ interface Message {
 
 const ChatBot: React.FC = () => {
   const { user, isAuthenticated, hasRole, getCurrentTheme } = useRBAC();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -272,7 +274,13 @@ const ChatBot: React.FC = () => {
         navigate('/features');
         break;
       case 'signup':
-        navigate('/auth');
+        if (isAuthenticated) {
+          addMessage('✅ You are already signed in.', true);
+          break;
+        }
+
+        addMessage('🔐 Opening sign-in…', true);
+        login();
         break;
       
       // DJ actions

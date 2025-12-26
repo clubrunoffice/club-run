@@ -173,6 +173,11 @@ export const PrivyAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.warn('⚠️ Privy not ready yet');
       return;
     }
+
+    if (authenticated) {
+      console.warn('ℹ️ Login requested but user is already authenticated');
+      return;
+    }
     
     try {
       console.log('✅ Calling privyLogin()...');
